@@ -1,0 +1,39 @@
+name: Hourly weather → ads sync
+
+on:
+  schedule:
+    - cron: "5 * * * *"   # 5 minutes past every hour, UTC
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Materialise secret files
+        env:
+          SHEETS_SA_JSON: ${{ secrets.SHEETS_SA_JSON }}
+          GOOGLE_ADS_YAML: ${{ secrets.GOOGLE_ADS_YAML }}
+        run: |
+          mkdir -p secrets
+          printf '%s' "$SHEETS_SA_JSON"  > secrets/sheets-service-account.json
+          printf '%s' "$GOOGLE_ADS_YAML" > secrets/google-ads.yaml
+          chmod 600 secrets/*
+
+      - name: Run sync
+        env:
+          GOOGLE_SHEETS_CREDENTIALS: ./secrets/sheets-service-account.json
+          GOOGLE_ADS_YAML:           ./secrets/google-ads.yaml
+          SPREADSHEET_ID:            ${{ secrets.SPREADSHEET_ID }}
+          GOOGLE_ADS_CUSTOMER_ID:    ${{ secrets.GOOGLE_ADS_CUSTOMER_ID }}
+          NOAA_USER_AGENT:           ${{ secrets.NOAA_USER_AGENT }}
+        run: python src/run_hourly.py

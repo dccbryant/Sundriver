@@ -1,0 +1,9 @@
+# Copy to google-ads.yaml and fill in. Keep the real file out of git.
+# See https://developers.google.com/google-ads/api/docs/client-libs/python/configuration
+developer_token: YOUR_DEVELOPER_TOKEN
+client_id: YOUR_OAUTH_CLIENT_ID.apps.googleusercontent.com
+client_secret: YOUR_OAUTH_CLIENT_SECRET
+refresh_token: YOUR_OAUTH_REFRESH_TOKEN
+# Required when you authenticate via a Google Ads manager (MCC) account:
+login_customer_id: 1234567890
+use_proto_plus: true
