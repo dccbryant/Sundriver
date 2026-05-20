@@ -95,20 +95,35 @@ Example rows:
 
 ### 3. Local install
 
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env             # edit values
-cp google-ads.yaml.example google-ads.yaml   # edit values
+The fastest path is `./setup.sh`, which creates the virtualenv, installs
+dependencies, sets up the `secrets/` directory, copies the example config
+files, runs a connection check, and prints a checklist of any human steps
+that still need doing. It's idempotent — re-run it as you finish each
+manual step.
 
-# one-shot, no API calls — verifies sheet read/write only
-python src/fetch_weather.py
+```bash
+./setup.sh                # full setup + smoke test
+./setup.sh --skip-ads     # before you have an Ads refresh token
+./setup.sh --install-cron # also install an hourly crontab entry
+./setup.sh --no-check     # skip the smoke test
+```
+
+Once setup passes:
+
+```bash
+source .venv/bin/activate
 
 # dry-run the ads step — decisions logged to the sheet, no mutations
 python src/update_campaigns.py --dry-run
 
 # real run
 python src/run_hourly.py
+```
+
+To re-verify credentials at any time without making changes:
+
+```bash
+python src/check_setup.py
 ```
 
 ### 4. Schedule it
