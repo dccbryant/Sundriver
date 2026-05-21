@@ -794,13 +794,22 @@ function loadGsSettings() {
 }
 function saveGsSettings() {
   gsSettings.clientId = $("gs-client-id").value.trim();
-  gsSettings.sheetId  = $("gs-sheet-id").value.trim();
+  gsSettings.sheetId  = extractSheetId($("gs-sheet-id").value);
   gsSettings.tab      = $("gs-tab").value.trim() || "Weather Data";
   gsSettings.auto     = $("gs-auto").checked;
+  // Reflect any URL-to-ID extraction back into the field so the user sees what was stored.
+  $("gs-sheet-id").value = gsSettings.sheetId;
   try { localStorage.setItem(GS_SETTINGS_KEY, JSON.stringify(gsSettings)); } catch {}
   // Re-init token client next time it's needed (in case clientId changed).
   GS_TOKEN_CLIENT = null;
   updateGsStatus();
+}
+
+// Accept either a raw Spreadsheet ID or a full sheet URL pasted from the browser.
+function extractSheetId(input) {
+  const trimmed = (input || "").trim();
+  const m = trimmed.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  return m ? m[1] : trimmed;
 }
 
 function updateGsStatus() {
@@ -861,14 +870,52 @@ async function ensureAccessToken(silent) {
   return requestAccessToken({ silent });
 }
 
+async function ensureSheetTab(sheetId, tabName, auth) {
+  // List existing tabs. A 404 here means the spreadsheet ID itself is wrong
+  // (or the connected Google account can't see it).
+  const metaUrl = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(sheetId)}?fields=sheets.properties.title`;
+  const metaResp = await fetch(metaUrl, { headers: auth });
+  if (metaResp.status === 404) {
+    throw new Error(`spreadsheet not found — check the Spreadsheet ID in Settings, and that the connected Google account has access to it`);
+  }
+  if (metaResp.status === 403) {
+    throw new Error(`access denied — share the sheet with the Google account you connected as (Editor)`);
+  }
+  if (!metaResp.ok) {
+    throw new Error(`spreadsheet lookup ${metaResp.status}: ${(await metaResp.text()).slice(0, 200)}`);
+  }
+  const meta = await metaResp.json();
+  const titles = (meta.sheets || []).map(s => s.properties && s.properties.title).filter(Boolean);
+  if (titles.includes(tabName)) return;
+
+  // Tab missing — create it. Common when the user just made a fresh sheet
+  // whose default tab is "Sheet1" but our default tab name is "Weather Data".
+  const createResp = await fetch(
+    `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(sheetId)}:batchUpdate`,
+    {
+      method: "POST",
+      headers: { ...auth, "Content-Type": "application/json" },
+      body: JSON.stringify({ requests: [{ addSheet: { properties: { title: tabName } } }] }),
+    }
+  );
+  if (!createResp.ok) {
+    throw new Error(`could not create tab "${tabName}" (${createResp.status}); existing tabs: ${titles.join(", ") || "(none)"}`);
+  }
+}
+
 async function pushToSheet({ interactive }) {
   if (!gsSettings.sheetId) throw new Error("spreadsheet ID is empty");
   if (!CURRENT.length) throw new Error("no data yet — wait for the first fetch");
 
   const token = await ensureAccessToken(!interactive);
-  const tab = encodeURIComponent(gsSettings.tab || "Weather Data");
-  const base = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(gsSettings.sheetId)}/values/${tab}`;
   const auth = { Authorization: "Bearer " + token };
+  const tabName = gsSettings.tab || "Weather Data";
+
+  // Verify the spreadsheet exists and the target tab is present (create it if not).
+  await ensureSheetTab(gsSettings.sheetId, tabName, auth);
+
+  const tab = encodeURIComponent(tabName);
+  const base = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(gsSettings.sheetId)}/values/${tab}`;
 
   // Wipe the tab first so a shrinking dataset doesn't leave stale rows.
   const clearResp = await fetch(`${base}!A:K:clear`, { method: "POST", headers: auth });
