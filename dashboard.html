@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Sundriver — US Weather & UV Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
   :root {
     --bg: #0f1419;
@@ -206,6 +207,12 @@
     <span class="meta-item">Next refresh: <strong id="next">—</strong></span>
     <span class="meta-item">Status: <strong id="status">idle</strong></span>
     <button id="refresh">Refresh now</button>
+    <span style="border-left:1px solid var(--border); height:18px"></span>
+    <label class="meta-item">File
+      <input id="xlsx-name" placeholder="sundriver-2026-05-21-1430" style="width:220px" />
+    </label>
+    <button id="save-xlsx" title="Save the current snapshot as an Excel file. Picker opens on the desktop by default.">Save Excel</button>
+    <span class="meta-item" id="save-status"></span>
   </div>
   <div class="controls">
     <input id="filter" placeholder="Filter by state, city, or forecast…" />
@@ -232,6 +239,8 @@
   <div class="footer-note">
     Data: National Weather Service forecast hourly + EPA Envirofacts UV hourly forecast.
     Cached lookups stored in <code>localStorage</code>.
+    Save Excel opens a file picker on your Desktop by default (Chrome/Edge);
+    other browsers save to the Downloads folder.
   </div>
 </main>
 <script>
@@ -522,6 +531,101 @@ $("refresh").addEventListener("click", refreshAll);
   $(id).addEventListener("input", render);
   $(id).addEventListener("change", render);
 });
+
+// ---- save to Excel ----
+const LAST_NAME_KEY = "sundriver.lastFilename.v1";
+
+function defaultBaseName() {
+  const d = new Date();
+  const p = n => String(n).padStart(2, "0");
+  return `sundriver-${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`;
+}
+
+function buildSheetRows() {
+  const header = ["state","name","city","lat","lon","zip","temperature_f","uv_index","short_forecast","updated_at_local","errors"];
+  const updated = new Date().toLocaleString();
+  const rows = CURRENT.map(r => [
+    r.state, r.name, r.city, r.lat, r.lon, r.zip,
+    r.temp_f == null ? "" : Math.round(r.temp_f * 10) / 10,
+    r.uv     == null ? "" : Math.round(r.uv     * 10) / 10,
+    r.short || "",
+    updated,
+    (r.errs || []).join("; "),
+  ]);
+  return [header, ...rows];
+}
+
+function csvEscape(v) {
+  if (v == null) return "";
+  const s = String(v);
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
+function flashSave(msg, isErr) {
+  const el = $("save-status");
+  el.textContent = msg;
+  el.style.color = isErr ? "var(--hot)" : "var(--accent)";
+  clearTimeout(flashSave._t);
+  flashSave._t = setTimeout(() => { el.textContent = ""; el.style.color = ""; }, 6000);
+}
+
+async function saveSnapshot() {
+  if (!CURRENT.length) { flashSave("nothing to save yet — wait for the first fetch", true); return; }
+
+  const xlsxAvailable = typeof XLSX !== "undefined";
+  const ext = xlsxAvailable ? ".xlsx" : ".csv";
+  const baseRaw = ($("xlsx-name").value || "").trim() || defaultBaseName();
+  const base = baseRaw.replace(/\.(xlsx|csv)$/i, "");
+  const filename = base + ext;
+  try { localStorage.setItem(LAST_NAME_KEY, base); } catch {}
+
+  let blob;
+  if (xlsxAvailable) {
+    const ws = XLSX.utils.aoa_to_sheet(buildSheetRows());
+    ws["!cols"] = [
+      {wch:6},{wch:18},{wch:18},{wch:9},{wch:10},{wch:7},
+      {wch:8},{wch:7},{wch:32},{wch:22},{wch:30},
+    ];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Weather Data");
+    const buf = XLSX.write(wb, { type: "array", bookType: "xlsx" });
+    blob = new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+  } else {
+    const csv = buildSheetRows().map(r => r.map(csvEscape).join(",")).join("\r\n");
+    blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+  }
+
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        startIn: "desktop",
+        types: xlsxAvailable
+          ? [{ description: "Excel workbook", accept: { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"] }}]
+          : [{ description: "CSV (Excel can open)",   accept: { "text/csv": [".csv"] }}],
+      });
+      const w = await handle.createWritable();
+      await w.write(blob);
+      await w.close();
+      flashSave(`saved ${handle.name}${xlsxAvailable ? "" : " (CSV — SheetJS unavailable)"}`);
+    } catch (e) {
+      if (e.name !== "AbortError") flashSave("save failed: " + (e.message || e), true);
+    }
+  } else {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    flashSave(`downloaded ${filename} to your browser's Downloads folder` + (xlsxAvailable ? "" : " (CSV)"));
+  }
+}
+
+(function initFilenameInput() {
+  const last = (() => { try { return localStorage.getItem(LAST_NAME_KEY); } catch { return null; }})();
+  $("xlsx-name").value = last || defaultBaseName();
+})();
+$("save-xlsx").addEventListener("click", saveSnapshot);
 
 restoreLast();
 refreshAll();
