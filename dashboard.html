@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Sundriver — US Weather & UV Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root {
     --bg: #0f1419;
@@ -193,6 +194,89 @@
     vertical-align: middle;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 20px;
+    z-index: 50;
+  }
+  .overlay.open { display: flex; }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    max-width: 560px;
+    width: 100%;
+    padding: 22px 24px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+  }
+  .panel h2 {
+    margin: 0 0 4px;
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .panel .lede { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .panel label.field {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+  .panel .field input[type=text],
+  .panel .field input:not([type]) {
+    display: block;
+    width: 100%;
+    margin-top: 4px;
+    padding: 7px 9px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+  }
+  .panel label.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .panel-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .panel-actions .spacer { flex: 1; }
+  .panel details {
+    margin-top: 16px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .panel details summary {
+    cursor: pointer;
+    color: var(--accent);
+    font-size: 12px;
+  }
+  .panel details ol { font-size: 12px; color: var(--muted); padding-left: 18px; }
+  .panel details code {
+    background: var(--bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 11px;
+  }
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 11px;
+    border: 1px solid var(--border);
+  }
+  .pill.ok { color: #6ee7b7; border-color: #6ee7b7; }
+  .pill.warn { color: var(--accent); border-color: var(--accent); }
+  .pill.err { color: var(--hot); border-color: var(--hot); }
 </style>
 </head>
 <body>
@@ -213,6 +297,10 @@
     </label>
     <button id="save-xlsx" title="Save the current snapshot as an Excel file. Picker opens on the desktop by default.">Save Excel</button>
     <span class="meta-item" id="save-status"></span>
+    <span style="border-left:1px solid var(--border); height:18px"></span>
+    <button id="sync-sheet" title="Push the current snapshot to your Google Sheet">Sync to Google Sheet</button>
+    <button id="open-settings" title="Configure Google Sheet integration">⚙ Settings</button>
+    <span class="meta-item" id="gs-status">sheet: not configured</span>
   </div>
   <div class="controls">
     <input id="filter" placeholder="Filter by state, city, or forecast…" />
@@ -236,6 +324,54 @@
     <code>python3 -m http.server</code> in this folder and visit <code>http://localhost:8000</code>.
   </div>
   <div id="grid" class="grid"></div>
+  <div id="settings-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="panel">
+      <h2 id="settings-title">Google Sheet integration</h2>
+      <div class="lede">
+        Push each snapshot to a Google Sheet you own. The page asks Google
+        for permission once per browser session; nothing leaves this tab
+        otherwise.
+      </div>
+
+      <label class="field">OAuth client ID
+        <input id="gs-client-id" type="text" placeholder="1234-abcd.apps.googleusercontent.com" autocomplete="off" />
+      </label>
+
+      <label class="field">Spreadsheet ID
+        <input id="gs-sheet-id" type="text" placeholder="the long ID from your sheet URL: /d/<this>/edit" autocomplete="off" />
+      </label>
+
+      <label class="field">Tab name
+        <input id="gs-tab" type="text" placeholder="Weather Data" autocomplete="off" />
+      </label>
+
+      <label class="checkbox">
+        <input id="gs-auto" type="checkbox" />
+        Automatically update the Google Sheet on every hourly refresh
+      </label>
+
+      <div class="panel-actions">
+        <button id="gs-connect">Connect to Google</button>
+        <span id="gs-conn-pill" class="pill">not connected</span>
+        <span class="spacer"></span>
+        <button id="gs-save">Save settings</button>
+        <button id="gs-close">Close</button>
+      </div>
+
+      <details>
+        <summary>One-time setup: how to create the OAuth client ID</summary>
+        <ol>
+          <li>Open <code>console.cloud.google.com</code> → APIs &amp; Services → Enabled APIs &amp; services → enable the <strong>Google Sheets API</strong>.</li>
+          <li>APIs &amp; Services → Credentials → Create credentials → <strong>OAuth client ID</strong> → type <em>Web application</em>.</li>
+          <li>Under <em>Authorised JavaScript origins</em> add the URL this page is served from. Right now that's:<br>
+            <code id="gs-origin"></code>
+            <br>(Google won't accept <code>file://</code> or <code>null</code> origins — if you opened the file directly, run <code>python3 -m http.server</code> in this folder and reload from <code>http://localhost:8000/dashboard.html</code>.)</li>
+          <li>Copy the new client ID into the field above. Share the Google Sheet with the Google account you'll connect with (Editor).</li>
+        </ol>
+      </details>
+    </div>
+  </div>
+
   <div class="footer-note">
     Data: National Weather Service forecast hourly + EPA Envirofacts UV hourly forecast.
     Cached lookups stored in <code>localStorage</code>.
@@ -432,6 +568,11 @@ async function refreshAll() {
   scheduleNext();
   btn.disabled = false;
 
+  // Fire-and-forget auto-sync to Google Sheets (no-op unless opted in & connected).
+  if (typeof autoSyncAfterRefresh === "function") {
+    autoSyncAfterRefresh().catch(() => {});
+  }
+
   // If EVERY uv fetch failed and at least some succeeded for temp, show the file:// banner.
   const uvFail = data.every(d => d.uv == null);
   const tempFail = data.every(d => d.temp_f == null);
@@ -626,6 +767,173 @@ async function saveSnapshot() {
   $("xlsx-name").value = last || defaultBaseName();
 })();
 $("save-xlsx").addEventListener("click", saveSnapshot);
+
+// ---- Google Sheet integration ----
+const GS_SETTINGS_KEY = "sundriver.gsSettings.v1";
+const GS_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
+
+const gsSettings = {
+  clientId: "",
+  sheetId: "",
+  tab: "Weather Data",
+  auto: false,
+};
+let GS_TOKEN = null;           // { token, expiresAt }
+let GS_TOKEN_CLIENT = null;    // GIS token client, re-created if clientId changes
+
+function loadGsSettings() {
+  try {
+    const j = JSON.parse(localStorage.getItem(GS_SETTINGS_KEY) || "{}");
+    Object.assign(gsSettings, j);
+  } catch {}
+  $("gs-client-id").value = gsSettings.clientId || "";
+  $("gs-sheet-id").value  = gsSettings.sheetId  || "";
+  $("gs-tab").value       = gsSettings.tab      || "Weather Data";
+  $("gs-auto").checked    = !!gsSettings.auto;
+  updateGsStatus();
+}
+function saveGsSettings() {
+  gsSettings.clientId = $("gs-client-id").value.trim();
+  gsSettings.sheetId  = $("gs-sheet-id").value.trim();
+  gsSettings.tab      = $("gs-tab").value.trim() || "Weather Data";
+  gsSettings.auto     = $("gs-auto").checked;
+  try { localStorage.setItem(GS_SETTINGS_KEY, JSON.stringify(gsSettings)); } catch {}
+  // Re-init token client next time it's needed (in case clientId changed).
+  GS_TOKEN_CLIENT = null;
+  updateGsStatus();
+}
+
+function updateGsStatus() {
+  const pill = $("gs-conn-pill");
+  const status = $("gs-status");
+  const connected = GS_TOKEN && GS_TOKEN.expiresAt > Date.now();
+  if (!gsSettings.clientId || !gsSettings.sheetId) {
+    pill.className = "pill"; pill.textContent = "not configured";
+    status.textContent = "sheet: not configured";
+  } else if (connected) {
+    pill.className = "pill ok"; pill.textContent = "connected";
+    const mins = Math.max(0, Math.round((GS_TOKEN.expiresAt - Date.now()) / 60000));
+    status.textContent = `sheet: connected (token ${mins}m)` + (gsSettings.auto ? " · auto-sync ON" : "");
+  } else {
+    pill.className = "pill warn"; pill.textContent = "configured, not connected";
+    status.textContent = "sheet: configured, click Connect" + (gsSettings.auto ? " · auto-sync pending" : "");
+  }
+}
+setInterval(updateGsStatus, 30 * 1000);
+
+function ensureTokenClient() {
+  if (!gsSettings.clientId) throw new Error("OAuth client ID is empty — open Settings");
+  if (!window.google || !google.accounts || !google.accounts.oauth2) {
+    throw new Error("Google Identity Services script hasn't loaded (check your network)");
+  }
+  if (GS_TOKEN_CLIENT && GS_TOKEN_CLIENT._cid === gsSettings.clientId) return GS_TOKEN_CLIENT;
+  GS_TOKEN_CLIENT = google.accounts.oauth2.initTokenClient({
+    client_id: gsSettings.clientId,
+    scope: GS_SCOPE,
+    callback: () => {}, // overwritten per request
+  });
+  GS_TOKEN_CLIENT._cid = gsSettings.clientId;
+  return GS_TOKEN_CLIENT;
+}
+
+function requestAccessToken({ silent } = { silent: false }) {
+  return new Promise((resolve, reject) => {
+    let client;
+    try { client = ensureTokenClient(); } catch (e) { return reject(e); }
+    client.callback = (resp) => {
+      if (resp && resp.error) return reject(new Error(resp.error_description || resp.error));
+      if (!resp || !resp.access_token) return reject(new Error("no access_token in response"));
+      GS_TOKEN = {
+        token: resp.access_token,
+        expiresAt: Date.now() + Math.max(0, ((resp.expires_in || 3600) - 30) * 1000),
+      };
+      updateGsStatus();
+      resolve(resp.access_token);
+    };
+    try {
+      client.requestAccessToken({ prompt: silent ? "none" : "" });
+    } catch (e) { reject(e); }
+  });
+}
+
+async function ensureAccessToken(silent) {
+  if (GS_TOKEN && GS_TOKEN.expiresAt > Date.now() + 5000) return GS_TOKEN.token;
+  return requestAccessToken({ silent });
+}
+
+async function pushToSheet({ interactive }) {
+  if (!gsSettings.sheetId) throw new Error("spreadsheet ID is empty");
+  if (!CURRENT.length) throw new Error("no data yet — wait for the first fetch");
+
+  const token = await ensureAccessToken(!interactive);
+  const tab = encodeURIComponent(gsSettings.tab || "Weather Data");
+  const base = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(gsSettings.sheetId)}/values/${tab}`;
+  const auth = { Authorization: "Bearer " + token };
+
+  // Wipe the tab first so a shrinking dataset doesn't leave stale rows.
+  const clearResp = await fetch(`${base}!A:K:clear`, { method: "POST", headers: auth });
+  if (!clearResp.ok) throw new Error("clear " + clearResp.status + ": " + (await clearResp.text()).slice(0, 200));
+
+  const rows = buildSheetRows();
+  const writeResp = await fetch(`${base}!A1?valueInputOption=RAW`, {
+    method: "PUT",
+    headers: { ...auth, "Content-Type": "application/json" },
+    body: JSON.stringify({ values: rows }),
+  });
+  if (!writeResp.ok) throw new Error("write " + writeResp.status + ": " + (await writeResp.text()).slice(0, 200));
+  return rows.length - 1;
+}
+
+async function manualSync() {
+  const btn = $("sync-sheet");
+  btn.disabled = true;
+  try {
+    const n = await pushToSheet({ interactive: true });
+    flashSave(`pushed ${n} rows to Google Sheet`);
+  } catch (e) {
+    flashSave("sheet sync failed: " + (e.message || e), true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function autoSyncAfterRefresh() {
+  if (!gsSettings.auto) return;
+  if (!gsSettings.clientId || !gsSettings.sheetId) return;
+  // Try silent first (won't pop up an OAuth window during a background refresh).
+  try {
+    const n = await pushToSheet({ interactive: false });
+    flashSave(`auto-synced ${n} rows to Google Sheet`);
+  } catch (e) {
+    // Surface a status hint but don't interrupt with an alert/popup.
+    flashSave("auto-sync skipped: " + (e.message || e) + " — click Connect", true);
+  }
+}
+
+// Wire up
+$("open-settings").addEventListener("click", () => {
+  $("gs-origin").textContent = location.origin === "null" ? "(file://, not allowed by Google)" : location.origin;
+  $("settings-overlay").classList.add("open");
+});
+$("gs-close").addEventListener("click", () => $("settings-overlay").classList.remove("open"));
+$("settings-overlay").addEventListener("click", (e) => {
+  if (e.target === $("settings-overlay")) $("settings-overlay").classList.remove("open");
+});
+$("gs-save").addEventListener("click", () => {
+  saveGsSettings();
+  flashSave("settings saved");
+});
+$("gs-connect").addEventListener("click", async () => {
+  saveGsSettings();
+  try {
+    await ensureAccessToken(false);
+    flashSave("connected to Google");
+  } catch (e) {
+    flashSave("connect failed: " + (e.message || e), true);
+  }
+});
+$("sync-sheet").addEventListener("click", manualSync);
+loadGsSettings();
 
 restoreLast();
 refreshAll();
