@@ -957,6 +957,32 @@ async function autoSyncAfterRefresh() {
   }
 }
 
+// Wait for the Google Identity Services script (loaded async) to be ready.
+function waitForGis(timeoutMs = 10000) {
+  return new Promise((resolve, reject) => {
+    const start = Date.now();
+    (function tick() {
+      if (window.google && google.accounts && google.accounts.oauth2) return resolve();
+      if (Date.now() - start > timeoutMs) return reject(new Error("Google Identity Services did not load"));
+      setTimeout(tick, 150);
+    })();
+  });
+}
+
+// On page load, if we already have settings, try to refresh the token silently.
+// Succeeds when the user has previously consented to this client ID and is still
+// signed in to Google — no popup. Fails benignly otherwise, leaving the user to
+// click Connect when they're ready.
+async function attemptSilentConnect() {
+  if (!gsSettings.clientId || !gsSettings.sheetId) return;
+  try {
+    await waitForGis();
+    await ensureAccessToken(true);  // silent
+  } catch (e) {
+    // Stay disconnected. Status pill already says "configured, not connected".
+  }
+}
+
 // Wire up
 $("open-settings").addEventListener("click", () => {
   $("gs-origin").textContent = location.origin === "null" ? "(file://, not allowed by Google)" : location.origin;
@@ -981,6 +1007,7 @@ $("gs-connect").addEventListener("click", async () => {
 });
 $("sync-sheet").addEventListener("click", manualSync);
 loadGsSettings();
+attemptSilentConnect();
 
 restoreLast();
 refreshAll();
