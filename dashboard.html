@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Sundriver — US Weather & UV Dashboard</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --panel: #161c24;
+    --border: #232b35;
+    --text: #e6edf3;
+    --muted: #8b96a3;
+    --accent: #ffb454;
+    --hot: #ff7849;
+    --warm: #ffb454;
+    --mild: #6ee7b7;
+    --cool: #60a5fa;
+    --cold: #a78bfa;
+    --uv-low: #6ee7b7;
+    --uv-mod: #fde68a;
+    --uv-high: #fb923c;
+    --uv-very: #ef4444;
+    --uv-ext: #a855f7;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      --bg: #fafbfc;
+      --panel: #ffffff;
+      --border: #e1e4e8;
+      --text: #1f2328;
+      --muted: #59636e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  header {
+    padding: 20px 24px 12px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+  h1 {
+    margin: 0 0 4px;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .meta-item {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .meta-item strong { color: var(--text); font-weight: 600; }
+  button, input, select {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button:disabled { opacity: 0.5; cursor: wait; }
+  .controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  #filter { min-width: 240px; }
+  main { padding: 16px 24px 40px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .state-name {
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .state-code {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+  .city {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .readings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .reading {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 8px;
+  }
+  .reading-label {
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .reading-value {
+    font-size: 18px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .forecast {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .err {
+    color: var(--hot);
+    font-size: 11px;
+  }
+  .swatch {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .banner {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .banner code { background: var(--bg); padding: 1px 5px; border-radius: 3px; }
+  .footer-note {
+    color: var(--muted);
+    font-size: 11px;
+    margin-top: 24px;
+    text-align: center;
+  }
+  .spinner {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Sundriver — US Weather &amp; UV Dashboard</h1>
+  <div class="subtitle">
+    Hourly snapshot per US state, sourced from NOAA (api.weather.gov) and EPA (data.epa.gov).
+    Auto-refreshes every hour.
+  </div>
+  <div class="meta">
+    <span class="meta-item">Last updated: <strong id="updated">—</strong></span>
+    <span class="meta-item">Next refresh: <strong id="next">—</strong></span>
+    <span class="meta-item">Status: <strong id="status">idle</strong></span>
+    <button id="refresh">Refresh now</button>
+  </div>
+  <div class="controls">
+    <input id="filter" placeholder="Filter by state, city, or forecast…" />
+    <label class="meta-item">Sort
+      <select id="sort">
+        <option value="state">State (A–Z)</option>
+        <option value="temp-desc">Temperature (hot → cold)</option>
+        <option value="temp-asc">Temperature (cold → hot)</option>
+        <option value="uv-desc">UV index (high → low)</option>
+        <option value="uv-asc">UV index (low → high)</option>
+      </select>
+    </label>
+    <label class="meta-item">Min °F <input id="min-temp" type="number" style="width:64px" /></label>
+    <label class="meta-item">Min UV <input id="min-uv" type="number" style="width:54px" step="0.5" /></label>
+  </div>
+</header>
+<main>
+  <div id="banner" class="banner" style="display:none">
+    Some browsers block API calls from files opened with <code>file://</code>.
+    If readings stay empty, either open this file in Firefox, or serve it with
+    <code>python3 -m http.server</code> in this folder and visit <code>http://localhost:8000</code>.
+  </div>
+  <div id="grid" class="grid"></div>
+  <div class="footer-note">
+    Data: National Weather Service forecast hourly + EPA Envirofacts UV hourly forecast.
+    Cached lookups stored in <code>localStorage</code>.
+  </div>
+</main>
+<script>
+const STATES = [
+  {state:"AL",name:"Alabama",city:"Montgomery",lat:32.3792,lon:-86.3077,zip:"36104"},
+  {state:"AK",name:"Alaska",city:"Juneau",lat:58.3019,lon:-134.4197,zip:"99801"},
+  {state:"AZ",name:"Arizona",city:"Phoenix",lat:33.4484,lon:-112.0740,zip:"85007"},
+  {state:"AR",name:"Arkansas",city:"Little Rock",lat:34.7465,lon:-92.2896,zip:"72201"},
+  {state:"CA",name:"California",city:"Sacramento",lat:38.5816,lon:-121.4944,zip:"95814"},
+  {state:"CO",name:"Colorado",city:"Denver",lat:39.7392,lon:-104.9903,zip:"80202"},
+  {state:"CT",name:"Connecticut",city:"Hartford",lat:41.7658,lon:-72.6734,zip:"06103"},
+  {state:"DE",name:"Delaware",city:"Dover",lat:39.1582,lon:-75.5244,zip:"19901"},
+  {state:"FL",name:"Florida",city:"Tallahassee",lat:30.4383,lon:-84.2807,zip:"32301"},
+  {state:"GA",name:"Georgia",city:"Atlanta",lat:33.7490,lon:-84.3880,zip:"30303"},
+  {state:"HI",name:"Hawaii",city:"Honolulu",lat:21.3070,lon:-157.8583,zip:"96813"},
+  {state:"ID",name:"Idaho",city:"Boise",lat:43.6150,lon:-116.2023,zip:"83702"},
+  {state:"IL",name:"Illinois",city:"Springfield",lat:39.7817,lon:-89.6501,zip:"62701"},
+  {state:"IN",name:"Indiana",city:"Indianapolis",lat:39.7684,lon:-86.1581,zip:"46204"},
+  {state:"IA",name:"Iowa",city:"Des Moines",lat:41.5868,lon:-93.6250,zip:"50309"},
+  {state:"KS",name:"Kansas",city:"Topeka",lat:39.0473,lon:-95.6752,zip:"66603"},
+  {state:"KY",name:"Kentucky",city:"Frankfort",lat:38.2009,lon:-84.8733,zip:"40601"},
+  {state:"LA",name:"Louisiana",city:"Baton Rouge",lat:30.4515,lon:-91.1871,zip:"70802"},
+  {state:"ME",name:"Maine",city:"Augusta",lat:44.3106,lon:-69.7795,zip:"04330"},
+  {state:"MD",name:"Maryland",city:"Annapolis",lat:38.9784,lon:-76.4922,zip:"21401"},
+  {state:"MA",name:"Massachusetts",city:"Boston",lat:42.3601,lon:-71.0589,zip:"02108"},
+  {state:"MI",name:"Michigan",city:"Lansing",lat:42.7325,lon:-84.5555,zip:"48933"},
+  {state:"MN",name:"Minnesota",city:"Saint Paul",lat:44.9537,lon:-93.0900,zip:"55102"},
+  {state:"MS",name:"Mississippi",city:"Jackson",lat:32.2988,lon:-90.1848,zip:"39201"},
+  {state:"MO",name:"Missouri",city:"Jefferson City",lat:38.5767,lon:-92.1735,zip:"65101"},
+  {state:"MT",name:"Montana",city:"Helena",lat:46.5891,lon:-112.0391,zip:"59601"},
+  {state:"NE",name:"Nebraska",city:"Lincoln",lat:40.8136,lon:-96.7026,zip:"68508"},
+  {state:"NV",name:"Nevada",city:"Carson City",lat:39.1638,lon:-119.7674,zip:"89701"},
+  {state:"NH",name:"New Hampshire",city:"Concord",lat:43.2081,lon:-71.5376,zip:"03301"},
+  {state:"NJ",name:"New Jersey",city:"Trenton",lat:40.2206,lon:-74.7597,zip:"08608"},
+  {state:"NM",name:"New Mexico",city:"Santa Fe",lat:35.6870,lon:-105.9378,zip:"87501"},
+  {state:"NY",name:"New York",city:"Albany",lat:42.6526,lon:-73.7562,zip:"12207"},
+  {state:"NC",name:"North Carolina",city:"Raleigh",lat:35.7796,lon:-78.6382,zip:"27601"},
+  {state:"ND",name:"North Dakota",city:"Bismarck",lat:46.8083,lon:-100.7837,zip:"58501"},
+  {state:"OH",name:"Ohio",city:"Columbus",lat:39.9612,lon:-82.9988,zip:"43215"},
+  {state:"OK",name:"Oklahoma",city:"Oklahoma City",lat:35.4676,lon:-97.5164,zip:"73102"},
+  {state:"OR",name:"Oregon",city:"Salem",lat:44.9429,lon:-123.0351,zip:"97301"},
+  {state:"PA",name:"Pennsylvania",city:"Harrisburg",lat:40.2732,lon:-76.8867,zip:"17101"},
+  {state:"RI",name:"Rhode Island",city:"Providence",lat:41.8240,lon:-71.4128,zip:"02903"},
+  {state:"SC",name:"South Carolina",city:"Columbia",lat:34.0007,lon:-81.0348,zip:"29201"},
+  {state:"SD",name:"South Dakota",city:"Pierre",lat:44.3683,lon:-100.3510,zip:"57501"},
+  {state:"TN",name:"Tennessee",city:"Nashville",lat:36.1627,lon:-86.7816,zip:"37219"},
+  {state:"TX",name:"Texas",city:"Austin",lat:30.2672,lon:-97.7431,zip:"78701"},
+  {state:"UT",name:"Utah",city:"Salt Lake City",lat:40.7608,lon:-111.8910,zip:"84111"},
+  {state:"VT",name:"Vermont",city:"Montpelier",lat:44.2601,lon:-72.5754,zip:"05602"},
+  {state:"VA",name:"Virginia",city:"Richmond",lat:37.5407,lon:-77.4360,zip:"23219"},
+  {state:"WA",name:"Washington",city:"Olympia",lat:47.0379,lon:-122.9007,zip:"98501"},
+  {state:"WV",name:"West Virginia",city:"Charleston",lat:38.3498,lon:-81.6326,zip:"25301"},
+  {state:"WI",name:"Wisconsin",city:"Madison",lat:43.0731,lon:-89.4012,zip:"53703"},
+  {state:"WY",name:"Wyoming",city:"Cheyenne",lat:41.1400,lon:-104.8202,zip:"82001"},
+  {state:"DC",name:"District of Columbia",city:"Washington",lat:38.9072,lon:-77.0369,zip:"20001"}
+];
+
+const REFRESH_MS = 60 * 60 * 1000;      // 1 hour
+const CONCURRENCY = 6;                   // simultaneous fetches per API
+const GRID_CACHE_KEY = "sundriver.gridCache.v1";
+const DATA_CACHE_KEY = "sundriver.lastData.v1";
+let CURRENT = [];                        // last rendered dataset
+let TIMER = null;
+let NEXT_AT = null;
+
+// ---- tiny helpers ----
+const $ = (id) => document.getElementById(id);
+const fmtTemp = (t) => (t == null || Number.isNaN(t)) ? "—" : Math.round(t) + "°";
+const fmtUv   = (u) => (u == null || Number.isNaN(u)) ? "—" : (Math.round(u * 10) / 10).toFixed(1);
+
+function tempColor(t) {
+  if (t == null) return "var(--muted)";
+  if (t >= 90) return "var(--hot)";
+  if (t >= 75) return "var(--warm)";
+  if (t >= 60) return "var(--mild)";
+  if (t >= 40) return "var(--cool)";
+  return "var(--cold)";
+}
+function uvColor(u) {
+  if (u == null) return "var(--muted)";
+  if (u >= 11) return "var(--uv-ext)";
+  if (u >= 8)  return "var(--uv-very)";
+  if (u >= 6)  return "var(--uv-high)";
+  if (u >= 3)  return "var(--uv-mod)";
+  return "var(--uv-low)";
+}
+
+async function pmap(items, concurrency, worker) {
+  const out = new Array(items.length);
+  let i = 0;
+  async function run() {
+    while (i < items.length) {
+      const idx = i++;
+      try { out[idx] = await worker(items[idx], idx); }
+      catch (e) { out[idx] = { _error: String(e && e.message || e) }; }
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, run));
+  return out;
+}
+
+// ---- NOAA ----
+function loadGridCache() {
+  try { return JSON.parse(localStorage.getItem(GRID_CACHE_KEY) || "{}"); }
+  catch { return {}; }
+}
+function saveGridCache(c) {
+  try { localStorage.setItem(GRID_CACHE_KEY, JSON.stringify(c)); } catch {}
+}
+async function noaaForecastUrl(s, cache) {
+  const key = s.lat.toFixed(4) + "," + s.lon.toFixed(4);
+  if (cache[key] && cache[key].forecastHourly) return cache[key].forecastHourly;
+  const r = await fetch("https://api.weather.gov/points/" + key, { headers: { Accept: "application/geo+json" }});
+  if (!r.ok) throw new Error("NOAA points " + r.status);
+  const j = await r.json();
+  cache[key] = { forecastHourly: j.properties.forecastHourly };
+  return cache[key].forecastHourly;
+}
+async function noaaCurrent(s, cache) {
+  const url = await noaaForecastUrl(s, cache);
+  const r = await fetch(url, { headers: { Accept: "application/geo+json" }});
+  if (!r.ok) throw new Error("NOAA hourly " + r.status);
+  const j = await r.json();
+  const p = (j.properties.periods || [])[0];
+  if (!p) throw new Error("NOAA empty periods");
+  let temp_f = p.temperature;
+  if (p.temperatureUnit === "C" && typeof temp_f === "number") temp_f = temp_f * 9 / 5 + 32;
+  return { temp_f, short: p.shortForecast || "" };
+}
+
+// ---- EPA ----
+async function epaUv(s) {
+  const url = "https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/ZIP/" + s.zip + "/JSON";
+  const r = await fetch(url, { headers: { Accept: "application/json" }});
+  if (!r.ok) throw new Error("EPA " + r.status);
+  const rows = await r.json();
+  if (!Array.isArray(rows) || !rows.length) throw new Error("EPA empty");
+  const now = new Date();
+  let best = rows[0], bestDelta = Infinity;
+  for (const row of rows) {
+    const parsed = parseEpaTimestamp(row.DATE_TIME);
+    if (!parsed) continue;
+    const delta = Math.abs(parsed - now);
+    if (delta < bestDelta) { best = row; bestDelta = delta; }
+  }
+  const uv = parseFloat(best.UV_VALUE);
+  if (!Number.isFinite(uv)) throw new Error("EPA non-numeric UV");
+  return uv;
+}
+function parseEpaTimestamp(s) {
+  if (!s) return null;
+  const m = /^([A-Za-z]{3})\/(\d{1,2})\/(\d{4})\s+(\d{1,2})\s*(AM|PM)$/i.exec(s.trim());
+  if (!m) return null;
+  const months = {JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
+  const mo = months[m[1].toUpperCase()];
+  if (mo == null) return null;
+  let hr = parseInt(m[4], 10) % 12;
+  if (m[5].toUpperCase() === "PM") hr += 12;
+  return new Date(parseInt(m[3],10), mo, parseInt(m[2],10), hr, 0, 0);
+}
+
+// ---- orchestration ----
+async function refreshAll() {
+  const btn = $("refresh");
+  btn.disabled = true;
+  $("status").innerHTML = '<span class="spinner"></span> fetching';
+  const gridCache = loadGridCache();
+  const data = STATES.map(s => ({ ...s, temp_f: null, uv: null, short: "", errs: [] }));
+
+  // NOAA
+  await pmap(STATES, CONCURRENCY, async (s, i) => {
+    try { const r = await noaaCurrent(s, gridCache); data[i].temp_f = r.temp_f; data[i].short = r.short; }
+    catch (e) { data[i].errs.push("temp: " + (e.message || e)); }
+  });
+  saveGridCache(gridCache);
+
+  // EPA
+  await pmap(STATES, CONCURRENCY, async (s, i) => {
+    try { data[i].uv = await epaUv(s); }
+    catch (e) { data[i].errs.push("uv: " + (e.message || e)); }
+  });
+
+  CURRENT = data;
+  try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify({ at: Date.now(), data })); } catch {}
+  render();
+
+  $("status").textContent = "ok";
+  $("updated").textContent = new Date().toLocaleString();
+  scheduleNext();
+  btn.disabled = false;
+
+  // If EVERY uv fetch failed and at least some succeeded for temp, show the file:// banner.
+  const uvFail = data.every(d => d.uv == null);
+  const tempFail = data.every(d => d.temp_f == null);
+  if (uvFail || tempFail) $("banner").style.display = "";
+  else $("banner").style.display = "none";
+}
+
+function scheduleNext() {
+  if (TIMER) clearTimeout(TIMER);
+  NEXT_AT = Date.now() + REFRESH_MS;
+  TIMER = setTimeout(refreshAll, REFRESH_MS);
+  updateNextLabel();
+}
+function updateNextLabel() {
+  if (!NEXT_AT) return;
+  const mins = Math.max(0, Math.round((NEXT_AT - Date.now()) / 60000));
+  $("next").textContent = mins + " min";
+}
+setInterval(updateNextLabel, 30 * 1000);
+
+// ---- render ----
+function render() {
+  const q = ($("filter").value || "").toLowerCase().trim();
+  const sort = $("sort").value;
+  const minT = parseFloat($("min-temp").value);
+  const minU = parseFloat($("min-uv").value);
+
+  let rows = CURRENT.slice();
+  if (q) {
+    rows = rows.filter(r => (r.state + " " + r.name + " " + r.city + " " + r.short).toLowerCase().includes(q));
+  }
+  if (Number.isFinite(minT)) rows = rows.filter(r => r.temp_f != null && r.temp_f >= minT);
+  if (Number.isFinite(minU)) rows = rows.filter(r => r.uv     != null && r.uv     >= minU);
+
+  const numOrInf = (v, dir) => v == null ? (dir === "desc" ? -Infinity : Infinity) : v;
+  switch (sort) {
+    case "temp-desc": rows.sort((a,b) => numOrInf(b.temp_f,"desc") - numOrInf(a.temp_f,"desc")); break;
+    case "temp-asc":  rows.sort((a,b) => numOrInf(a.temp_f,"asc")  - numOrInf(b.temp_f,"asc"));  break;
+    case "uv-desc":   rows.sort((a,b) => numOrInf(b.uv,"desc")     - numOrInf(a.uv,"desc"));     break;
+    case "uv-asc":    rows.sort((a,b) => numOrInf(a.uv,"asc")      - numOrInf(b.uv,"asc"));      break;
+    default:          rows.sort((a,b) => a.state.localeCompare(b.state));
+  }
+
+  const grid = $("grid");
+  grid.innerHTML = "";
+  for (const r of rows) {
+    const card = document.createElement("div");
+    card.className = "card";
+    const errHtml = r.errs && r.errs.length
+      ? `<div class="err" title="${escapeAttr(r.errs.join('\n'))}">⚠ partial</div>` : "";
+    card.innerHTML = `
+      <div class="card-head">
+        <span class="state-name">${escapeHtml(r.name)}</span>
+        <span class="state-code">${escapeHtml(r.state)}</span>
+      </div>
+      <div class="city">${escapeHtml(r.city)} · ${escapeHtml(r.zip)}</div>
+      <div class="readings">
+        <div class="reading">
+          <div class="reading-label"><span class="swatch" style="background:${tempColor(r.temp_f)}"></span>Temp</div>
+          <div class="reading-value" style="color:${tempColor(r.temp_f)}">${fmtTemp(r.temp_f)}</div>
+        </div>
+        <div class="reading">
+          <div class="reading-label"><span class="swatch" style="background:${uvColor(r.uv)}"></span>UV</div>
+          <div class="reading-value" style="color:${uvColor(r.uv)}">${fmtUv(r.uv)}</div>
+        </div>
+      </div>
+      <div class="forecast">${escapeHtml(r.short || "—")}</div>
+      ${errHtml}
+    `;
+    grid.appendChild(card);
+  }
+  if (!rows.length) {
+    grid.innerHTML = '<div class="meta-item">No rows match the current filters.</div>';
+  }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function escapeAttr(s) { return escapeHtml(s).replace(/"/g, "&quot;"); }
+
+// ---- restore + wire ----
+function restoreLast() {
+  try {
+    const j = JSON.parse(localStorage.getItem(DATA_CACHE_KEY) || "null");
+    if (j && Array.isArray(j.data)) {
+      CURRENT = j.data;
+      $("updated").textContent = new Date(j.at).toLocaleString() + " (cached)";
+      render();
+    }
+  } catch {}
+}
+
+$("refresh").addEventListener("click", refreshAll);
+["filter","sort","min-temp","min-uv"].forEach(id => {
+  $(id).addEventListener("input", render);
+  $(id).addEventListener("change", render);
+});
+
+restoreLast();
+refreshAll();
+</script>
+</body>
+</html>
