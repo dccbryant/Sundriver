@@ -456,7 +456,7 @@
     align-items: flex-start;
     justify-content: center;
     padding: 60px 20px;
-    z-index: 50;
+    z-index: 1000;  /* above Leaflet (its panes/popups can reach z-index 700) */
     backdrop-filter: blur(3px);
   }
   .overlay.open { display: flex; }
