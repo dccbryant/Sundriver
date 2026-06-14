@@ -6,6 +6,8 @@
 <title>Sundriver — US Weather & UV Dashboard</title>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
 <style>
   :root {
     --bg: #0f1419;
@@ -152,6 +154,88 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .view-toggle {
+    display: inline-flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .view-tab {
+    background: transparent;
+    border: none;
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .view-tab:hover { color: var(--text); }
+  .view-tab.active {
+    background: var(--panel);
+    color: var(--text);
+    box-shadow: 0 0 0 1px var(--border);
+  }
+  #store-map-wrap { position: relative; }
+  #store-map {
+    width: 100%;
+    height: calc(100vh - 240px);
+    min-height: 480px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel);
+  }
+  .uv-legend {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    z-index: 400;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  }
+  .uv-legend strong {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+  .uv-legend .legend-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .uv-legend .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex: 0 0 10px;
+    border: 1px solid rgba(0,0,0,0.3);
+  }
+  .store-popup {
+    font-family: inherit;
+    font-size: 12px;
+    min-width: 180px;
+  }
+  .store-popup .name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .store-popup .loc  { color: #666; margin-bottom: 6px; }
+  .store-popup .reading-line {
+    display: flex; justify-content: space-between; padding: 1px 0;
+  }
+  /* Force Leaflet popup to use our colors so dark/light modes work */
+  .leaflet-popup-content-wrapper {
+    background: var(--panel); color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .leaflet-popup-tip { background: var(--panel); border: 1px solid var(--border); }
   .swatch {
     display: inline-block;
     width: 8px;
@@ -314,6 +398,11 @@
     <label class="meta-item">Min °F <input id="min-temp" type="number" style="width:64px" /></label>
     <label class="meta-item">Min UV <input id="min-uv" type="number" style="width:54px" step="0.5" /></label>
     <span class="meta-item" id="visible-count"></span>
+    <span style="border-left:1px solid var(--border); height:18px"></span>
+    <div class="view-toggle" role="tablist" aria-label="View">
+      <button id="view-table" class="view-tab active" role="tab" aria-selected="true">Table</button>
+      <button id="view-map" class="view-tab" role="tab" aria-selected="false">Map</button>
+    </div>
   </div>
 </header>
 <main>
@@ -329,6 +418,18 @@
     </div>
   </div>
   <div id="store-table-wrap"></div>
+  <div id="store-map-wrap" style="display:none">
+    <div id="store-map"></div>
+    <div id="uv-legend" class="uv-legend">
+      <strong>UV index</strong>
+      <span class="legend-row"><span class="dot" style="background:#6ee7b7"></span>0–2 low</span>
+      <span class="legend-row"><span class="dot" style="background:#fde68a"></span>3–5 moderate</span>
+      <span class="legend-row"><span class="dot" style="background:#fb923c"></span>6–7 high</span>
+      <span class="legend-row"><span class="dot" style="background:#ef4444"></span>8–10 very high</span>
+      <span class="legend-row"><span class="dot" style="background:#a855f7"></span>11+ extreme</span>
+      <span class="legend-row"><span class="dot" style="background:#666"></span>no data</span>
+    </div>
+  </div>
   <div id="settings-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="settings-title">
     <div class="panel">
       <h2 id="settings-title">Google Sheet integration</h2>
@@ -2570,7 +2671,7 @@ async function refreshAll() {
   CURRENT = data;
   try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify({ at: Date.now(), data })); } catch {}
   populateStateFilter();
-  render();
+  rerender();
 
   $("status").textContent = "ok";
   $("updated").textContent = new Date().toLocaleString();
@@ -2669,24 +2770,142 @@ function escapeHtml(s) {
 }
 function escapeAttr(s) { return escapeHtml(s).replace(/"/g, "&quot;"); }
 
+// ---- map view ----
+// Hex equivalents of the CSS UV colour variables, so we can paint Leaflet
+// markers (which want concrete colours, not CSS var references).
+function uvColorHex(u) {
+  if (u == null) return "#666666";
+  if (u >= 11) return "#a855f7";
+  if (u >= 8)  return "#ef4444";
+  if (u >= 6)  return "#fb923c";
+  if (u >= 3)  return "#fde68a";
+  return "#6ee7b7";
+}
+
+let MAP = null;           // Leaflet map instance (lazy)
+let MARKER_LAYER = null;  // FeatureGroup we redraw on every render
+const VIEW_KEY = "sundriver.view.v1";
+
+function currentView() {
+  try { return localStorage.getItem(VIEW_KEY) || "table"; } catch { return "table"; }
+}
+function setView(view) {
+  try { localStorage.setItem(VIEW_KEY, view); } catch {}
+  const tableOn = view === "table";
+  $("store-table-wrap").style.display = tableOn ? "" : "none";
+  $("store-map-wrap").style.display   = tableOn ? "none" : "";
+  $("view-table").classList.toggle("active", tableOn);
+  $("view-map").classList.toggle("active", !tableOn);
+  $("view-table").setAttribute("aria-selected", tableOn ? "true" : "false");
+  $("view-map").setAttribute("aria-selected", tableOn ? "false" : "true");
+  if (!tableOn) {
+    initMap();
+    // Leaflet needs a kick if the container was hidden when it was created.
+    if (MAP) setTimeout(() => MAP.invalidateSize(), 50);
+    renderMap();
+  }
+}
+
+function initMap() {
+  if (MAP) return;
+  if (typeof L === "undefined") {
+    $("store-map").innerHTML =
+      '<div style="padding:24px;color:var(--muted)">Loading map library… ' +
+      'if this never goes away, check your internet connection.</div>';
+    // Try again once Leaflet's deferred script lands.
+    const wait = setInterval(() => {
+      if (typeof L !== "undefined") { clearInterval(wait); initMap(); renderMap(); }
+    }, 200);
+    return;
+  }
+  $("store-map").innerHTML = "";
+  MAP = L.map("store-map", {
+    center: [39.5, -98.35],   // continental US centroid
+    zoom: 4,
+    minZoom: 3,
+    worldCopyJump: true,
+    preferCanvas: true,        // canvas renderer scales much better for ~2k markers
+  });
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 18,
+  }).addTo(MAP);
+  MARKER_LAYER = L.featureGroup().addTo(MAP);
+}
+
+function filteredRows() {
+  // Same filter pipeline as render(), refactored out so the map can reuse it.
+  const q = ($("filter").value || "").toLowerCase().trim();
+  const stateFilter = $("state-filter").value;
+  const minT = parseFloat($("min-temp").value);
+  const minU = parseFloat($("min-uv").value);
+  let rows = CURRENT.slice();
+  if (stateFilter) rows = rows.filter(r => r.state === stateFilter);
+  if (q) rows = rows.filter(r =>
+    (r.state + " " + r.store_name + " " + r.city + " " + r.short).toLowerCase().includes(q));
+  if (Number.isFinite(minT)) rows = rows.filter(r => r.temp_f != null && r.temp_f >= minT);
+  if (Number.isFinite(minU)) rows = rows.filter(r => r.uv     != null && r.uv     >= minU);
+  return rows;
+}
+
+function renderMap() {
+  if (!MAP || !MARKER_LAYER) return;
+  MARKER_LAYER.clearLayers();
+  const rows = filteredRows();
+  for (const r of rows) {
+    if (!Number.isFinite(r.lat) || !Number.isFinite(r.lng)) continue;
+    const marker = L.circleMarker([r.lat, r.lng], {
+      radius: 5,
+      color: "#000",
+      weight: 0.5,
+      opacity: 0.85,
+      fillColor: uvColorHex(r.uv),
+      fillOpacity: 0.85,
+    });
+    marker.bindPopup(() => {
+      const errLine = (r.errs && r.errs.length)
+        ? `<div class="reading-line" style="color:var(--hot)"><span>⚠</span><span>${escapeHtml(r.errs.join("; "))}</span></div>` : "";
+      return `<div class="store-popup">
+        <div class="name">${escapeHtml(r.store_name)}</div>
+        <div class="loc">${escapeHtml(r.city)}, ${escapeHtml(r.state)}</div>
+        <div class="reading-line"><span>Temperature</span><strong style="color:${tempColor(r.temp_f)}">${fmtTemp(r.temp_f)}</strong></div>
+        <div class="reading-line"><span>UV index</span><strong style="color:${uvColorHex(r.uv)}">${fmtUv(r.uv)}</strong></div>
+        <div class="reading-line"><span>Forecast</span><span>${escapeHtml(r.short || "—")}</span></div>
+        ${errLine}
+      </div>`;
+    });
+    MARKER_LAYER.addLayer(marker);
+  }
+}
+
 // ---- restore + wire ----
+function rerender() {
+  render();
+  // Only redraw the map when the map view is visible; otherwise defer until
+  // the user switches to it (setView calls renderMap on switch).
+  if ($("store-map-wrap").style.display !== "none") renderMap();
+}
+
 function restoreLast() {
   populateStateFilter();
+  setView(currentView());
   try {
     const j = JSON.parse(localStorage.getItem(DATA_CACHE_KEY) || "null");
     if (j && Array.isArray(j.data)) {
       CURRENT = j.data;
       $("updated").textContent = new Date(j.at).toLocaleString() + " (cached)";
-      render();
+      rerender();
     }
   } catch {}
 }
 
 $("refresh").addEventListener("click", refreshAll);
 ["filter","state-filter","sort","min-temp","min-uv"].forEach(id => {
-  $(id).addEventListener("input", render);
-  $(id).addEventListener("change", render);
+  $(id).addEventListener("input", rerender);
+  $(id).addEventListener("change", rerender);
 });
+$("view-table").addEventListener("click", () => setView("table"));
+$("view-map").addEventListener("click", () => setView("map"));
 
 // ---- save to Excel ----
 const LAST_NAME_KEY = "sundriver.lastFilename.v1";
