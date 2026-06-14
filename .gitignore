@@ -7,3 +7,6 @@ secrets/
 google-ads.yaml
 *.log
 .DS_Store
+
+# NOAA /points cache (rebuilt automatically; safe to delete)
+config/.noaa-points-cache.json

@@ -1,34 +1,47 @@
-"""Step 1 of the pipeline: fetch government weather/UV data per state and
-write it to the 'Weather Data' tab of the configured Google Sheet.
+"""Step 1 of the pipeline: fetch per-store NOAA + EPA data and write it to the
+'Weather Data' tab of the configured Google Sheet.
 
-Run hourly (cron, GitHub Actions, etc.). Idempotent — overwrites the tab.
+Reads the target store list from config/targets.csv (columns: store_name,
+city_name, state_id, lat, lng). Deduplicates NOAA grid lookups and EPA UV
+calls so a list of ~2000 stores stays tractable.
 """
 
 from __future__ import annotations
 
 import argparse
-import json
+import csv
 import logging
 import os
 import sys
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from sheets_client import open_sheet, write_weather
-from weather_sources import build_session, fetch_state_snapshot
+from weather_sources import (
+    PointsCache,
+    build_session,
+    fetch_store_snapshots,
+)
 
 log = logging.getLogger("fetch_weather")
 
 
-def load_states(path: Path) -> list[dict]:
+def load_targets(path: Path) -> list[dict]:
     with path.open() as fh:
-        return json.load(fh)["states"]
+        reader = csv.DictReader(fh)
+        rows = []
+        for r in reader:
+            if not (r.get("lat") and r.get("lng") and r.get("store_name")):
+                continue
+            rows.append(r)
+        return rows
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Pull NOAA + EPA data into Google Sheet")
-    parser.add_argument("--states", default="config/states.json",
-                        help="Path to states config (default: config/states.json)")
+    parser = argparse.ArgumentParser(description="Pull NOAA + EPA data per store into Google Sheet")
+    parser.add_argument("--targets", default="config/targets.csv",
+                        help="Path to targets CSV (default: config/targets.csv)")
+    parser.add_argument("--points-cache", default="config/.noaa-points-cache.json",
+                        help="Where to persist NOAA /points lookups")
     parser.add_argument("--credentials", default=os.environ.get("GOOGLE_SHEETS_CREDENTIALS"),
                         help="Path to Google service account JSON")
     parser.add_argument("--spreadsheet-id", default=os.environ.get("SPREADSHEET_ID"),
@@ -50,22 +63,15 @@ def main() -> int:
         log.error("Need --credentials and --spreadsheet-id (or env vars).")
         return 2
 
-    states = load_states(Path(args.states))
+    stores = load_targets(Path(args.targets))
+    log.info("Loaded %d stores from %s", len(stores), args.targets)
+
     session = build_session(args.user_agent)
+    cache = PointsCache(Path(args.points_cache))
+    snapshots = fetch_store_snapshots(session, stores, workers=args.workers, points_cache=cache)
 
-    snapshots = []
-    with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = {pool.submit(fetch_state_snapshot, session, s): s for s in states}
-        for fut in as_completed(futures):
-            cfg = futures[fut]
-            try:
-                snap = fut.result()
-                snapshots.append(snap)
-                log.info("%s temp=%s uv=%s", snap.state, snap.temperature_f, snap.uv_index)
-            except Exception as exc:
-                log.exception("Unhandled error for %s: %s", cfg["state"], exc)
+    snapshots.sort(key=lambda s: (s.state, s.city, s.store_name))
 
-    snapshots.sort(key=lambda s: s.state)
     sheet = open_sheet(args.credentials, args.spreadsheet_id)
     write_weather(sheet, snapshots)
     log.info("Wrote %d rows to 'Weather Data'", len(snapshots))

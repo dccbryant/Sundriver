@@ -4,7 +4,7 @@ Google Ads API. Every decision is appended to the 'Campaign Log' tab.
 
 Decision rule (per row in Thresholds):
   - If enabled is FALSE → skip (kill switch for that row).
-  - Otherwise compare the matching state's weather to the thresholds:
+  - Otherwise compare the matching store's weather to the thresholds:
       met = (min_temp_f is blank OR temperature_f >= min_temp_f)
             AND
             (min_uv      is blank OR uv_index      >= min_uv)
@@ -38,7 +38,7 @@ log = logging.getLogger("update_campaigns")
 def decide(threshold, weather_row) -> tuple[str, str]:
     """Return (desired_status, reason)."""
     if weather_row is None:
-        return "PAUSED", f"no weather data for {threshold.state}; pausing as failsafe"
+        return "PAUSED", f"no weather data for {threshold.store_name}; pausing as failsafe"
 
     temp = weather_row.get("temperature_f")
     uv = weather_row.get("uv_index")
@@ -58,14 +58,14 @@ def decide(threshold, weather_row) -> tuple[str, str]:
     temp_ok = True
     if threshold.min_temp_f is not None:
         if temp_val is None:
-            return "PAUSED", f"missing temperature for {threshold.state}; pausing as failsafe"
+            return "PAUSED", f"missing temperature for {threshold.store_name}; pausing as failsafe"
         temp_ok = temp_val >= threshold.min_temp_f
         parts.append(f"temp {temp_val}>= {threshold.min_temp_f}={temp_ok}")
 
     uv_ok = True
     if threshold.min_uv is not None:
         if uv_val is None:
-            return "PAUSED", f"missing UV for {threshold.state}; pausing as failsafe"
+            return "PAUSED", f"missing UV for {threshold.store_name}; pausing as failsafe"
         uv_ok = uv_val >= threshold.min_uv
         parts.append(f"uv {uv_val}>= {threshold.min_uv}={uv_ok}")
 
@@ -113,18 +113,18 @@ def main() -> int:
 
     for t in thresholds:
         if not t.enabled:
-            log_rows.append([now, t.state, t.campaign_id, "skip", "row disabled in sheet"])
+            log_rows.append([now, t.store_name, t.campaign_id, "skip", "row disabled in sheet"])
             continue
 
-        desired, reason = decide(t, weather.get(t.state))
+        desired, reason = decide(t, weather.get(t.store_name))
         if desired == "SKIP":
-            log_rows.append([now, t.state, t.campaign_id, "skip", reason])
-            log.warning("Skipping %s/%s: %s", t.state, t.campaign_id, reason)
+            log_rows.append([now, t.store_name, t.campaign_id, "skip", reason])
+            log.warning("Skipping %s/%s: %s", t.store_name, t.campaign_id, reason)
             continue
 
         current_status = current.get(t.campaign_id)
         if current_status == desired:
-            log_rows.append([now, t.state, t.campaign_id, "no-change",
+            log_rows.append([now, t.store_name, t.campaign_id, "no-change",
                              f"already {desired}; {reason}"])
             continue
 
@@ -134,9 +134,9 @@ def main() -> int:
             desired_status=desired,
             reason=reason,
         ))
-        log_rows.append([now, t.state, t.campaign_id, desired.lower(),
+        log_rows.append([now, t.store_name, t.campaign_id, desired.lower(),
                          f"{outcome}; {reason}"])
-        log.info("%s/%s: %s", t.state, t.campaign_id, outcome)
+        log.info("%s/%s: %s", t.store_name, t.campaign_id, outcome)
 
     append_log(sheet, log_rows)
     return 0

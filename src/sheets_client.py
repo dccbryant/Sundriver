@@ -1,21 +1,21 @@
-"""Thin wrapper around gspread for the two-sheet workflow.
+"""Thin wrapper around gspread for the store-level workflow.
 
 Sheet layout (the marketer owns the spreadsheet; this code only writes to
 'Weather Data' and 'Campaign Log' and reads from 'Thresholds'):
 
-  Weather Data   — overwritten every run with the latest snapshot per state
-    state | name | city | lat | lon | zip | temperature_f | uv_index |
+  Weather Data   — overwritten every run with one row per store
+    store_name | city | state | lat | lng | temperature_f | uv_index |
     short_forecast | observed_at_utc | source_notes
 
-  Thresholds     — hand-edited by the marketer; one row per (state, campaign)
-    state | campaign_id | campaign_name | min_temp_f | min_uv | enabled
-           | notes
+  Thresholds     — hand-edited by the marketer; one row per (store, campaign)
+    store_name | campaign_id | campaign_name | min_temp_f | min_uv | enabled |
+    notes
+    - store_name must match the Weather Data store_name exactly
     - min_temp_f / min_uv may be blank to ignore that signal
     - 'enabled' (TRUE/FALSE) is a kill switch; FALSE means leave campaign alone
-    - campaign_id is the Google Ads numeric campaign ID
 
   Campaign Log   — append-only audit trail of enable/pause actions
-    timestamp_utc | state | campaign_id | action | reason
+    timestamp_utc | store_name | campaign_id | action | reason
 """
 
 from __future__ import annotations
@@ -39,20 +39,23 @@ THRESHOLDS_TAB = "Thresholds"
 LOG_TAB = "Campaign Log"
 
 WEATHER_HEADERS = [
-    "state", "name", "city", "lat", "lon", "zip",
+    "store_name", "city", "state", "lat", "lng",
     "temperature_f", "uv_index", "short_forecast",
     "observed_at_utc", "source_notes",
 ]
 THRESHOLD_HEADERS = [
-    "state", "campaign_id", "campaign_name",
+    "store_name", "campaign_id", "campaign_name",
     "min_temp_f", "min_uv", "enabled", "notes",
 ]
-LOG_HEADERS = ["timestamp_utc", "state", "campaign_id", "action", "reason"]
+LOG_HEADERS = ["timestamp_utc", "store_name", "campaign_id", "action", "reason"]
+
+WEATHER_RANGE = f"A2:{chr(ord('A') + len(WEATHER_HEADERS) - 1)}"  # "A2:J" today
+WEATHER_COLS = len(WEATHER_HEADERS)
 
 
 @dataclass
 class ThresholdRow:
-    state: str
+    store_name: str
     campaign_id: str
     campaign_name: str
     min_temp_f: Optional[float]
@@ -71,7 +74,7 @@ def _ensure_tab(sheet: gspread.Spreadsheet, title: str, headers: list[str]) -> g
     try:
         ws = sheet.worksheet(title)
     except gspread.WorksheetNotFound:
-        ws = sheet.add_worksheet(title=title, rows=200, cols=max(10, len(headers)))
+        ws = sheet.add_worksheet(title=title, rows=2200, cols=max(10, len(headers)))
         ws.update(values=[headers], range_name="A1")
         return ws
     existing = ws.row_values(1)
@@ -83,12 +86,15 @@ def _ensure_tab(sheet: gspread.Spreadsheet, title: str, headers: list[str]) -> g
 def write_weather(sheet: gspread.Spreadsheet, snapshots: list) -> None:
     ws = _ensure_tab(sheet, WEATHER_TAB, WEATHER_HEADERS)
     rows = [
-        [s.state, s.name, s.city, s.lat, s.lon, s.zip,
+        [s.store_name, s.city, s.state, s.lat, s.lng,
          s.temperature_f, s.uv_index, s.short_forecast,
          s.observed_at_utc, s.source_notes]
         for s in snapshots
     ]
-    ws.batch_clear([f"A2:K{max(ws.row_count, len(rows) + 1)}"])
+    last_col = chr(ord("A") + WEATHER_COLS - 1)
+    # Clear past the new dataset so a shrinking input doesn't leave stale rows.
+    end_row = max(ws.row_count, len(rows) + 1)
+    ws.batch_clear([f"A2:{last_col}{end_row}"])
     if rows:
         ws.update(values=rows, range_name="A2", value_input_option="RAW")
 
@@ -98,12 +104,12 @@ def read_thresholds(sheet: gspread.Spreadsheet) -> List[ThresholdRow]:
     records = ws.get_all_records(expected_headers=THRESHOLD_HEADERS)
     out: list[ThresholdRow] = []
     for r in records:
-        state = str(r.get("state", "")).strip().upper()
+        name = str(r.get("store_name", "")).strip()
         cid = str(r.get("campaign_id", "")).strip()
-        if not state or not cid:
+        if not name or not cid:
             continue
         out.append(ThresholdRow(
-            state=state,
+            store_name=name,
             campaign_id=cid,
             campaign_name=str(r.get("campaign_name", "")).strip(),
             min_temp_f=_to_float(r.get("min_temp_f")),
@@ -115,9 +121,10 @@ def read_thresholds(sheet: gspread.Spreadsheet) -> List[ThresholdRow]:
 
 
 def read_weather(sheet: gspread.Spreadsheet) -> dict[str, dict]:
+    """Return {store_name: row_dict} for every row in the Weather Data tab."""
     ws = _ensure_tab(sheet, WEATHER_TAB, WEATHER_HEADERS)
     records = ws.get_all_records(expected_headers=WEATHER_HEADERS)
-    return {str(r["state"]).upper(): r for r in records if r.get("state")}
+    return {str(r["store_name"]): r for r in records if r.get("store_name")}
 
 
 def append_log(sheet: gspread.Spreadsheet, entries: list[list]) -> None:

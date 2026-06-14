@@ -1,13 +1,14 @@
 # Sundriver
 
-Hourly weather/UV → Google Ads automation for a sunscreen brand.
+Hourly weather/UV → Google Ads automation for a sunscreen brand, driven by a
+list of Target stores in `config/targets.csv` (1,989 locations by default).
 
 Two small Python scripts and one Google Sheet. A solo marketer manages
-thresholds in the Sheet; the scripts do the rest.
+per-store thresholds in the Sheet; the scripts do the rest.
 
 ```
 NOAA (api.weather.gov)   ┐
-                          ├──►  fetch_weather.py  ──► Google Sheet (Weather Data)
+                          ├──►  fetch_weather.py  ──► Google Sheet (Weather Data, one row per store)
 EPA UV (data.epa.gov)    ┘                                       │
                                                                  ▼
                                           update_campaigns.py ◄── Thresholds tab
@@ -21,14 +22,15 @@ EPA UV (data.epa.gov)    ┘                                       │
 
 ## What it does
 
-- Every hour, pulls temperature + short forecast from the NOAA National
-  Weather Service API and the UV index from the EPA Envirofacts UV hourly
-  forecast API for one representative point per US state
-  (`config/states.json` — state capitals by default).
-- Writes the latest snapshot to the **Weather Data** tab of a Google Sheet.
-- Reads the **Thresholds** tab (one row per state × campaign with min
-  temperature °F, min UV index, and a kill switch) and the Weather Data
-  tab.
+- Every hour, pulls **per-store** temperature + short forecast from the NOAA
+  National Weather Service API and the UV index from the EPA Envirofacts UV
+  hourly forecast API, for every store in `config/targets.csv`.
+- Deduplicates calls aggressively: stores sharing a NOAA forecast grid only
+  trigger one hourly-forecast call, and stores in the same `(state, city)`
+  share one EPA UV call. NOAA `/points` lookups are cached to disk forever.
+- Writes one row per store to the **Weather Data** tab of a Google Sheet.
+- Reads the **Thresholds** tab (one row per store × campaign with min
+  temperature °F, min UV index, and a kill switch).
 - For each row, decides ENABLED or PAUSED, compares against the current
   status in Google Ads, and only sends a change when needed.
 - Appends every decision to the **Campaign Log** tab.
@@ -40,7 +42,7 @@ Decision rule per Thresholds row:
 | `temperature_f ≥ min_temp_f` **and** `uv_index ≥ min_uv` | ENABLED |
 | Either threshold missed | PAUSED |
 | `enabled = FALSE` in the sheet | Skipped (kill switch) |
-| Weather data missing for that state | PAUSED (failsafe) |
+| Weather data missing for that store | PAUSED (failsafe) |
 
 Blank threshold cells are ignored (i.e. only the populated signal is
 checked). If both are blank, the row is skipped with a warning so you
@@ -53,25 +55,29 @@ Editor. The scripts auto-create the tabs and header rows on first run.
 
 **Weather Data** (auto-written, do not edit by hand)
 
-| state | name | city | lat | lon | zip | temperature_f | uv_index | short_forecast | observed_at_utc | source_notes |
+| store_name | city | state | lat | lng | temperature_f | uv_index | short_forecast | observed_at_utc | source_notes |
 
 **Thresholds** (you own this)
 
-| state | campaign_id | campaign_name | min_temp_f | min_uv | enabled | notes |
-|-------|-------------|---------------|-----------:|-------:|---------|-------|
+| store_name | campaign_id | campaign_name | min_temp_f | min_uv | enabled | notes |
+|------------|-------------|---------------|-----------:|-------:|---------|-------|
+
+`store_name` must match the value in Weather Data exactly (e.g. `Target
+Bessemer`). You don't need a row for every store — just the ones with an
+active campaign.
 
 Example rows:
 
-| state | campaign_id | campaign_name        | min_temp_f | min_uv | enabled | notes                        |
-|-------|-------------|----------------------|-----------:|-------:|---------|------------------------------|
-| FL    | 1234567890  | SPF50 Banner — FL    | 75         | 6      | TRUE    | summer banner                |
-| AK    | 1234567891  | SPF50 Banner — AK    |            | 5      | TRUE    | UV-only trigger              |
-| CA    | 1234567892  | After-sun — CA       | 80         |        | TRUE    | heat-driven, no UV gate      |
-| TX    | 1234567893  | Test campaign        | 75         | 6      | FALSE   | paused while QAing creatives |
+| store_name           | campaign_id | campaign_name             | min_temp_f | min_uv | enabled | notes                        |
+|----------------------|-------------|---------------------------|-----------:|-------:|---------|------------------------------|
+| Target Bessemer      | 1234567890  | SPF50 Banner — Bessemer   | 75         | 6      | TRUE    | summer banner                |
+| Target Juneau        | 1234567891  | SPF50 Banner — Juneau     |            | 5      | TRUE    | UV-only trigger              |
+| Target Sacramento    | 1234567892  | After-sun — Sacramento    | 80         |        | TRUE    | heat-driven, no UV gate      |
+| Target Austin Mueller| 1234567893  | Test campaign — Austin    | 75         | 6      | FALSE   | paused while QAing creatives |
 
 **Campaign Log** (auto-appended)
 
-| timestamp_utc | state | campaign_id | action | reason |
+| timestamp_utc | store_name | campaign_id | action | reason |
 
 ## Setup
 
@@ -120,6 +126,11 @@ python src/update_campaigns.py --dry-run
 python src/run_hourly.py
 ```
 
+The first run does roughly 1,989 NOAA `/points` lookups and caches them to
+`config/.noaa-points-cache.json`; subsequent runs only re-fetch the hourly
+forecast per unique grid (~300–500 calls) plus UV per unique `(state, city)`
+(~1,400 calls). Plan for ~10 minutes cold start, ~3–5 minutes warm.
+
 To re-verify credentials at any time without making changes:
 
 ```bash
@@ -138,17 +149,28 @@ python src/check_setup.py
   5 * * * * cd /opt/sundriver && /opt/sundriver/.venv/bin/python src/run_hourly.py >> /var/log/sundriver.log 2>&1
   ```
 
+## Standalone dashboard
+
+`dashboard.html` is a single self-contained HTML file showing all 1,989
+stores in a sortable, filterable table — open it directly from your
+desktop. It auto-refreshes every hour, can save the snapshot as Excel,
+and can optionally push the snapshot to a Google Sheet (Settings panel
+holds the OAuth client ID, Spreadsheet ID, tab name, and an auto-update
+checkbox). See the in-page banner for the one CORS caveat when opening
+from `file://`.
+
 ## Notes & limits
 
 - NOAA's API is keyless but requires a descriptive `User-Agent` per their
   policy — set `NOAA_USER_AGENT` to something that identifies you and
   includes a contact.
-- One point per state is a reasonable proxy for state-level Google Ads
-  geo targeting; to go finer (DMA, metro, ZIP), add more rows to
-  `config/states.json` and use a richer key than `state` in the Sheet.
 - The Google Ads campaign IDs in the Thresholds tab must already be
-  geo-targeted to the matching state — this tool only flips ENABLED /
-  PAUSED, it doesn't manage targeting.
+  geo-targeted to the matching store's catchment — this tool only flips
+  ENABLED / PAUSED, it doesn't manage targeting.
 - All times in the sheet are UTC.
 - Failsafe is biased toward pausing: if weather data is missing or the
   API call fails, campaigns get paused rather than left running blind.
+- To update the target store list, edit `config/targets.csv` and rerun.
+  The dashboard inlines the store list — if you change the CSV, regenerate
+  the inlined block in `dashboard.html` (or just keep using the CSV via
+  the Python pipeline).

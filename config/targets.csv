@@ -1,0 +1,1990 @@
+store_name,city_name,state_id,lat,lng
+Target Bessemer,Bessemer,AL,33.334,-86.99
+Target Daphne,Daphne,AL,30.602,-87.896
+Target Alabaster,Alabaster,AL,33.224,-86.804
+Target Auburn Toomers Corner,Auburn,AL,32.608,-85.483
+Target Decatur,Decatur,AL,34.559,-86.971
+Target Dothan,Dothan,AL,31.266,-85.447
+Target Gulf Shores,Gulf Shores,AL,30.304,-87.68
+Target Florence,Florence,AL,34.842,-87.634
+Target Fultondale,Fultondale,AL,33.606,-86.806
+Target Homewood,Homewood,AL,33.467,-86.775
+Target Opelika,Opelika,AL,32.618,-85.411
+Target Madison,Madison,AL,34.749,-86.757
+Target Montgomery,Montgomery,AL,32.36,-86.16
+Target Prattville,Prattville,AL,32.457,-86.395
+Target Oxford,Oxford,AL,33.609,-85.782
+Target Tuscaloosa,Tuscaloosa,AL,33.193,-87.519
+Target Huntsville West,Huntsville,AL,34.741,-86.681
+Target Hoover West,Birmingham,AL,33.362,-86.853
+Target Birmingham 280 Corridor,Birmingham,AL,33.425,-86.712
+Target Trussville,Birmingham,AL,33.602,-86.639
+Target Huntsville South,Huntsville,AL,34.675,-86.544
+Target Wasilla,Wasilla,AK,61.577,-149.403
+Target Mobile West,Mobile,AL,30.673,-88.226
+Target Bel-Air,Mobile,AL,30.671,-88.12
+Target Anchorage NE,Anchorage,AK,61.227,-149.746
+Target Bullhead City,Bullhead City,AZ,35.053,-114.59
+Target Flagstaff,Flagstaff,AZ,35.184,-111.66
+Target Anchorage South,Anchorage,AK,61.13,-149.881
+Target Fountain Hills,Fountain Hills,AZ,33.574,-111.718
+Target Oro Valley,Oro Valley,AZ,32.399,-110.96
+Target Sierra Vista,Sierra Vista,AZ,31.556,-110.256
+Target Prescott,Prescott,AZ,34.549,-112.432
+Target Phoenix SW,Tolleson,AZ,33.423,-112.27
+Target Yuma,Yuma,AZ,32.705,-114.606
+Target Chandler Fashion Center,Chandler,AZ,33.296,-111.9
+Target Gilbert Val Vista,Gilbert,AZ,33.334,-111.757
+Target Chandler South,Chandler,AZ,33.252,-111.841
+Target Gilbert SW,Gilbert,AZ,33.279,-111.786
+Target Peoria SW,Glendale,AZ,33.555,-112.26
+Target Glendale,Glendale,AZ,33.581,-112.153
+Target Goodyear,Goodyear,AZ,33.463,-112.356
+Target Goodyear West,Goodyear,AZ,33.437,-112.427
+Target Mesa Central,Mesa,AZ,33.394,-111.786
+Target Mesa East,Mesa,AZ,33.389,-111.683
+Target Mesa Red Mountain,Mesa,AZ,33.454,-111.683
+Target Gilbert Gateway,Mesa,AZ,33.324,-111.69
+Target Mesa West,Mesa,AZ,33.392,-111.865
+Target Peoria North,Peoria,AZ,33.636,-112.228
+Target Peoria Lake Pleasant Pkwy,Peoria,AZ,33.71,-112.275
+Target Paradise Valley,Phoenix,AZ,33.6,-111.99
+Target Westridge,Phoenix,AZ,33.476,-112.219
+Target Ahwatukee,Phoenix,AZ,33.322,-111.981
+Target Phoenix I17 and SR101,Phoenix,AZ,33.666,-112.119
+Target Arcadia Crossing,Phoenix,AZ,33.478,-111.984
+Target Phoenix NE,Phoenix,AZ,33.678,-111.975
+Target South Mountain,Phoenix,AZ,33.379,-112.035
+Target Phoenix 7th Street and Bell,Phoenix,AZ,33.638,-112.066
+Target Phoenix Spectrum,Phoenix,AZ,33.521,-112.098
+Target Phoenix Uptown Camelback,Phoenix,AZ,33.508,-112.046
+Target Queen Creek,Queen Creek,AZ,33.254,-111.642
+Target Queen Creek Gantzel and Combs,Queen Creek,AZ,33.224,-111.563
+Target Scottsdale Talking Stick Way,Scottsdale,AZ,33.541,-111.887
+Target Scottsdale Road,Scottsdale,AZ,33.779,-111.923
+Target Frank Lloyd Wright Blvd,Scottsdale,AZ,33.627,-111.889
+Target Surprise,Surprise,AZ,33.637,-112.354
+Target Surprise West Prasada,Surprise,AZ,33.612,-112.413
+Target Tempe,Tempe,AZ,33.379,-111.908
+Target Tucson NE,Tucson,AZ,32.249,-110.853
+Target Marana,Tucson,AZ,32.336,-111.049
+Target Tempe Rio Salado,Tempe,AZ,33.43,-111.905
+Target Tucson SW,Tucson,AZ,32.16,-110.99
+Target Tucson El Con Mall,Tucson,AZ,32.223,-110.915
+Target Tucson SE,Tucson,AZ,32.207,-110.786
+Target Bryant,Bryant,AR,34.604,-92.53
+Target Tucson North,Tucson,AZ,32.28,-110.976
+Target Fayetteville,Fayetteville,AR,36.121,-94.146
+Target Conway,Conway,AR,35.087,-92.415
+Target Fort Smith,Fort Smith,AR,35.341,-94.388
+Target Jonesboro,Jonesboro,AR,35.823,-90.666
+Target Little Rock North,North Little Rock,AR,34.788,-92.229
+Target Little Rock West,Little Rock,AR,34.755,-92.414
+Target Rogers,Rogers,AR,36.299,-94.173
+Target Little Rock Univer,Little Rock,AR,34.749,-92.345
+Target Alameda,Alameda,CA,37.789,-122.279
+Target Albany,Albany,CA,37.883,-122.306
+Target Alhambra,Alhambra,CA,34.091,-118.147
+Target Aliso Viejo,Aliso Viejo,CA,33.571,-117.705
+Target Atwater,Atwater,CA,37.341,-120.611
+Target Antioch Slatten Ranch,Antioch,CA,37.964,-121.738
+Target Auburn,Auburn,CA,38.943,-121.095
+Target Azusa,Azusa,CA,34.135,-117.908
+Target Baldwin Park,Baldwin Park,CA,34.07,-117.977
+Target Brea,Brea,CA,33.919,-117.888
+Target Camarillo,Camarillo,CA,34.217,-119.073
+Target Buena Park,Buena Park,CA,33.857,-118.002
+Target Los Angeles Topanga,Canoga Park,CA,34.191,-118.604
+Target Capitola,Capitola,CA,36.976,-121.967
+Target Palm Springs,Cathedral City,CA,33.788,-116.48
+Target Chico,Chico,CA,39.726,-121.802
+Target Colma,Colma,CA,37.674,-122.464
+Target Birdcage-Citrus Heights,Citrus Heights,CA,38.673,-121.275
+Target Commerce,Commerce,CA,34.018,-118.151
+Target Compton-Rancho Dom,Compton,CA,33.88,-118.219
+Target Corona,Corona,CA,33.827,-117.516
+Target Cupertino De Anza Blvd,Cupertino,CA,37.324,-122.036
+Target Cypress,Cypress,CA,33.804,-118.013
+Target Davis,Davis,CA,38.554,-121.699
+Target Diamond Bar,Diamond Bar,CA,34.005,-117.821
+Target Duarte,Duarte,CA,34.138,-117.983
+Target El Dorado Hills,El Dorado Hills,CA,38.65,-121.063
+Target El Centro,El Centro,CA,32.816,-115.57
+Target El Monte,El Monte,CA,34.072,-118.022
+Target Elk Grove,Elk Grove,CA,38.426,-121.415
+Target Encinitas,Encinitas,CA,33.063,-117.265
+Target Oakland-Emeryville,Emeryville,CA,37.828,-122.289
+Target Encino Ventura Blvd,Encino,CA,34.162,-118.512
+Target Eureka,Eureka,CA,40.806,-124.144
+Target Fairfield,Fairfield,CA,38.247,-122.069
+Target Folsom,Folsom,CA,38.672,-121.153
+Target Gardena,Gardena,CA,33.887,-118.317
+Target Foothill Ranch,Foothill Ranch,CA,33.676,-117.664
+Target Glendale,Glendale,CA,34.145,-118.26
+Target Gilroy,Gilroy,CA,37.0,-121.555
+Target Goleta,Goleta,CA,34.429,-119.868
+Target Granada Hills,Granada Hills,CA,34.273,-118.503
+Target Grass Valley,Grass Valley,CA,39.199,-121.061
+Target Hawthorne,Hawthorne,CA,33.922,-118.321
+Target Hanford,Hanford,CA,36.324,-119.676
+Target Hemet,Hemet,CA,33.745,-117.009
+Target Hesperia,Hesperia,CA,34.425,-117.384
+Target Hollister,Hollister,CA,36.835,-121.39
+Target LA Huntington Park,Huntington Park,CA,33.99,-118.217
+Target Jurupa Valley,Jurupa Valley,CA,34.012,-117.459
+Target La Canada Flintridge,La Canada Flintridge,CA,34.205,-118.199
+Target La Habra,La Habra,CA,33.916,-117.958
+Target UC San Diego Price Center,La Jolla,CA,32.876,-117.239
+Target La Quinta,La Quinta,CA,33.709,-116.29
+Target Grossmont,La Mesa,CA,32.778,-117.011
+Target Laverne,La Verne,CA,34.11,-117.76
+Target Lake Elsinore,Lake Elsinore,CA,33.689,-117.343
+Target Lakewood Center Mall,Lakewood,CA,33.853,-118.141
+Target Lancaster,Lancaster,CA,34.675,-118.148
+Target Lathrop,Lathrop,CA,37.808,-121.299
+Target Lincoln,Lincoln,CA,38.87,-121.304
+Target Lawndale Hawthorne Blvd,Lawndale,CA,33.901,-118.351
+Target Livermore,Livermore,CA,37.701,-121.747
+Target Lodi,Lodi,CA,38.117,-121.304
+Target Lomita,Lomita,CA,33.789,-118.318
+Target Los Banos,Los Banos,CA,37.054,-120.876
+Target Manhattan Beach,Manhattan Beach,CA,33.888,-118.395
+Target Manteca,Manteca,CA,37.795,-121.197
+Target Menifee,Menifee,CA,33.68,-117.172
+Target Marina,Marina,CA,36.668,-121.811
+Target Merced,Merced,CA,37.323,-120.485
+Target Mission Hills CA,Mission Hills,CA,34.259,-118.466
+Target Eastvale,Mira Loma,CA,33.976,-117.555
+Target Montclair,Montclair,CA,34.09,-117.691
+Target Moorpark,Moorpark,CA,34.278,-118.867
+Target Moreno Valley East,Moreno Valley,CA,33.936,-117.188
+Target Morgan Hill,Morgan Hill,CA,37.157,-121.654
+Target Mountain View,Mountain View,CA,37.401,-122.108
+Target Natl Cty Pl Bonita,National City,CA,32.657,-117.067
+Target Novato,Novato,CA,38.09,-122.553
+Target Norco,Norco,CA,33.901,-117.564
+Target Oxnard West,Oxnard,CA,34.243,-119.178
+Target Pacoima,Pacoima,CA,34.245,-118.419
+Target Palm Desert,Palm Desert,CA,33.724,-116.403
+Target Paso Robles,Paso Robles,CA,35.584,-120.699
+Target Petaluma,Petaluma,CA,38.245,-122.627
+Target Pico Rivera,Pico Rivera,CA,34.001,-118.087
+Target Pinole,Pinole,CA,37.988,-122.309
+Target Placerville,Placerville,CA,38.709,-120.844
+Target Pomona,Pomona,CA,34.035,-117.756
+Target Pleasant Hill,Pleasant Hill,CA,37.977,-122.067
+Target Poway,Poway,CA,32.98,-117.061
+Target Porterville,Porterville,CA,36.078,-119.047
+Target Rancho Cordova,Rancho Cordova,CA,38.594,-121.284
+Target Rancho Santa Margarita,Rancho Santa Margarita,CA,33.642,-117.598
+Target Rancho Cucamonga,Rancho Cucamonga,CA,34.106,-117.612
+Target Redlands,Redlands,CA,34.072,-117.208
+Target Redding,Redding,CA,40.587,-122.348
+Target Redwood City,Redwood City,CA,37.475,-122.218
+Target Redondo Beach,Redondo Beach,CA,33.869,-118.357
+Target Richmond,Richmond,CA,37.932,-122.327
+Target Rocklin,Rocklin,CA,38.804,-121.209
+Target Riverbank,Riverbank,CA,37.713,-120.953
+Target Rohnert Park,Rohnert Park,CA,38.346,-122.72
+Target Rolling Hills,Rolling Hills Estates,CA,33.773,-118.376
+Target Rosemead,Rosemead,CA,34.075,-118.07
+Target Puente Hills,Rowland Heights,CA,33.992,-117.919
+Target Salinas,Salinas,CA,36.715,-121.653
+Target Orange Show,San Bernardino,CA,34.078,-117.292
+Target Tanforan,San Bruno,CA,37.637,-122.417
+Target San Clemente,San Clemente,CA,33.463,-117.606
+Target San Dimas,San Dimas,CA,34.104,-117.824
+Target San Juan Capistrano,San Juan Capistrano,CA,33.498,-117.664
+Target San Leandro Bayfair,San Leandro,CA,37.701,-122.125
+Target San Luis Obispo,San Luis Obispo,CA,35.252,-120.685
+Target San Mateo Fashion Island,San Mateo,CA,37.559,-122.283
+Target San Pedro,San Pedro,CA,33.76,-118.293
+Target San Rafael,San Rafael,CA,37.955,-122.491
+Target San Ramon,San Ramon,CA,37.762,-121.964
+Target Sand City,Sand City,CA,36.621,-121.843
+Target Santa Barbara Galleria,Santa Barbara,CA,34.44,-119.751
+Target Santa Clara,Santa Clara,CA,37.35,-121.96
+Target Santa Fe Springs,Santa Fe Springs,CA,33.938,-118.048
+Target Santa Clarita East,Santa Clarita,CA,34.395,-118.465
+Target Santa Maria,Santa Maria,CA,34.923,-120.434
+Target Santee,Santee,CA,32.842,-116.983
+Target Marin City,Sausalito,CA,37.874,-122.511
+Target Scotts Valley,Scotts Valley,CA,37.048,-122.031
+Target Seal Beach,Seal Beach,CA,33.783,-118.07
+Target Signal Hill,Signal Hill,CA,33.817,-118.182
+Target South Gate,South Gate,CA,33.948,-118.168
+Target South Lake Tahoe,South Lake Tahoe,CA,38.955,-119.944
+Target Spring Valley Jamacha Rd,Spring Valley,CA,32.714,-117.011
+Target Sunnyvale,Sunnyvale,CA,37.374,-122.032
+Target San Fernando,Sylmar,CA,34.294,-118.417
+Target Rancho California,Temecula,CA,33.507,-117.146
+Target Thousand Oaks,Thousand Oaks,CA,34.191,-118.934
+Target Torrance,Torrance,CA,33.827,-118.346
+Target Tracy,Tracy,CA,37.758,-121.458
+Target Tulare,Tulare,CA,36.225,-119.315
+Target Turlock,Turlock,CA,37.52,-120.879
+Target Tustin,Tustin,CA,33.7,-117.827
+Target Upland,Upland,CA,34.133,-117.641
+Target Vacaville,Vacaville,CA,38.361,-121.962
+Target Vallejo,Vallejo,CA,38.132,-122.223
+Target Valencia,Valencia,CA,34.421,-118.562
+Target Walnut Creek,Walnut Creek,CA,37.905,-122.064
+Target Watsonville,Watsonville,CA,36.915,-121.774
+Target West Hills,West Hills,CA,34.19,-118.625
+Target West Hollywood,West Hollywood,CA,34.09,-118.345
+Target West Sacramento,West Sacramento,CA,38.549,-121.537
+Target Westlake Village,Westlake Village,CA,34.148,-118.794
+Target Woodland,Woodland,CA,38.673,-121.725
+Target Whittier,Whittier,CA,33.943,-117.997
+Target Woodland Hills,Woodland Hills,CA,34.167,-118.586
+Target Yorba Linda,Yorba Linda,CA,33.888,-117.828
+Target Yuba City,Yuba City,CA,39.147,-121.633
+Target Anaheim Hills,Anaheim,CA,33.868,-117.749
+Target Anaheim,Anaheim,CA,33.831,-117.943
+Target Anaheim East,Anaheim,CA,33.838,-117.886
+Target Apple Valley,Apple Valley,CA,34.471,-117.245
+Target Apple Valley North,Apple Valley,CA,34.528,-117.217
+Target Bakersfield NE,Bakersfield,CA,35.394,-118.955
+Target Bakersfield NW,Bakersfield,CA,35.385,-119.103
+Target Bakersfield Central,Bakersfield,CA,35.337,-119.036
+Target Bakersfield West,Bakersfield,CA,35.35,-119.125
+Target Berkeley Central,Berkeley,CA,37.87,-122.267
+Target Burbank,Burbank,CA,34.19,-118.33
+Target Berkeley Univ Ave,Berkeley,CA,37.87,-122.284
+Target LA Burbank West,Burbank,CA,34.169,-118.348
+Target Carson North,Carson,CA,33.844,-118.262
+Target Carson,Carson,CA,33.809,-118.286
+Target Cerritos South Street,Cerritos,CA,33.859,-118.087
+Target Cerritos Bloomfield Avenue,Cerritos,CA,33.847,-118.062
+Target Chino Philadelphia Street,Chino,CA,34.033,-117.682
+Target Chino Hills Grand Avenue,Chino,CA,33.999,-117.718
+Target Chula Vista Broadway,Chula Vista,CA,32.605,-117.081
+Target Clovis NW,Clovis,CA,36.838,-119.729
+Target Clovis,Clovis,CA,36.807,-119.699
+Target Chula Vista East,Chula Vista,CA,32.651,-116.969
+Target Costa Mesa,Costa Mesa,CA,33.682,-117.919
+Target Culver City Jefferson,Culver City,CA,33.999,-118.394
+Target Costa Mesa 17th St,Costa Mesa,CA,33.633,-117.917
+Target Culver City Westfield Mall,Culver City,CA,33.985,-118.395
+Target Daly City Serramonte,Daly City,CA,37.67,-122.471
+Target Daly City Westlake,Daly City,CA,37.701,-122.484
+Target El Cajon,El Cajon,CA,32.81,-116.959
+Target Dublin,Dublin,CA,37.706,-121.932
+Target Dublin East,Dublin,CA,37.703,-121.854
+Target Rancho San Diego,El Cajon,CA,32.739,-116.939
+Target Escondido,Escondido,CA,33.114,-117.099
+Target Fontana North,Fontana,CA,34.152,-117.472
+Target Escondido South,Escondido,CA,33.07,-117.065
+Target Fontana,Fontana,CA,34.065,-117.434
+Target Fremont Hub,Fremont,CA,37.545,-121.985
+Target Fremont South,Fremont,CA,37.502,-121.968
+Target Fresno West,Fresno,CA,36.81,-119.847
+Target Blackstone and Nees Ave,Fresno,CA,36.847,-119.787
+Target Fresno South,Fresno,CA,36.78,-119.771
+Target Blackstone and Bullard,Fresno,CA,36.822,-119.788
+Target Fresno Fancher Creek,Fresno,CA,36.743,-119.7
+Target Fresno NW,Fresno,CA,36.834,-119.913
+Target Fullerton Yorba Linda,Fullerton,CA,33.888,-117.878
+Target West Fullerton,Fullerton,CA,33.88,-117.961
+Target Fullerton South,Fullerton,CA,33.858,-117.927
+Target Brookhurst,Garden Grove,CA,33.762,-117.956
+Target Garden Grove Harbor,Garden Grove,CA,33.788,-117.913
+Target Hayward,Hayward,CA,37.608,-122.062
+Target Hayward North,Hayward,CA,37.666,-122.121
+Target Huntington Beach East,Huntington Beach,CA,33.671,-117.956
+Target Huntington Beach Garfield and Beach,Huntington Beach,CA,33.686,-117.99
+Target Inglewood Florence and La Brea,Inglewood,CA,33.965,-118.353
+Target Inglewood,Inglewood,CA,33.948,-118.333
+Target Irvine,Irvine,CA,33.685,-117.813
+Target Irvine North,Irvine,CA,33.727,-117.785
+Target Irvine Spectrum,Irvine,CA,33.648,-117.741
+Target Irvine University Town Center,Irvine,CA,33.65,-117.839
+Target Long Beach Bellflower,Long Beach,CA,33.798,-118.123
+Target Long Beach NW,Long Beach,CA,33.877,-118.166
+Target Long Beach Bixby,Long Beach,CA,33.774,-118.12
+Target Los Angeles,Los Angeles,CA,34.023,-118.373
+Target Los Angeles Eagle Rock,Los Angeles,CA,34.141,-118.224
+Target LA Sunset,Los Angeles,CA,34.097,-118.31
+Target LA Westwood,Los Angeles,CA,34.063,-118.444
+Target LA Beverly,Los Angeles,CA,34.075,-118.376
+Target LA Central,Los Angeles,CA,34.049,-118.261
+Target Los Angeles Koreatown,Los Angeles,CA,34.063,-118.286
+Target LA Sawtelle,Los Angeles,CA,34.042,-118.459
+Target Los Angeles USC Village,Los Angeles,CA,34.026,-118.284
+Target LA Glassell Park,Los Angeles,CA,34.123,-118.225
+Target LA Silver Lake,Los Angeles,CA,34.079,-118.279
+Target Hollywood Galaxy,Los Angeles,CA,34.102,-118.343
+Target LA LaBrea and 4th St,Los Angeles,CA,34.066,-118.344
+Target LA 18th and La Cienega,Los Angeles,CA,34.044,-118.377
+Target LA Westchester Sepulveda Blvd,Los Angeles,CA,33.956,-118.396
+Target LA Mid City,Los Angeles,CA,34.049,-118.344
+Target LA Bonnie Brae,Los Angeles,CA,34.069,-118.267
+Target Alicia Parkway,Mission Viejo,CA,33.606,-117.689
+Target Mission Viejo South,Mission Viejo,CA,33.563,-117.672
+Target Mission Viejo N,Mission Viejo,CA,33.623,-117.681
+Target Modesto McHenry Ave,Modesto,CA,37.687,-120.996
+Target Modesto Sisk Rd,Modesto,CA,37.693,-121.064
+Target Murrieta,Murrieta,CA,33.566,-117.203
+Target Napa Soscol Ave,Napa,CA,38.283,-122.275
+Target Murrieta North,Murrieta,CA,33.604,-117.174
+Target Napa North,Napa,CA,38.322,-122.308
+Target North Hollywood,North Hollywood,CA,34.188,-118.371
+Target NoHo Valley Plaza,North Hollywood,CA,34.187,-118.398
+Target Northridge,Northridge,CA,34.231,-118.56
+Target Sherwood Forest,Northridge,CA,34.235,-118.503
+Target Norwalk,Norwalk,CA,33.926,-118.107
+Target Oceanside,Oceanside,CA,33.184,-117.33
+Target Norwalk East,Norwalk,CA,33.918,-118.075
+Target Oceanside East,Oceanside,CA,33.247,-117.293
+Target Ontario,Ontario,CA,34.075,-117.561
+Target North Ontario,Ontario,CA,34.076,-117.618
+Target East Orange,Orange,CA,33.787,-117.826
+Target Palmdale,Palmdale,CA,34.599,-118.147
+Target Pasadena,Pasadena,CA,34.147,-118.135
+Target Orange,Orange,CA,33.825,-117.835
+Target Pasadena East,Pasadena,CA,34.147,-118.084
+Target Palmdale East,Palmdale,CA,34.557,-118.084
+Target Riverside,Riverside,CA,33.906,-117.46
+Target Riverside Arlington,Riverside,CA,33.947,-117.382
+Target Riverside SE,Riverside,CA,33.939,-117.282
+Target Roseville Douglas Blvd,Roseville,CA,38.746,-121.255
+Target Roseville Fairway Drive,Roseville,CA,38.791,-121.29
+Target Sacramento Riverside,Sacramento,CA,38.562,-121.497
+Target Sacramento Madison,Sacramento,CA,38.662,-121.349
+Target Sacramento Arden,Sacramento,CA,38.601,-121.402
+Target Sacramento SW,Sacramento,CA,38.459,-121.414
+Target Sacramento Natomas,Sacramento,CA,38.641,-121.499
+Target Sacramento Midtown,Sacramento,CA,38.578,-121.484
+Target Sports Arena,San Diego,CA,32.752,-117.212
+Target Sacramento East,Sacramento,CA,38.55,-121.426
+Target Kearny Mesa,San Diego,CA,32.817,-117.152
+Target Mira Mesa,San Diego,CA,32.91,-117.146
+Target San Diego Mission Valley,San Diego,CA,32.768,-117.151
+Target Balboa,San Diego,CA,32.822,-117.179
+Target Lemon Grove,San Diego,CA,32.741,-117.055
+Target San Diego Del Sur,San Diego,CA,33.02,-117.126
+Target San Diego South Park,San Diego,CA,32.727,-117.129
+Target San Diego North Park,San Diego,CA,32.748,-117.129
+Target San Francisco Central,San Francisco,CA,37.785,-122.404
+Target San Francisco West,San Francisco,CA,37.782,-122.446
+Target San Francisco Stonestown,San Francisco,CA,37.727,-122.478
+Target San Jose West,San Jose,CA,37.265,-121.918
+Target Ocean Beach,San Diego,CA,32.746,-117.249
+Target San Jose Landess,San Jose,CA,37.414,-121.877
+Target San Jose Capitol,San Jose,CA,37.374,-121.845
+Target San Jose Oakridge,San Jose,CA,37.252,-121.861
+Target San Jose Westgate,San Jose,CA,37.293,-121.989
+Target San Jose Story Road,San Jose,CA,37.34,-121.84
+Target San Jose College Park,San Jose,CA,37.339,-121.904
+Target San Jose East,San Jose,CA,37.307,-121.813
+Target San Jose Central,San Jose,CA,37.305,-121.862
+Target San Jose North,San Jose,CA,37.418,-121.956
+Target San Jose South,San Jose,CA,37.251,-121.803
+Target Santa Ana 17th Street,Santa Ana,CA,33.759,-117.85
+Target Santa Ana South Coast,Santa Ana,CA,33.703,-117.888
+Target Santa Ana NW,Santa Ana,CA,33.761,-117.888
+Target Santa Rosa South,Santa Rosa,CA,38.417,-122.709
+Target Santa Monica 16th and Wilshire,Santa Monica,CA,34.028,-118.486
+Target Santa Monica Broadway and 5th St,Santa Monica,CA,34.016,-118.493
+Target Santa Rosa North,Santa Rosa,CA,38.457,-122.73
+Target Simi Valley Cochran Street,Simi Valley,CA,34.281,-118.74
+Target Stockton North,Stockton,CA,38.052,-121.372
+Target Stockton,Stockton,CA,37.992,-121.315
+Target Simi Valley Tierra Rejada Road,Simi Valley,CA,34.273,-118.798
+Target Sherman Oaks,Van Nuys,CA,34.175,-118.466
+Target Van Nuys Raymer St,Van Nuys,CA,34.213,-118.459
+Target Ventura Main Street,Ventura,CA,34.261,-119.237
+Target Visalia,Visalia,CA,36.294,-119.314
+Target Ventura Mall,Ventura,CA,34.27,-119.249
+Target Visalia North,Visalia,CA,36.352,-119.297
+Target Vista South Business Park Drive,Vista,CA,33.137,-117.228
+Target Vista North University Drive,Vista,CA,33.169,-117.215
+Target West Covina,West Covina,CA,34.073,-117.885
+Target West Covina South,West Covina,CA,34.035,-117.91
+Target Westminster,Westminster,CA,33.725,-117.986
+Target Westminster Mall,Westminster,CA,33.746,-118.012
+Target Boulder,Boulder,CO,40.022,-105.257
+Target Arvada,Arvada,CO,39.84,-105.085
+Target Brighton,Brighton,CO,39.956,-104.781
+Target Castle Rock,Castle Rock,CO,39.408,-104.856
+Target Edgewater,Edgewater,CO,39.747,-105.055
+Target Glenwood Springs,Glenwood Springs,CO,39.556,-107.343
+Target Glendale,Glendale,CO,39.708,-104.937
+Target Greeley,Greeley,CO,40.394,-104.75
+Target Grand Junction,Grand Junction,CO,39.091,-108.602
+Target Denver SW,Littleton,CO,39.611,-105.102
+Target Arapahoe,Greenwood Village,CO,39.593,-104.882
+Target Lone Tree,Lone Tree,CO,39.535,-104.884
+Target Longmont,Longmont,CO,40.153,-105.134
+Target Loveland,Loveland,CO,40.409,-105.004
+Target Montrose,Montrose,CO,38.444,-107.869
+Target Parker,Parker,CO,39.513,-104.773
+Target Sheridan,Sheridan,CO,39.65,-105.006
+Target Pueblo,Pueblo,CO,38.303,-104.606
+Target Silverthorne,Silverthorne,CO,39.638,-106.078
+Target Superior,Superior,CO,39.956,-105.17
+Target Wheat Ridge,Wheat Ridge,CO,39.788,-105.113
+Target Aurora SE,Aurora,CO,39.636,-104.79
+Target Thornton,Thornton,CO,39.917,-104.975
+Target Aurora West,Aurora,CO,39.692,-104.865
+Target Aurora,Aurora,CO,39.716,-104.821
+Target Aurora Saddle Rock,Aurora,CO,39.581,-104.722
+Target Aurora South,Aurora,CO,39.592,-104.805
+Target Colorado Springs North,Colorado Springs,CO,38.905,-104.781
+Target S Colorado Springs,Colorado Springs,CO,38.792,-104.802
+Target Colorado Springs East,Colorado Springs,CO,38.888,-104.718
+Target Denver Northfield Blvd,Denver,CO,39.783,-104.895
+Target Colorado Springs NE,Colorado Springs,CO,38.974,-104.746
+Target Denver University Hills Plaza,Denver,CO,39.671,-104.939
+Target Denver Downtown,Denver,CO,39.745,-104.992
+Target Denver SE,Denver,CO,39.654,-104.9
+Target Denver Lowry,Denver,CO,39.715,-104.904
+Target Fort Collins East,Fort Collins,CO,40.528,-105.023
+Target Fort Collins,Fort Collins,CO,40.527,-105.078
+Target Fort Collins Old Town,Fort Collins,CO,40.582,-105.076
+Target Douglas County,Highlands Ranch,CO,39.565,-104.966
+Target Highlands Ranch,Highlands Ranch,CO,39.55,-105.006
+Target Denver West,Lakewood,CO,39.734,-105.154
+Target Lakewood,Lakewood,CO,39.708,-105.079
+Target Westminster,Westminster,CO,39.886,-105.079
+Target Westminster Orchard Parkway,Westminster,CO,39.959,-104.996
+Target Bethel,Bethel,CT,41.414,-73.402
+Target Ansonia,Ansonia,CT,41.344,-73.08
+Target Danbury Fair Mall,Danbury,CT,41.379,-73.477
+Target Killingly,Dayville,CT,41.839,-71.885
+Target Enfield,Enfield,CT,41.997,-72.582
+Target Guilford,Guilford,CT,41.287,-72.679
+Target South Windsor,Manchester,CT,41.809,-72.549
+Target Meriden,Meriden,CT,41.553,-72.816
+Target Lisbon,Lisbon,CT,41.585,-71.997
+Target New Britain,New Britain,CT,41.711,-72.764
+Target Milford,Milford,CT,41.234,-73.038
+Target Newington,Newington,CT,41.661,-72.725
+Target North Haven,North Haven,CT,41.355,-72.872
+Target Norwalk Route 1,Norwalk,CT,41.096,-73.45
+Target Orange,Orange,CT,41.257,-73.011
+Target Stamford,Stamford,CT,41.055,-73.542
+Target Southington,Southington,CT,41.611,-72.902
+Target Torrington,Torrington,CT,41.819,-73.075
+Target Waterbury,Waterbury,CT,41.583,-73.034
+Target Waterford,Waterford,CT,41.378,-72.149
+Target Bishops Corner,West Hartford,CT,41.785,-72.746
+Target Windsor,Windsor,CT,41.893,-72.65
+Target Trumbull,Trumbull,CT,41.234,-73.152
+Target Trumbull West,Trumbull,CT,41.23,-73.226
+Target Dover,Dover,DE,39.16,-75.51
+Target Middletown Warwick Road,Middletown,DE,39.456,-75.726
+Target Christiana,Newark,DE,39.678,-75.65
+Target Brandywine,Wilmington,DE,39.831,-75.54
+Target Wilmington Prices Corner,Wilmington,DE,39.737,-75.624
+Target Altamonte Springs,Altamonte Springs,FL,28.663,-81.418
+Target West Boca Raton,Boca Raton,FL,26.355,-80.205
+Target Brandon,Brandon,FL,27.936,-82.324
+Target Aventura,Aventura,FL,25.972,-80.14
+Target Brooksville,Brooksville,FL,28.479,-82.479
+Target Casselberry,Casselberry,FL,28.672,-81.341
+Target Clermont,Clermont,FL,28.549,-81.705
+Target Coral Gables,Coral Gables,FL,25.755,-80.259
+Target NE Polk County,Davenport,FL,28.233,-81.644
+Target Clearwater,Clearwater,FL,27.959,-82.724
+Target Davie,Davie,FL,26.049,-80.25
+Target Daytona Beach,Daytona Beach,FL,29.183,-81.08
+Target Destin,Destin,FL,30.391,-86.481
+Target Delray Beach,Delray Beach,FL,26.437,-80.085
+Target Coconut Point,Estero,FL,26.407,-81.806
+Target Ft Lauderdale,Fort Lauderdale,FL,26.168,-80.116
+Target Hialeah,Hialeah,FL,25.854,-80.318
+Target Gainesville,Gainesville,FL,29.621,-82.384
+Target Greenacres,Greenacres,FL,26.618,-80.137
+Target Hollywood,Hollywood,FL,26.011,-80.175
+Target Homestead,Homestead,FL,25.479,-80.442
+Target Jacksonville Beach,Jacksonville Beach,FL,30.255,-81.399
+Target Lake Mary,Lake Mary,FL,28.755,-81.348
+Target Lake Park/Palm Beach Gardens,Lake Park,FL,26.805,-80.084
+Target Wellington South,Lake Worth,FL,26.593,-80.203
+Target Largo,Largo,FL,27.893,-82.784
+Target Lutz Dale Mabry Highway,Lutz,FL,28.173,-82.47
+Target Mary Esther,Mary Esther,FL,30.411,-86.659
+Target Lecanto,Lecanto,FL,28.894,-82.486
+Target Melbourne,Melbourne Village,FL,28.08,-80.666
+Target Merritt Island,Merritt Island,FL,28.384,-80.706
+Target South Beach,Miami Beach,FL,25.775,-80.136
+Target Miramar,Miramar,FL,25.98,-80.372
+Target Miami Lakes,Miami Gardens,FL,25.94,-80.291
+Target Mt Dora,Mount Dora,FL,28.82,-81.668
+Target North Miami,North Miami Beach,FL,25.906,-80.156
+Target Ocala,Ocala,FL,29.174,-82.157
+Target Fleming Island,Orange Park,FL,30.104,-81.707
+Target Orange City,Orange City,FL,28.916,-81.292
+Target Oviedo,Oviedo,FL,28.658,-81.236
+Target Pace,Pace,FL,30.601,-87.126
+Target Palm Coast,Palm Coast,FL,29.477,-81.218
+Target Panama City,Panama City,FL,30.192,-85.649
+Target Boot Ranch,Palm Harbor,FL,28.064,-82.708
+Target Pier Park,Panama City Beach,FL,30.219,-85.869
+Target Pembroke Pines,Pembroke Pines,FL,26.009,-80.299
+Target Plantation,Plantation,FL,26.118,-80.259
+Target Pinellas Park,Pinellas Park,FL,27.836,-82.684
+Target Port Charlotte,Port Charlotte,FL,27.012,-82.143
+Target Port Orange,Port Orange,FL,29.11,-81.029
+Target Port St Lucie,Port Saint Lucie,FL,27.27,-80.427
+Target St Augustine,Saint Augustine,FL,29.868,-81.324
+Target Riverview,Riverview,FL,27.896,-82.334
+Target Sanford,Sanford,FL,28.798,-81.337
+Target Spring Hill,Spring Hill,FL,28.496,-82.598
+Target Stuart,Stuart,FL,27.237,-80.272
+Target Sawgrass,Sunrise,FL,26.149,-80.323
+Target Lady Lake,The Villages,FL,28.952,-81.958
+Target Titusville,Titusville,FL,28.552,-80.841
+Target Venice,Venice,FL,27.05,-82.391
+Target Seven Springs,Trinity,FL,28.201,-82.664
+Target Winter Park,Winter Park,FL,28.595,-81.288
+Target Vero Beach,Vero Beach,FL,27.641,-80.448
+Target Wildwood,Wildwood,FL,28.866,-82.011
+Target Yulee,Yulee,FL,30.63,-81.554
+Target Boynton Beach West,Boynton Beach,FL,26.525,-80.166
+Target Boynton Beach SE,Boynton Beach,FL,26.534,-80.088
+Target Bradenton,Bradenton,FL,27.432,-82.578
+Target Bradenton Heritage Harbor,Bradenton,FL,27.496,-82.471
+Target Bradenton Beach,Bradenton,FL,27.498,-82.635
+Target Cape Coral,Cape Coral,FL,26.607,-81.975
+Target Coral Springs,Coral Springs,FL,26.284,-80.202
+Target Cape Coral North,Cape Coral,FL,26.669,-81.933
+Target Coral Springs NW,Coral Springs,FL,26.297,-80.252
+Target Deerfield Beach Hillsboro Blvd,Deerfield Beach,FL,26.317,-80.153
+Target Deerfield Beach,Deerfield Beach,FL,26.302,-80.093
+Target Ft Myers,Fort Myers,FL,26.543,-81.868
+Target Lee County,Fort Myers,FL,26.483,-81.787
+Target Fort Myers SW,Fort Myers,FL,26.51,-81.945
+Target Southside,Jacksonville,FL,30.192,-81.551
+Target Fort Myers North,Fort Myers,FL,26.616,-81.802
+Target Regency,Jacksonville,FL,30.329,-81.549
+Target Jacksonville Mandarin,Jacksonville,FL,30.188,-81.63
+Target Jacksonville East,Jacksonville,FL,30.285,-81.457
+Target Ortega,Jacksonville,FL,30.235,-81.695
+Target Jacksonville St Johns,Jacksonville,FL,30.261,-81.525
+Target Jacksonville West,Jacksonville,FL,30.199,-81.825
+Target Orlando SW,Kissimmee,FL,28.344,-81.614
+Target Lakeland South,Lakeland,FL,28.0,-81.973
+Target Kissimmee West,Kissimmee,FL,28.332,-81.472
+Target Lakeland North,Lakeland,FL,28.092,-81.971
+Target Viera,Melbourne,FL,28.228,-80.719
+Target Palm Bay,Melbourne,FL,28.039,-80.661
+Target Kendall,Miami,FL,25.686,-80.438
+Target Bird Road,Miami,FL,25.736,-80.321
+Target Cutler Ridge,Miami,FL,25.576,-80.375
+Target Miami Central,Miami,FL,25.809,-80.195
+Target Miami SW 104th Street,Miami,FL,25.673,-80.323
+Target Miami Flagler,Miami,FL,25.771,-80.36
+Target Miami Grove Central,Miami,FL,25.741,-80.238
+Target Dadeland,Miami,FL,25.693,-80.305
+Target Miami Downtown,Miami,FL,25.78,-80.198
+Target Miami NW 7th Street,Miami,FL,25.78,-80.259
+Target Naples,Naples,FL,26.209,-81.771
+Target East Colonial,Orlando,FL,28.556,-81.345
+Target Naples North,Naples,FL,26.27,-81.74
+Target Waterford Lakes,Orlando,FL,28.552,-81.201
+Target Orlando Millenia,Orlando,FL,28.494,-81.43
+Target Orlando Sand Lake Rd,Orlando,FL,28.449,-81.391
+Target Orlando - Sodo,Orlando,FL,28.515,-81.38
+Target Hunters Creek,Orlando,FL,28.37,-81.408
+Target Orlando Vineland,Orlando,FL,28.396,-81.485
+Target Pensacola,Pensacola,FL,30.468,-87.209
+Target Pensacola NE,Pensacola,FL,30.529,-87.224
+Target Saint Petersburg,Saint Petersburg,FL,27.812,-82.756
+Target Pensacola West,Pensacola,FL,30.363,-87.358
+Target St Petersburg Gateway,Saint Petersburg,FL,27.847,-82.644
+Target Sarasota Tamiami Trail,Sarasota,FL,27.228,-82.493
+Target North Sarasota Fruitville Rd,Sarasota,FL,27.336,-82.463
+Target Tallahassee,Tallahassee,FL,30.433,-84.245
+Target University Parkway,Sarasota,FL,27.387,-82.459
+Target Tallahassee North,Tallahassee,FL,30.561,-84.215
+Target Tallahassee FL State U,Tallahassee,FL,30.448,-84.314
+Target University Plaza,Tampa,FL,28.072,-82.428
+Target North Dale Mabry,Tampa,FL,28.089,-82.505
+Target Tampa,Tampa,FL,28.028,-82.549
+Target Gandy,Tampa,FL,27.895,-82.505
+Target Tampa Central Walter's Crossing,Tampa,FL,27.957,-82.509
+Target New Tampa,Wesley Chapel,FL,28.173,-82.356
+Target Tampa West,Tampa,FL,28.016,-82.613
+Target Wesley Chapel Grove,Wesley Chapel,FL,28.237,-82.356
+Target Royal Palm Beach,West Palm Beach,FL,26.711,-80.203
+Target West Palm Beach,West Palm Beach,FL,26.723,-80.085
+Target Orlando Flamingo Crossings,Winter Garden,FL,28.38,-81.617
+Target Winter Garden,Winter Garden,FL,28.521,-81.585
+Target Albany,Albany,GA,31.621,-84.226
+Target Acworth,Acworth,GA,34.04,-84.684
+Target Augusta,Augusta,GA,33.49,-82.081
+Target Alpharetta,Alpharetta,GA,34.046,-84.287
+Target Austell,Austell,GA,33.852,-84.603
+Target Brunswick,Brunswick,GA,31.201,-81.48
+Target Winder,Bethlehem,GA,33.943,-83.753
+Target Canton,Canton,GA,34.237,-84.455
+Target Buford,Buford,GA,34.07,-83.982
+Target Carrollton,Carrollton,GA,33.559,-85.077
+Target Cartersville,Cartersville,GA,34.173,-84.786
+Target Columbus,Columbus,GA,32.533,-84.969
+Target Cumming,Cumming,GA,34.186,-84.134
+Target Douglasville,Douglasville,GA,33.726,-84.735
+Target Conyers,Conyers,GA,33.633,-84.017
+Target East Point,East Point,GA,33.659,-84.499
+Target Evans,Evans,GA,33.527,-82.118
+Target Fayetteville,Fayetteville,GA,33.482,-84.439
+Target Gainesville,Gainesville,GA,34.277,-83.818
+Target Flowery Branch,Flowery Branch,GA,34.18,-83.911
+Target Hiram,Hiram,GA,33.886,-84.744
+Target Johns Creek State St and 141,Johns Creek,GA,34.013,-84.186
+Target Cobb,Kennesaw,GA,34.009,-84.573
+Target McDonough,Mcdonough,GA,33.468,-84.217
+Target Lawrenceville,Lawrenceville,GA,33.971,-84.017
+Target Milton,Milton,GA,34.099,-84.269
+Target Newnan,Newnan,GA,33.393,-84.758
+Target Peachtree Corners,Peachtree Corners,GA,33.952,-84.232
+Target Peachtree City,Peachtree City,GA,33.441,-84.591
+Target Roswell,Roswell,GA,34.064,-84.398
+Target Sandy Springs Prado,Sandy Springs,GA,33.907,-84.38
+Target Smyrna,Smyrna,GA,33.898,-84.479
+Target Snellville,Snellville,GA,33.877,-84.015
+Target Valdosta,Valdosta,GA,30.843,-83.316
+Target Suwanee Peachtree Pkwy,Suwanee,GA,34.097,-84.173
+Target Northlake,Tucker,GA,33.845,-84.246
+Target Warner Robins,Warner Robins,GA,32.618,-83.685
+Target Woodstock,Woodstock,GA,34.085,-84.546
+Target Athens,Athens,GA,33.942,-83.441
+Target Athens Broad Street,Athens,GA,33.958,-83.376
+Target North Druid Hills,Atlanta,GA,33.828,-84.325
+Target Buckhead,Atlanta,GA,33.852,-84.36
+Target Atlanta Edgewood,Atlanta,GA,33.757,-84.346
+Target Atlanta Midtown,Atlanta,GA,33.793,-84.399
+Target Buckhead South,Atlanta,GA,33.824,-84.363
+Target Cobb NE,Marietta,GA,34.035,-84.46
+Target Atlanta Perimeter,Atlanta,GA,33.931,-84.341
+Target West Marietta,Marietta,GA,33.944,-84.626
+Target Marietta East,Marietta,GA,33.985,-84.429
+Target Savannah East,Savannah,GA,32.041,-81.069
+Target Savannah,Savannah,GA,31.984,-81.175
+Target Hawaii-Hilo,Hilo,HI,19.701,-155.06
+Target Maui-Kahului,Kahului,HI,20.874,-156.455
+Target Oahu-Kailua,Kailua,HI,21.392,-157.74
+Target Hawaii-Kona,Kailua Kona,HI,19.648,-156.003
+Target Oahu Windward Mall,Kaneohe,HI,21.42,-157.805
+Target Oahu-Kapolei,Kapolei,HI,21.332,-158.093
+Target Lihue Kauai,Lihue,HI,21.968,-159.377
+Target Oahu-Honolulu Salt Lake,Honolulu,HI,21.355,-157.929
+Target Oahu Honolulu Ala Moana,Honolulu,HI,21.293,-157.842
+Target Oahu Waikiki,Honolulu,HI,21.278,-157.826
+Target Coeur d'Alene,Coeur D'alene,ID,47.735,-116.791
+Target Idaho Falls,Idaho Falls,ID,43.477,-111.984
+Target Moscow West Pullman Road,Moscow,ID,46.733,-117.028
+Target Nampa,Nampa,ID,43.61,-116.589
+Target Boise,Boise,ID,43.61,-116.286
+Target Boise Eagle Road,Boise,ID,43.661,-116.352
+Target Twin Falls,Twin Falls,ID,42.591,-114.46
+Target Alton,Alton,IL,38.921,-90.17
+Target Algonquin,Algonquin,IL,42.163,-88.336
+Target Arlington Heights,Arlington Heights,IL,42.112,-87.977
+Target Batavia,Batavia,IL,41.852,-88.343
+Target Belleville,Belleville,IL,38.519,-90.024
+Target Bolingbrook,Bolingbrook,IL,41.705,-88.122
+Target Broadview,Broadview,IL,41.855,-87.851
+Target Bradley,Bourbonnais,IL,41.207,-87.853
+Target Cicero,Cicero,IL,41.84,-87.741
+Target Crestwood,Crestwood,IL,41.657,-87.746
+Target Crystal Lake,Crystal Lake,IL,42.229,-88.305
+Target DeKalb,Dekalb,IL,41.956,-88.725
+Target Decatur,Decatur,IL,39.891,-88.958
+Target Edwardsville,Edwardsville,IL,38.783,-89.949
+Target East Peoria,East Peoria,IL,40.663,-89.573
+Target Galesburg,Galesburg,IL,40.976,-90.388
+Target Elgin,Elgin,IL,42.026,-88.341
+Target Fairview Heights,Fairview Heights,IL,38.572,-89.987
+Target Glendale Heights,Glendale Heights,IL,41.938,-88.099
+Target Glenview,Glenview,IL,42.105,-87.814
+Target Highland Park,Highland Park,IL,42.192,-87.825
+Target Gurnee,Gurnee,IL,42.383,-87.966
+Target Hillside,Hillside,IL,41.867,-87.883
+Target Hodgkins,Hodgkins,IL,41.781,-87.859
+Target Hoffman Estates,Hoffman Estates,IL,42.074,-88.194
+Target Homewood,Homewood,IL,41.569,-87.634
+Target Joliet,Joliet,IL,41.577,-88.154
+Target Lake Zurich,Lake Zurich,IL,42.187,-88.104
+Target Lake Bluff,Lake Bluff,IL,42.28,-87.883
+Target Lemont,Lemont,IL,41.644,-88.004
+Target Lombard,Lombard,IL,41.845,-88.003
+Target Marion,Marion,IL,37.748,-88.976
+Target Machesney Park,Machesney Park,IL,42.367,-89.028
+Target SW Moline,Moline,IL,41.469,-90.524
+Target Mundelein,Mundelein,IL,42.284,-88.045
+Target Melrose Park,Melrose Park,IL,41.906,-87.844
+Target New Lenox,New Lenox,IL,41.507,-87.921
+Target Naperville,Naperville,IL,41.772,-88.204
+Target North Aurora,North Aurora,IL,41.798,-88.365
+Target Bloomington Normal,Normal,IL,40.505,-88.956
+Target Norridge,Norridge,IL,41.955,-87.808
+Target Oak Lawn,Oak Lawn,IL,41.721,-87.725
+Target OakPark,Oak Park,IL,41.888,-87.804
+Target Orland Park,Orland Park,IL,41.603,-87.851
+Target Oswego,Oswego,IL,41.697,-88.316
+Target Peoria,Peoria,IL,40.75,-89.635
+Target Palatine,Palatine,IL,42.138,-88.028
+Target Peru,Peru,IL,41.362,-89.129
+Target Plainfield,Plainfield,IL,41.65,-88.206
+Target Quincy,Quincy,IL,39.936,-91.356
+Target Rockford,Rockford,IL,42.27,-88.989
+Target Rosemont,Rosemont,IL,42.007,-87.886
+Target Shorewood,Shorewood,IL,41.542,-88.201
+Target Shiloh,Shiloh,IL,38.573,-89.923
+Target Skokie IL,Skokie,IL,42.04,-87.751
+Target South Elgin,South Elgin,IL,41.975,-88.342
+Target Springfield,Springfield,IL,39.75,-89.711
+Target Streamwood,Streamwood,IL,42.017,-88.201
+Target St Charles,St Charles,IL,41.918,-88.264
+Target Tinley Park,Tinley Park,IL,41.544,-87.797
+Target Villa Park,Villa Park,IL,41.907,-87.977
+Target Vernon Hills,Vernon Hills,IL,42.242,-87.957
+Target Warrenville,Warrenville,IL,41.801,-88.169
+Target Waukegan,Waukegan,IL,42.408,-87.856
+Target Wheaton,Wheaton,IL,41.859,-88.14
+Target Wheeling,Wheeling,IL,42.154,-87.951
+Target Willowbrook,Willowbrook,IL,41.75,-87.944
+Target Woodridge,Woodridge,IL,41.771,-88.039
+Target Yorkville,Yorkville,IL,41.663,-88.465
+Target Wood Dale,Wood Dale,IL,41.967,-87.993
+Target Champaign,Champaign,IL,40.142,-88.255
+Target Champaign Campustown,Champaign,IL,40.11,-88.23
+Target Chicago Near North Elston,Chicago,IL,41.929,-87.685
+Target Chicago Mid North,Chicago,IL,41.945,-87.702
+Target Bedford Park,Chicago,IL,41.764,-87.742
+Target Chicago South Pulaski,Chicago,IL,41.812,-87.722
+Target Chicago Brickyard,Chicago,IL,41.93,-87.789
+Target Chicago South Loop,Chicago,IL,41.868,-87.631
+Target Chicago Peterson Ave,Chicago,IL,41.991,-87.682
+Target Chicago McKinley Park,Chicago,IL,41.836,-87.675
+Target Chicago Wilson Yard,Chicago,IL,41.964,-87.656
+Target Chicago Gold Coast,Chicago,IL,41.904,-87.644
+Target Chicago West Loop,Chicago,IL,41.878,-87.655
+Target Chicago State St.,Chicago,IL,41.882,-87.627
+Target Chicago Streeterville,Chicago,IL,41.891,-87.617
+Target Chicago Lakeview Belmont Stn,Chicago,IL,41.94,-87.651
+Target Chicago Hyde Park IL,Chicago,IL,41.8,-87.594
+Target Chicago Lincoln Park North,Chicago,IL,41.931,-87.645
+Target Rogers Park,Chicago,IL,41.999,-87.661
+Target Chicago Lakeview Ashland,Chicago,IL,41.942,-87.669
+Target Chicago Wicker Park,Chicago,IL,41.904,-87.67
+Target Chicago Mayfair,Chicago,IL,41.975,-87.744
+Target Chicago Lincoln Park South Webster,Chicago,IL,41.922,-87.643
+Target Chicago Logan Square Milwaukee,Chicago,IL,41.926,-87.703
+Target Chicago River North,Chicago,IL,41.893,-87.633
+Target Chicago Portage Park,Chicago,IL,41.954,-87.746
+Target Evanston,Evanston,IL,42.021,-87.706
+Target Niles,Niles,IL,42.013,-87.78
+Target Evanston Downtown,Evanston,IL,42.048,-87.682
+Target Golf Mill,Niles,IL,42.05,-87.837
+Target West Schaumburg,Schaumburg,IL,42.023,-88.146
+Target Waterford Park,Clarksville,IN,38.328,-85.765
+Target Woodfield,Schaumburg,IL,42.038,-88.049
+Target Avon,Avon,IN,39.764,-86.342
+Target Bloomington,Bloomington,IN,39.162,-86.495
+Target Columbus,Columbus,IN,39.219,-85.885
+Target Goshen,Goshen,IN,41.622,-85.906
+Target Greenwood South,Greenwood,IN,39.603,-86.157
+Target Fishers,Fishers,IN,39.96,-86.01
+Target Mishawaka,Granger,IN,41.718,-86.176
+Target Highland,Highland,IN,41.524,-87.468
+Target Kokomo,Kokomo,IN,40.475,-86.11
+Target Lake County,Merrillville,IN,41.469,-87.303
+Target Lafayette,Lafayette,IN,40.42,-86.847
+Target Muncie,Muncie,IN,40.222,-85.381
+Target Munster,Munster,IN,41.568,-87.507
+Target New Albany,New Albany,IN,38.308,-85.842
+Target Plainfield,Plainfield,IN,39.716,-86.355
+Target South Bend,South Bend,IN,41.627,-86.229
+Target Valparaiso,Valparaiso,IN,41.467,-87.032
+Target St John,Saint John,IN,41.44,-87.468
+Target West Lafayette State Street,West Lafayette,IN,40.424,-86.908
+Target Carmel East 151st Street,Carmel,IN,40.008,-86.129
+Target Carmel West,Carmel,IN,39.937,-86.233
+Target Evansville Lloyd Expressway,Evansville,IN,37.975,-87.47
+Target Evansville North,Evansville,IN,38.016,-87.576
+Target Ft Wayne NE,Fort Wayne,IN,41.122,-85.064
+Target Ft Wayne Glenbrook,Fort Wayne,IN,41.111,-85.139
+Target Eagle Creek,Indianapolis,IN,39.824,-86.236
+Target Fort Wayne SW,Fort Wayne,IN,41.077,-85.204
+Target Washington Square,Indianapolis,IN,39.778,-85.987
+Target Nora Plaza,Indianapolis,IN,39.914,-86.137
+Target Southport,Indianapolis,IN,39.665,-86.083
+Target Indy Glendale,Indianapolis,IN,39.866,-86.123
+Target Altoona,Altoona,IA,41.641,-93.504
+Target Ames,Ames,IA,42.019,-93.608
+Target Ankeny,Ankeny,IA,41.709,-93.578
+Target Cedar Falls,Cedar Falls,IA,42.481,-92.444
+Target Davenport,Davenport,IA,41.573,-90.526
+Target Council Bluffs,Council Bluffs,IA,41.22,-95.839
+Target Coralville,Coralville,IA,41.692,-91.606
+Target Dubuque,Dubuque,IA,42.491,-90.723
+Target Fort Dodge,Fort Dodge,IA,42.505,-94.153
+Target Mason City,Mason City,IA,43.15,-93.253
+Target Iowa City Downtown,Iowa City,IA,41.66,-91.534
+Target Sioux City,Sioux City,IA,42.451,-96.334
+Target Waterloo,Waterloo,IA,42.466,-92.327
+Target Urbandale,Urbandale,IA,41.647,-93.767
+Target Waukee,Waukee,IA,41.612,-93.857
+Target Burlington,West Burlington,IA,40.821,-91.172
+Target Cedar Rapids North,Cedar Rapids,IA,42.037,-91.652
+Target Cedar Rapids South,Cedar Rapids,IA,41.944,-91.717
+Target South Des Moines,Des Moines,IA,41.526,-93.602
+Target Des Moines North,Des Moines,IA,41.63,-93.7
+Target Valley West,West Des Moines,IA,41.6,-93.753
+Target West Des Moines SW,West Des Moines,IA,41.561,-93.78
+Target Derby,Derby,KS,37.569,-97.242
+Target Garden City,Garden City,KS,37.98,-100.843
+Target KC Speedway,Kansas City,KS,39.127,-94.832
+Target Manhattan,Manhattan,KS,39.171,-96.606
+Target Lawrence,Lawrence,KS,38.926,-95.261
+Target Mission,Mission,KS,39.018,-94.665
+Target Salina,Salina,KS,38.784,-97.609
+Target Shawnee,Shawnee,KS,39.01,-94.768
+Target Topeka,Topeka,KS,39.028,-95.76
+Target Olathe South,Olathe,KS,38.849,-94.82
+Target Olathe,Olathe,KS,38.91,-94.764
+Target Overland Park South,Overland Park,KS,38.853,-94.682
+Target Overland Park,Overland Park,KS,38.908,-94.675
+Target Overland Park West,Overland Park,KS,38.951,-94.72
+Target Wichita NE,Wichita,KS,37.724,-97.212
+Target Wichita Maple,Wichita,KS,37.678,-97.432
+Target Bowling Green,Bowling Green,KY,36.949,-86.436
+Target Wichita NW,Wichita,KS,37.733,-97.465
+Target Elizabethtown,Elizabethtown,KY,37.729,-85.88
+Target Florence,Florence,KY,39.02,-84.634
+Target Newport,Newport,KY,39.089,-84.478
+Target Owensboro,Owensboro,KY,37.717,-87.123
+Target Lexington,Lexington,KY,37.993,-84.526
+Target Lexington SE,Lexington,KY,38.022,-84.415
+Target Lexington Campus,Lexington,KY,38.043,-84.504
+Target Jeffersontown,Louisville,KY,38.215,-85.595
+Target Bashford Manor,Louisville,KY,38.198,-85.671
+Target Springhurst,Louisville,KY,38.297,-85.558
+Target Louisville Jefferson Pavilion,Louisville,KY,38.146,-85.673
+Target St Matthews,Louisville,KY,38.258,-85.644
+Target Alexandria,Alexandria,LA,31.28,-92.458
+Target Bossier City,Bossier City,LA,32.559,-93.707
+Target Middletown,Louisville,KY,38.243,-85.51
+Target Covington,Covington,LA,30.443,-90.142
+Target Hammond,Hammond,LA,30.481,-90.462
+Target Harvey,Harvey,LA,29.889,-90.056
+Target Houma,Houma,LA,29.611,-90.757
+Target Kenner,Kenner,LA,30.019,-90.249
+Target Lake Charles,Lake Charles,LA,30.199,-93.248
+Target Mandeville,Mandeville,LA,30.39,-90.086
+Target Monroe,Monroe,LA,32.5,-92.07
+Target Metairie,Metairie,LA,30.003,-90.184
+Target Baton Rouge Siegen,Baton Rouge,LA,30.385,-91.061
+Target Shreveport,Shreveport,LA,32.44,-93.72
+Target Baton Rouge East,Baton Rouge,LA,30.441,-91.022
+Target Lafayette,Lafayette,LA,30.16,-92.049
+Target Lafayette N,Lafayette,LA,30.266,-91.996
+Target Auburn Center St,Auburn,ME,44.124,-70.223
+Target Augusta,Augusta,ME,44.313,-69.806
+Target Biddeford,Biddeford,ME,43.474,-70.515
+Target South Portland,South Portland,ME,43.634,-70.347
+Target Topsham,Topsham,ME,43.934,-69.985
+Target Bangor,Bangor,ME,44.842,-68.742
+Target Aberdeen,Aberdeen,MD,39.521,-76.179
+Target Abingdon,Abingdon,MD,39.46,-76.316
+Target Annapolis,Annapolis,MD,38.98,-76.542
+Target Baltimore East,Baltimore,MD,39.275,-76.566
+Target Bel Air,Bel Air,MD,39.526,-76.351
+Target Bethesda,Bethesda,MD,38.978,-77.091
+Target Brandywine,Brandywine,MD,38.672,-76.873
+Target Timonium,Cockeysville,MD,39.462,-76.634
+Target Lexington Park,California,MD,38.297,-76.514
+Target Columbia,Columbia,MD,39.197,-76.814
+Target Forestville,District Heights,MD,38.849,-76.887
+Target Ellicott City,Ellicott City,MD,39.25,-76.817
+Target Easton,Easton,MD,38.782,-76.087
+Target Frederick,Frederick,MD,39.382,-77.398
+Target Gaithersburg,Gaithersburg,MD,39.119,-77.203
+Target Crofton,Gambrills,MD,39.035,-76.684
+Target Hagerstown,Hagerstown,MD,39.62,-77.773
+Target Germantown,Germantown,MD,39.198,-77.245
+Target Greenbelt,Greenbelt,MD,38.999,-76.907
+Target Prince Georges Plaza,Hyattsville,MD,38.969,-76.957
+Target LaPlata,La Plata,MD,38.541,-76.983
+Target Middle River,Middle River,MD,39.335,-76.449
+Target Laurel,Laurel,MD,39.097,-76.81
+Target White Marsh,Nottingham,MD,39.371,-76.451
+Target Owings Mills,Owings Mills,MD,39.433,-76.799
+Target Oxon Hill,Oxon Hill,MD,38.806,-76.983
+Target Pikesville,Pikesville,MD,39.385,-76.732
+Target Rockville,Rockville,MD,39.056,-77.115
+Target Kent Island,Stevensville,MD,38.977,-76.319
+Target Towson,Towson,MD,39.394,-76.58
+Target Salisbury,Salisbury,MD,38.416,-75.56
+Target Largo,Upper Marlboro,MD,38.898,-76.828
+Target Waldorf,Waldorf,MD,38.625,-76.919
+Target Lanham,Bowie,MD,38.954,-76.825
+Target Westminster,Westminster,MD,39.567,-76.974
+Target Bowie,Bowie,MD,38.953,-76.723
+Target Glen Burnie,Glen Burnie,MD,39.133,-76.634
+Target Glen Burnie North,Glen Burnie,MD,39.192,-76.613
+Target Wheaton,Silver Spring,MD,39.037,-77.054
+Target Abington,Abington,MA,42.111,-70.928
+Target Silver Spring,Silver Spring,MD,39.053,-76.953
+Target Braintree,Braintree,MA,42.219,-71.026
+Target Burlington MA,Burlington,MA,42.485,-71.187
+Target Danvers,Danvers,MA,42.553,-70.938
+Target Everett,Everett,MA,42.401,-71.07
+Target Hadley,Hadley,MA,42.357,-72.547
+Target Framingham,Framingham,MA,42.306,-71.398
+Target Hanover,Hanover,MA,42.137,-70.839
+Target Haverhill,Haverhill,MA,42.788,-71.115
+Target Holyoke,Holyoke,MA,42.167,-72.641
+Target Lanesborough,Lanesborough,MA,42.493,-73.202
+Target Kingston,Kingston,MA,41.97,-70.716
+Target Hyannis Cape Cod,Hyannis,MA,41.667,-70.295
+Target Leominster,Leominster,MA,42.528,-71.714
+Target Lowell,Lowell,MA,42.624,-71.317
+Target Medford MA,Medford,MA,42.423,-71.089
+Target Methuen,Methuen,MA,42.74,-71.161
+Target Milford,Milford,MA,42.161,-71.498
+Target Millbury,Millbury,MA,42.195,-71.776
+Target North Attleborough,North Attleboro,MA,41.942,-71.349
+Target North Dartmouth,North Dartmouth,MA,41.64,-71.008
+Target Plainville,Plainville,MA,42.034,-71.31
+Target North Quincy T Station,Quincy,MA,42.276,-71.03
+Target Revere,Revere,MA,42.401,-71.001
+Target Boston Roslindale,Roslindale,MA,42.288,-71.126
+Target Salem Highland Ave,Salem,MA,42.504,-70.919
+Target Saugus,Saugus,MA,42.482,-71.024
+Target Seekonk,Seekonk,MA,41.796,-71.321
+Target Somerville,Somerville,MA,42.377,-71.091
+Target Stoneham Redstone,Stoneham,MA,42.495,-71.103
+Target Easton,South Easton,MA,42.028,-71.144
+Target Stoughton,Stoughton,MA,42.153,-71.073
+Target Swansea,Swansea,MA,41.749,-71.207
+Target Taunton,Taunton,MA,41.878,-71.069
+Target Wareham,Wareham,MA,41.776,-70.745
+Target Watertown,Watertown,MA,42.364,-71.159
+Target Westwood,Westwood,MA,42.205,-71.155
+Target Westborough,Westborough,MA,42.28,-71.655
+Target Wilmington,Wilmington,MA,42.59,-71.161
+Target Woburn,Woburn,MA,42.519,-71.135
+Target Worcester,Worcester,MA,42.292,-71.775
+Target Boston Fenway,Boston,MA,42.344,-71.098
+Target Boston Packards Corner,Boston,MA,42.35,-71.114
+Target Cambridge Central Square,Cambridge,MA,42.364,-71.103
+Target Boston Beacon Hill,Boston,MA,42.361,-71.063
+Target Cambridge Porter Square,Cambridge,MA,42.389,-71.119
+Target Boston South Bay,Dorchester,MA,42.329,-71.063
+Target Boston Dorchester Fields Corner,Dorchester,MA,42.299,-71.063
+Target Marlborough,Marlborough,MA,42.359,-71.607
+Target Allen Park,Allen Park,MI,42.285,-83.207
+Target Marlborough East,Marlborough,MA,42.348,-71.506
+Target Battle Creek,Battle Creek,MI,42.26,-85.185
+Target Auburn Hills,Auburn Hills,MI,42.706,-83.292
+Target Bloomfield Township,Bloomfield Hills,MI,42.603,-83.293
+Target Brighton,Brighton,MI,42.545,-83.793
+Target Grand Rapids South,Caledonia,MI,42.846,-85.616
+Target Chesterfield,Chesterfield,MI,42.677,-82.829
+Target Clinton Pointe,Clinton Township,MI,42.545,-82.903
+Target East Lansing Downtown,East Lansing,MI,42.735,-84.482
+Target Dearborn,Dearborn,MI,42.328,-83.199
+Target Dearborn Heights,Dearborn Heights,MI,42.328,-83.302
+Target Farmington Hills,Farmington Hills,MI,42.452,-83.344
+Target Flint,Flint,MI,42.983,-83.749
+Target Fenton,Fenton,MI,42.788,-83.738
+Target Port Huron,Fort Gratiot,MI,43.034,-82.456
+Target Grand Rapids East,Grand Rapids,MI,42.908,-85.541
+Target Grandville,Grandville,MI,42.882,-85.74
+Target Hartland Township,Howell,MI,42.635,-83.757
+Target Jackson,Jackson,MI,42.268,-84.43
+Target Holland,Holland,MI,42.831,-86.092
+Target Kalamazoo West,Kalamazoo,MI,42.298,-85.655
+Target Macomb Twp,Macomb,MI,42.631,-82.912
+Target Madison Heights,Madison Heights,MI,42.528,-83.108
+Target Marquette,Marquette,MI,46.552,-87.46
+Target Midland,Midland,MI,43.659,-84.246
+Target Mt Pleasant,Mount Pleasant,MI,43.577,-84.766
+Target Norton Shores,Muskegon,MI,43.16,-86.209
+Target Okemos,Okemos,MI,42.725,-84.413
+Target Novi,Novi,MI,42.488,-83.534
+Target Portage,Portage,MI,42.218,-85.588
+Target Rochester,Rochester Hills,MI,42.638,-83.129
+Target Shelby Township,Shelby Township,MI,42.711,-83.033
+Target Saginaw,Saginaw,MI,43.48,-83.971
+Target Southfield,Southfield,MI,42.513,-83.225
+Target Sterling Heights W,Sterling Heights,MI,42.562,-83.085
+Target Southland,Taylor,MI,42.204,-83.256
+Target Troy,Troy,MI,42.545,-83.189
+Target Traverse City,Traverse City,MI,44.726,-85.638
+Target Lakeside,Utica,MI,42.628,-82.997
+Target Commerce Township,Walled Lake,MI,42.534,-83.442
+Target Grand Rapids North,Walker,MI,43.022,-85.687
+Target Warren,Warren,MI,42.503,-83.083
+Target Westland,Westland,MI,42.337,-83.391
+Target Woodhaven,Woodhaven,MI,42.137,-83.225
+Target Wyoming,Wyoming,MI,42.865,-85.686
+Target Ypsilanti Carpenter Road,Ypsilanti,MI,42.236,-83.677
+Target Ann Arbor State Street,Ann Arbor,MI,42.279,-83.74
+Target Ann Arbor,Ann Arbor,MI,42.244,-83.769
+Target Canton Ford Road,Canton,MI,42.323,-83.471
+Target Canton Michigan Avenue,Canton,MI,42.27,-83.503
+Target Northville,Livonia,MI,42.434,-83.431
+Target Lansing South,Lansing,MI,42.663,-84.543
+Target West Lansing,Lansing,MI,42.738,-84.629
+Target Livonia,Livonia,MI,42.367,-83.335
+Target Alexandria,Alexandria,MN,45.85,-95.387
+Target Brainerd,Baxter,MN,46.363,-94.241
+Target Bemidji,Bemidji,MN,47.493,-94.91
+Target Andover,Andover,MN,45.219,-93.316
+Target Blaine,Blaine,MN,45.165,-93.233
+Target Bloomington 79th and Penn,Bloomington,MN,44.86,-93.311
+Target Brooklyn Park,Brooklyn Park,MN,45.091,-93.379
+Target Buffalo,Buffalo,MN,45.164,-93.855
+Target Burnsville,Burnsville,MN,44.749,-93.289
+Target Cambridge,Cambridge,MN,45.575,-93.201
+Target Champlin,Champlin,MN,45.173,-93.388
+Target Chanhassen,Chanhassen,MN,44.862,-93.542
+Target Crystal,Crystal,MN,45.052,-93.365
+Target Chaska,Chaska,MN,44.828,-93.601
+Target Cottage Grove,Cottage Grove,MN,44.815,-92.929
+Target Duluth,Duluth,MN,46.809,-92.168
+Target Eagan,Eagan,MN,44.792,-93.206
+Target Edina,Edina,MN,44.875,-93.322
+Target Forest Lake,Forest Lake,MN,45.275,-93.001
+Target Eden Prairie,Eden Prairie,MN,44.856,-93.426
+Target Fridley,Fridley,MN,45.066,-93.251
+Target Grand Rapids,Grand Rapids,MN,47.209,-93.527
+Target Hutchinson,Hutchinson,MN,44.869,-94.376
+Target Inver Grove Heights,Inver Grove Heights,MN,44.836,-93.088
+Target Lakeville,Lakeville,MN,44.685,-93.289
+Target Mankato,Mankato,MN,44.17,-93.953
+Target Medina,Medina,MN,45.045,-93.53
+Target Lino Lakes,Lino Lakes,MN,45.184,-93.105
+Target Maple Grove North,Maple Grove,MN,45.137,-93.476
+Target Monticello,Monticello,MN,45.294,-93.773
+Target North St Paul,North Saint Paul,MN,45.012,-93.007
+Target Moorhead,Moorhead,MN,46.875,-96.728
+Target Northfield,Northfield,MN,44.434,-93.186
+Target Oakdale,Oakdale,MN,44.996,-92.945
+Target Otsego,Otsego,MN,45.279,-93.564
+Target Plymouth,Plymouth,MN,45.031,-93.451
+Target Owatonna,Owatonna,MN,44.087,-93.249
+Target Red Wing,Red Wing,MN,44.569,-92.583
+Target Richfield,Richfield,MN,44.886,-93.248
+Target Roseville T1,Roseville,MN,45.008,-93.165
+Target Rogers Diamond Lake Road,Rogers,MN,45.197,-93.554
+Target Savage,Savage,MN,44.743,-93.379
+Target Shakopee,Shakopee,MN,44.776,-93.501
+Target Shoreview,Shoreview,MN,45.056,-93.145
+Target Knollwood Hwy 7,St.louis Park,MN,44.936,-93.392
+Target Stillwater,Stillwater,MN,45.037,-92.839
+Target Vadnais Heights,Vadnais Heights,MN,45.05,-93.062
+Target Virginia,Virginia,MN,47.511,-92.55
+Target Waconia,Waconia,MN,44.841,-93.771
+Target West St Paul,West St Paul,MN,44.893,-93.078
+Target Willmar,Willmar,MN,45.098,-95.041
+Target Winona,Winona,MN,44.032,-91.622
+Target Coon Rapids,Coon Rapids,MN,45.194,-93.35
+Target Northtown,Coon Rapids,MN,45.127,-93.268
+Target St Louis Park Hwy 100,Minneapolis,MN,44.937,-93.347
+Target East Lake Street and Hwy 55,Minneapolis,MN,44.949,-93.236
+Target Minneapolis NE,Minneapolis,MN,45.005,-93.229
+Target Mpls Nicollet Mall,Minneapolis,MN,44.975,-93.274
+Target Minneapolis Dinkytown,Minneapolis,MN,44.982,-93.235
+Target Ridgedale,Minnetonka,MN,44.97,-93.447
+Target Rochester,Rochester,MN,44.063,-92.504
+Target Minnetonka,Minnetonka,MN,44.917,-93.505
+Target St Cloud Crossroads,Saint Cloud,MN,45.557,-94.209
+Target Rochester South,Rochester,MN,43.954,-92.465
+Target St Cloud East,Saint Cloud,MN,45.565,-94.145
+Target East St Paul,Saint Paul,MN,44.95,-93.029
+Target St Paul Midway,Saint Paul,MN,44.953,-93.156
+Target Woodbury Commerce Drive,Woodbury,MN,44.94,-92.909
+Target St. Paul Highland Park,Saint Paul,MN,44.918,-93.188
+Target Woodbury Valley Creek Plaza,Woodbury,MN,44.927,-92.96
+Target D'Iberville,D'iberville,MS,30.455,-88.9
+Target Flowood,Flowood,MS,32.343,-90.061
+Target Horn Lake,Horn Lake,MS,34.966,-90.005
+Target North Jackson,Jackson,MS,32.399,-90.148
+Target Olive Branch West,Olive Branch,MS,34.963,-89.898
+Target Hattiesburg,Hattiesburg,MS,31.324,-89.382
+Target Arnold,Arnold,MO,38.413,-90.396
+Target Ballwin,Ballwin,MO,38.595,-90.547
+Target Blue Springs,Blue Springs,MO,39.023,-94.248
+Target Belton,Belton,MO,38.816,-94.516
+Target Branson,Branson,MO,36.674,-93.226
+Target Brentwood,Brentwood,MO,38.628,-90.343
+Target Bridgeton,Bridgeton,MO,38.754,-90.427
+Target Cape Girardeau,Cape Girardeau,MO,37.299,-89.579
+Target Dardenne Prairie,Dardenne Prairie,MO,38.766,-90.763
+Target Fenton,Fenton,MO,38.503,-90.448
+Target Columbia,Columbia,MO,38.965,-92.374
+Target Florissant,Florissant,MO,38.804,-90.307
+Target Independence,Independence,MO,39.051,-94.369
+Target Jefferson City,Jefferson City,MO,38.58,-92.214
+Target Joplin,Joplin,MO,37.085,-94.474
+Target Kirkwood,Kirkwood,MO,38.565,-90.404
+Target Lees Summit,Lees Summit,MO,38.928,-94.412
+Target O'Fallon,O Fallon,MO,38.778,-90.697
+Target Osage Beach,Osage Beach,MO,38.161,-92.603
+Target St Charles,Saint Charles,MO,38.788,-90.563
+Target St Peters,Saint Peters,MO,38.739,-90.637
+Target St Joseph,St Joseph,MO,39.816,-94.812
+Target Springfield,Springfield,MO,37.152,-93.263
+Target Washington,Washington,MO,38.536,-90.984
+Target Wentzville,Wentzville,MO,38.818,-90.881
+Target Town And Country,Chesterfield,MO,38.62,-90.518
+Target Chesterfield,Chesterfield,MO,38.667,-90.584
+Target Kansas City North,Kansas City,MO,39.249,-94.595
+Target Kansas City Chouteau,Kansas City,MO,39.174,-94.533
+Target Stateline,Kansas City,MO,38.88,-94.607
+Target Ward Parkway,Kansas City,MO,38.971,-94.607
+Target Liberty,Kansas City,MO,39.247,-94.464
+Target South County,Saint Louis,MO,38.506,-90.34
+Target Kansas City Skyview Ave,Kansas City,MO,39.258,-94.655
+Target Hampton Village,Saint Louis,MO,38.592,-90.295
+Target St. Louis Midtown,Saint Louis,MO,38.627,-90.236
+Target Bozeman,Bozeman,MT,45.711,-111.071
+Target Great Falls,Great Falls,MT,47.493,-111.272
+Target Helena,Helena,MT,46.621,-112.019
+Target Billings West,Billings,MT,45.771,-108.582
+Target Kalispell,Kalispell,MT,48.236,-114.326
+Target Missoula,Missoula,MT,46.888,-114.037
+Target Bellevue,Bellevue,NE,41.142,-95.97
+Target Billings Heights,Billings,MT,45.806,-108.473
+Target Grand Island,Grand Island,NE,40.932,-98.381
+Target Norfolk,Norfolk,NE,42.02,-97.43
+Target Kearney,Kearney,NE,40.722,-99.086
+Target Scottsbluff,Scottsbluff,NE,41.867,-103.641
+Target Papillion,Papillion,NE,41.165,-96.045
+Target Lincoln,Lincoln,NE,40.816,-96.655
+Target Lincoln South,Lincoln,NE,40.76,-96.641
+Target Lincoln SW,Lincoln,NE,40.728,-96.666
+Target Omaha West,Omaha,NE,41.236,-96.194
+Target Omaha NW,Omaha,NE,41.295,-96.117
+Target Omaha North,Omaha,NE,41.319,-96.028
+Target Omaha Far NW,Omaha,NE,41.289,-96.18
+Target Omaha,Omaha,NE,41.261,-96.025
+Target N Las Vegas Deer SP,North Las Vegas,NV,36.289,-115.134
+Target Carson City,Carson City,NV,39.1,-119.778
+Target Omaha Far SW,Omaha,NE,41.214,-96.108
+Target Reno South,Reno,NV,39.463,-119.781
+Target Sparks South,Sparks,NV,39.535,-119.717
+Target Henderson Stephanie Street,Henderson,NV,36.065,-115.048
+Target Las Vegas East,Las Vegas,NV,36.158,-115.061
+Target Henderson Lake Mead Pkwy,Henderson,NV,36.036,-114.994
+Target Las Vegas Flamingo,Las Vegas,NV,36.117,-115.139
+Target Henderson Green Valley Ranch Pkwy,Henderson,NV,36.003,-115.085
+Target West Las Vegas,Las Vegas,NV,36.125,-115.242
+Target Las Vegas NW,Las Vegas,NV,36.219,-115.249
+Target Las Vegas Boca Park,Las Vegas,NV,36.162,-115.287
+Target Las Vegas Centennial Hills,Las Vegas,NV,36.28,-115.264
+Target Las Vegas Silverado Ranch,Las Vegas,NV,36.012,-115.122
+Target Las Vegas Blue Diamond,Las Vegas,NV,36.041,-115.195
+Target Las Vegas Summerlin South,Las Vegas,NV,36.114,-115.308
+Target Las Vegas N Decatur,Las Vegas,NV,36.271,-115.207
+Target Las Vegas Showcase,Las Vegas,NV,36.105,-115.172
+Target Bedford,Bedford,NH,42.941,-71.474
+Target Concord,Concord,NH,43.218,-71.485
+Target Hooksett,Hooksett,NH,43.045,-71.46
+Target Greenland,Greenland,NH,43.049,-70.819
+Target Keene,Keene,NH,42.928,-72.302
+Target Salem Broadway,Salem,NH,42.765,-71.215
+Target Somersworth,Somersworth,NH,43.235,-70.885
+Target Nashua,Nashua,NH,42.703,-71.437
+Target West Lebanon Main St,West Lebanon,NH,43.633,-72.318
+Target Brick,Brick,NJ,40.059,-74.15
+Target Nashua NW,Nashua,NH,42.798,-71.537
+Target Bridgewater,Bridgewater,NJ,40.562,-74.555
+Target Burlington,Burlington,NJ,40.035,-74.824
+Target Cherry Hill,Cherry Hill,NJ,39.935,-75.025
+Target Clark,Clark,NJ,40.628,-74.308
+Target Clifton,Clifton,NJ,40.824,-74.135
+Target Closter NJ,Closter,NJ,40.971,-73.957
+Target Delran,Delran,NJ,40.013,-74.959
+Target Deptford,Deptford,NJ,39.83,-75.091
+Target East Hanover,East Hanover,NJ,40.811,-74.383
+Target East Windsor,East Windsor,NJ,40.278,-74.541
+Target Edgewater,Edgewater,NJ,40.814,-73.982
+Target Eatontown Plaza,Eatontown,NJ,40.291,-74.049
+Target Menlo Park,Edison,NJ,40.55,-74.334
+Target Flemington,Flemington,NJ,40.506,-74.849
+Target Fairfield,Fairfield,NJ,40.89,-74.272
+Target Washington Twp,Hackettstown,NJ,40.847,-74.809
+Target Hackensack,Hackensack,NJ,40.899,-74.039
+Target Haddon Township,Haddon Township,NJ,39.901,-75.062
+Target Howell Township,Howell,NJ,40.132,-74.22
+Target Jersey City,Jersey City,NJ,40.731,-74.035
+Target Linden,Linden,NJ,40.621,-74.248
+Target Stafford Township,Manahawkin,NJ,39.71,-74.284
+Target Kearny,Kearny,NJ,40.76,-74.159
+Target Manalapan,Manalapan,NJ,40.242,-74.371
+Target Marlton,Marlton,NJ,39.867,-74.923
+Target Milltown,Milltown,NJ,40.441,-74.426
+Target Millville,Millville,NJ,39.421,-75.041
+Target Mays Landing,Mays Landing,NJ,39.452,-74.631
+Target Middletown,Middletown,NJ,40.412,-74.135
+Target Mount Laurel,Mount Laurel,NJ,39.969,-74.911
+Target South Brunswick,Monmouth Junction,NJ,40.381,-74.576
+Target North Bergen Commons,North Bergen,NJ,40.801,-74.022
+Target North Brunswick,North Brunswick,NJ,40.435,-74.504
+Target Ocean Township,Ocean,NJ,40.23,-74.044
+Target Parsippany,Parsippany,NJ,40.863,-74.389
+Target Old Bridge Route 9,Old Bridge,NJ,40.42,-74.309
+Target Paramus,Paramus,NJ,40.916,-74.061
+Target Greenwich Township,Phillipsburg,NJ,40.674,-75.134
+Target Princeton,Princeton,NJ,40.306,-74.677
+Target Riverdale Rt 23 and Falston,Riverdale,NJ,40.99,-74.326
+Target Rockaway,Rockaway,NJ,40.906,-74.559
+Target Mantua,Sewell,NJ,39.765,-75.132
+Target Gloucester Township,Sicklerville,NJ,39.743,-74.996
+Target Somers Point,Somers Point,NJ,39.328,-74.595
+Target South Plainfield,South Plainfield,NJ,40.549,-74.427
+Target Toms River,Toms River,NJ,39.99,-74.174
+Target Union,Union,NJ,40.687,-74.308
+Target Union North,Vauxhall,NJ,40.719,-74.279
+Target Turnersville,Turnersville,NJ,39.733,-75.04
+Target Voorhees,Voorhees,NJ,39.85,-74.984
+Target Wall Township,Wall Township,NJ,40.159,-74.059
+Target Watchung,Watchung,NJ,40.642,-74.422
+Target Las Cruces,Las Cruces,NM,32.318,-106.744
+Target Farmington,Farmington,NM,36.769,-108.148
+Target Rio Rancho,Rio Rancho,NM,35.252,-106.651
+Target Santa Fe,Santa Fe,NM,35.64,-106.013
+Target Roswell,Roswell,NM,33.428,-104.522
+Target Albuquerque Lomas,Albuquerque,NM,35.088,-106.516
+Target Albuquerque Wyoming,Albuquerque,NM,35.129,-106.547
+Target Coors,Albuquerque,NM,35.186,-106.665
+Target Paseo,Albuquerque,NM,35.172,-106.582
+Target Boulevard Mall,Amherst,NY,43.001,-78.822
+Target Albuquerque Uptown,Albuquerque,NM,35.101,-106.568
+Target Amsterdam,Amsterdam,NY,42.965,-74.19
+Target Queens Astoria 31st and Ditmars,Astoria,NY,40.775,-73.911
+Target Bay Shore,Bay Shore,NY,40.726,-73.277
+Target Batavia,Batavia,NY,43.016,-78.202
+Target Brooklyn Fulton St,Brooklyn,NY,40.691,-73.983
+Target Central Islip,Central Islip,NY,40.773,-73.202
+Target North Buffalo,Buffalo,NY,42.956,-78.874
+Target Cicero,Cicero,NY,43.162,-76.123
+Target Walden Galleria,Cheektowaga,NY,42.911,-78.772
+Target Clifton Park,Clifton Park,NY,42.857,-73.772
+Target College Point,College Point,NY,40.782,-73.838
+Target Colonie Northway,Colonie,NY,42.707,-73.822
+Target Commack,Commack,NY,40.839,-73.287
+Target Copiague,Copiague,NY,40.688,-73.406
+Target Losson Road,Depew,NY,42.879,-78.699
+Target Big Flats,Elmira,NY,42.153,-76.873
+Target Elmont,Elmont,NY,40.709,-73.704
+Target Penfield,Fairport,NY,43.128,-77.443
+Target Fayetteville,Fayetteville,NY,43.031,-76.02
+Target Farmingdale,Farmingdale,NY,40.752,-73.419
+Target Forest Hills,Forest Hills,NY,40.721,-73.848
+Target Flushing,Flushing,NY,40.758,-73.835
+Target Hicksville,Hicksville,NY,40.772,-73.533
+Target Freeport,Freeport,NY,40.656,-73.572
+Target Huntington,Huntington Station,NY,40.828,-73.408
+Target Lansing,Ithaca,NY,42.485,-76.491
+Target Queens Jamaica Avenue,Jamaica,NY,40.704,-73.799
+Target Jamestown,Jamestown,NY,42.094,-79.293
+Target Latham,Latham,NY,42.757,-73.771
+Target Kingston,Kingston,NY,41.967,-73.985
+Target Lawrence Five Towns,Lawrence,NY,40.626,-73.739
+Target Levittown,Levittown,NY,40.725,-73.493
+Target Clay,Liverpool,NY,43.188,-76.247
+Target LIC Court Square,Long Island City,NY,40.747,-73.944
+Target Middletown,Middletown,NY,41.453,-74.37
+Target Medford,Medford,NY,40.825,-72.989
+Target Mt Kisco,Mount Kisco,NY,41.216,-73.722
+Target Monroe,Monroe,NY,41.318,-74.155
+Target New Hartford,New Hartford,NY,43.084,-75.316
+Target Mt Vernon,Mount Vernon,NY,40.901,-73.818
+Target Lake Success,New Hyde Park,NY,40.753,-73.696
+Target Newburgh,Newburgh,NY,41.504,-74.063
+Target Niagara Falls,Niagara Falls,NY,43.09,-78.98
+Target Orchard Park,Orchard Park,NY,42.792,-78.784
+Target Port Chester,Port Chester,NY,40.992,-73.674
+Target Plattsburgh,Plattsburgh,NY,44.702,-73.491
+Target Port Washington North,Port Washington,NY,40.841,-73.704
+Target Queensbury,Queensbury,NY,43.328,-73.676
+Target Poughkeepsie,Poughkeepsie,NY,41.626,-73.92
+Target East Greenbush,Rensselaer,NY,42.645,-73.701
+Target Riverhead,Riverhead,NY,40.933,-72.681
+Target Sayville,Sayville,NY,40.766,-73.068
+Target Selden,Selden,NY,40.866,-73.051
+Target South Setauket,South Setauket,NY,40.886,-73.099
+Target Saratoga Springs,Saratoga Springs,NY,43.099,-73.744
+Target Spring Valley,Spring Valley,NY,41.105,-74.023
+Target Camillus,Syracuse,NY,43.047,-76.236
+Target Valley Stream,Valley Stream,NY,40.664,-73.72
+Target Binghamton Vestal,Vestal,NY,42.094,-76.001
+Target Watertown,Watertown,NY,43.97,-75.962
+Target Victor,Victor,NY,43.034,-77.448
+Target Clarkstown,West Nyack,NY,41.098,-73.959
+Target Webster,Webster,NY,43.211,-77.451
+Target Westbury,Westbury,NY,40.742,-73.601
+Target Eastern Hills,Williamsville,NY,42.964,-78.695
+Target White Plains,White Plains,NY,41.032,-73.765
+Target Yonkers Cross County,Yonkers,NY,40.929,-73.852
+Target Bronx Riverdale,Bronx,NY,40.873,-73.908
+Target Bronx Terminal,Bronx,NY,40.82,-73.93
+Target Bronx-Throggs Neck,Bronx,NY,40.823,-73.837
+Target Bronx Fordham Road,Bronx,NY,40.862,-73.896
+Target Atlantic Terminal,Brooklyn,NY,40.684,-73.976
+Target Gateway,Brooklyn,NY,40.653,-73.87
+Target Brooklyn Junction,Brooklyn,NY,40.632,-73.947
+Target Brooklyn Midwood,Brooklyn,NY,40.608,-73.96
+Target Brooklyn Bensonhurst,Brooklyn,NY,40.619,-73.989
+Target Brooklyn Kings Hwy,Brooklyn,NY,40.636,-73.927
+Target Brooklyn Bay Parkway,Brooklyn,NY,40.594,-74.001
+Target Brooklyn Flatbush and Church,Brooklyn,NY,40.65,-73.959
+Target Brooklyn Kings Plaza,Brooklyn,NY,40.61,-73.92
+Target Queens Place,Elmhurst,NY,40.735,-73.875
+Target Jackson Heights,Elmhurst,NY,40.747,-73.884
+Target Manhattan East Village,New York,NY,40.73,-73.98
+Target Tribeca,New York,NY,40.715,-74.011
+Target Manhattan Hells Kitchen,New York,NY,40.761,-73.995
+Target Manhattan Herald Square,New York,NY,40.75,-73.989
+Target Lower East Side Grand and Clinton,New York,NY,40.716,-73.987
+Target Kips Bay,New York,NY,40.742,-73.978
+Target Upper East Side 70th and 3rd,New York,NY,40.768,-73.962
+Target Manhattan Washington Heights,New York,NY,40.849,-73.934
+Target Upper West Side 61st and Broadway,New York,NY,40.77,-73.983
+Target Harlem 125th St,New York,NY,40.808,-73.947
+Target Times Square 42nd Street,New York,NY,40.757,-73.988
+Target Upper East Side 86th and Lex,New York,NY,40.779,-73.955
+Target Manhattan Union Square,New York,NY,40.735,-73.99
+Target Chelsea 23rd and 8th,New York,NY,40.745,-73.998
+Target Upper West Side 98th and Columbus,New York City,NY,40.794,-73.966
+Target Greece,Rochester,NY,43.203,-77.692
+Target Manhattan Soho,New York City,NY,40.725,-73.997
+Target Henrietta,Rochester,NY,43.078,-77.632
+Target Irondequoit,Rochester,NY,43.197,-77.574
+Target Niskayuna,Schenectady,NY,42.775,-73.89
+Target Staten Island,Staten Island,NY,40.528,-74.232
+Target Chili,Rochester,NY,43.105,-77.746
+Target Glenville,Schenectady,NY,42.867,-73.93
+Target Staten Island Cntl,Staten Island,NY,40.575,-74.168
+Target Staten Island Forest Ave,Staten Island,NY,40.624,-74.139
+Target Apex,Apex,NC,35.745,-78.878
+Target Asheville South,Arden,NC,35.449,-82.536
+Target Burlington,Burlington,NC,36.066,-79.52
+Target Asheville,Asheville,NC,35.573,-82.522
+Target Kannapolis,Concord,NC,35.417,-80.679
+Target UNC Franklin St,Chapel Hill,NC,35.912,-79.058
+Target Fayetteville,Fayetteville,NC,35.058,-78.972
+Target Gastonia,Gastonia,NC,35.262,-81.135
+Target Goldsboro,Goldsboro,NC,35.38,-77.939
+Target Greenville,Greenville,NC,35.579,-77.383
+Target Hickory,Hickory,NC,35.7,-81.308
+Target High Point,High Point,NC,35.994,-80.008
+Target Holly Springs,Holly Springs,NC,35.663,-78.849
+Target Huntersville,Huntersville,NC,35.443,-80.862
+Target Kernersville,Kernersville,NC,36.112,-80.089
+Target Outer Banks,Kill Devil Hills,NC,36.038,-75.673
+Target Jacksonville,Jacksonville,NC,34.788,-77.404
+Target Knightdale,Knightdale,NC,35.798,-78.509
+Target Charlotte SE,Matthews,NC,35.122,-80.706
+Target Monroe,Monroe,NC,35.02,-80.581
+Target Mooresville,Mooresville,NC,35.598,-80.871
+Target Morrisville,Morrisville,NC,35.807,-78.816
+Target New Bern,New Bern,NC,35.102,-77.096
+Target Rocky Mount,Rocky Mount,NC,35.972,-77.813
+Target Southern Pines,Southern Pines,NC,35.168,-79.419
+Target Wesley Chapel,Wesley Chapel,NC,34.999,-80.696
+Target Wake Forest,Wake Forest,NC,35.974,-78.542
+Target Wilmington,Wilmington,NC,34.249,-77.881
+Target Cary,Cary,NC,35.758,-78.738
+Target Cary West,Cary,NC,35.844,-78.885
+Target Pineville,Charlotte,NC,35.108,-80.879
+Target Wilson,Wilson,NC,35.742,-77.964
+Target NE Charlotte,Charlotte,NC,35.293,-80.746
+Target Charlotte Stonecrest,Charlotte,NC,35.058,-80.816
+Target Charlotte East,Charlotte,NC,35.209,-80.694
+Target Charlotte North,Charlotte,NC,35.35,-80.86
+Target Charlotte Blakeney,Charlotte,NC,35.037,-80.808
+Target Charlotte SW,Charlotte,NC,35.1,-80.985
+Target Durham,Durham,NC,35.967,-78.959
+Target Charlotte Midtown,Charlotte,NC,35.215,-80.835
+Target Durham Renaissance Pkwy,Durham,NC,35.903,-78.957
+Target Garner,Garner,NC,35.715,-78.639
+Target White Oak Garner,Garner,NC,35.687,-78.579
+Target Greensboro Wendover,Greensboro,NC,36.057,-79.907
+Target Greensboro Lawndale,Greensboro,NC,36.105,-79.822
+Target Greensboro New Garden,Greensboro,NC,36.113,-79.877
+Target Raleigh Hwy 70,Raleigh,NC,35.869,-78.719
+Target Raleigh Brier Creek,Raleigh,NC,35.903,-78.785
+Target Raleigh Capital Blvd,Raleigh,NC,35.866,-78.568
+Target Raleigh North Hills,Raleigh,NC,35.836,-78.642
+Target Raleigh Six Forks Rd,Raleigh,NC,35.898,-78.653
+Target Raleigh NC State Hillsborough St,Raleigh,NC,35.788,-78.669
+Target Winston-Salem Hanes Mall,Winston Salem,NC,36.069,-80.321
+Target Winston-Salem University Parkway,Winston Salem,NC,36.168,-80.279
+Target Bismarck,Bismarck,ND,46.799,-100.784
+Target Fargo,Fargo,ND,46.86,-96.852
+Target Grand Forks,Grand Forks,ND,47.887,-97.08
+Target Minot,Minot,ND,48.206,-101.31
+Target Green,Akron,OH,40.983,-81.495
+Target Amherst,Amherst,OH,41.409,-82.237
+Target Bainbridge,Aurora,OH,41.357,-81.386
+Target Avon OH,Avon,OH,41.462,-82.01
+Target Beavercreek,Beavercreek,OH,39.765,-84.05
+Target Blue Ash,Blue Ash,OH,39.224,-84.395
+Target Boardman,Boardman,OH,41.024,-80.647
+Target Cuyahoga Falls,Cuyahoga Falls,OH,41.121,-81.477
+Target Columbus NW,Dublin,OH,40.09,-83.09
+Target Elyria,Elyria,OH,41.389,-82.109
+Target Fairlawn,Fairlawn,OH,41.128,-81.605
+Target Fairview Park,Fairview Park,OH,41.458,-81.851
+Target Grove City,Grove City,OH,39.877,-83.037
+Target Fairfield Township,Hamilton,OH,39.388,-84.505
+Target Holland Mall Drive,Holland,OH,41.616,-83.695
+Target Huber Heights,Huber Heights,OH,39.871,-84.133
+Target Heath,Heath,OH,40.023,-82.454
+Target Mansfield,Mansfield,OH,40.786,-82.594
+Target Lancaster,Lancaster,OH,39.731,-82.621
+Target Medina,Medina,OH,41.155,-81.865
+Target Massillon,Massillon,OH,40.801,-81.497
+Target Mayfield Heights,Mayfield Heights,OH,41.525,-81.435
+Target Milford,Milford,OH,39.163,-84.274
+Target Mentor,Mentor,OH,41.686,-81.293
+Target Niles,Niles,OH,41.213,-80.755
+Target North Olmsted,North Olmsted,OH,41.42,-81.896
+Target Macedonia,Northfield,OH,41.312,-81.526
+Target Canton,North Canton,OH,40.862,-81.431
+Target Parma,Parma,OH,41.378,-81.736
+Target Powell,Powell,OH,40.143,-83.095
+Target Sandusky,Sandusky,OH,41.421,-82.673
+Target Rossford,Rossford,OH,41.546,-83.591
+Target South Lebanon,South Lebanon,OH,39.379,-84.22
+Target Springdale,Springdale,OH,39.288,-84.454
+Target Stow,Stow,OH,41.156,-81.411
+Target Streetsboro,Streetsboro,OH,41.237,-81.353
+Target Strongsville,Strongsville,OH,41.314,-81.83
+Target University Heights,University Heights,OH,41.501,-81.527
+Target Wadsworth,Wadsworth,OH,41.04,-81.69
+Target West Chester Township,West Chester,OH,39.356,-84.361
+Target Willoughby,Willoughby,OH,41.629,-81.429
+Target Whitehall,Whitehall,OH,39.971,-82.896
+Target Columbus New Albany,Westerville,OH,40.081,-82.848
+Target Woodmere Village Square,Woodmere,OH,41.463,-81.486
+Target Beechmont Area,Cincinnati,OH,39.074,-84.313
+Target Fields Ertel,Cincinnati,OH,39.294,-84.303
+Target Colerain,Cincinnati,OH,39.236,-84.589
+Target Cincinnati Central,Cincinnati,OH,39.162,-84.426
+Target Western Hills,Cincinnati,OH,39.145,-84.62
+Target Cleveland West,Cleveland,OH,41.468,-81.771
+Target UC Calhoun St,Cincinnati,OH,39.128,-84.516
+Target Columbus Central,Columbus,OH,39.994,-83.027
+Target Cleveland South,Cleveland,OH,41.458,-81.689
+Target Columbus NE,Columbus,OH,40.057,-82.921
+Target Columbus Ohio State U,Columbus,OH,40.001,-83.008
+Target Graceland,Columbus,OH,40.065,-83.021
+Target Polaris,Columbus,OH,40.146,-82.98
+Target Dayton South,Dayton,OH,39.633,-84.213
+Target Sugarcreek Township,Dayton,OH,39.658,-84.105
+Target Hilliard,Hilliard,OH,40.038,-83.124
+Target Columbus Far SW,Hilliard,OH,39.991,-83.149
+Target Reynoldsburg,Reynoldsburg,OH,39.934,-82.793
+Target Columbus East Broad Street,Reynoldsburg,OH,39.988,-82.785
+Target Toledo Alexis Road,Toledo,OH,41.721,-83.56
+Target Toledo Monroe Street,Toledo,OH,41.7,-83.653
+Target Broken Arrow,Broken Arrow,OK,36.067,-95.774
+Target Lawton,Lawton,OK,34.629,-98.495
+Target Edmond,Edmond,OK,35.65,-97.464
+Target Midwest City,Midwest City,OK,35.437,-97.396
+Target Moore,Moore,OK,35.318,-97.5
+Target Norman,Norman,OK,35.236,-97.483
+Target Owasso,Owasso,OK,36.29,-95.844
+Target Yukon,Yukon,OK,35.481,-97.763
+Target Oklahoma City North,Oklahoma City,OK,35.524,-97.564
+Target Quail Springs,Oklahoma City,OK,35.612,-97.547
+Target Oklahoma City NW,Oklahoma City,OK,35.556,-97.64
+Target Tulsa,Tulsa,OK,36.138,-95.92
+Target Tulsa SE,Tulsa,OK,36.062,-95.857
+Target Tulsa Hills,Tulsa,OK,36.055,-96.001
+Target Tulsa South,Tulsa,OK,36.019,-95.884
+Target Beaverton,Beaverton,OR,45.488,-122.788
+Target Bend,Bend,OR,44.104,-121.299
+Target Albany,Albany,OR,44.63,-123.078
+Target Clackamas,Clackamas,OR,45.432,-122.571
+Target Eugene,Eugene,OR,44.049,-123.171
+Target Fairview,Fairview,OR,45.532,-122.442
+Target Medford,Medford,OR,42.348,-122.877
+Target Keizer,Keizer,OR,45.012,-122.995
+Target Salem,Salem,OR,44.939,-122.987
+Target Sherwood,Sherwood,OR,45.366,-122.838
+Target Springfield,Springfield,OR,44.072,-123.045
+Target Washington Square,Tigard,OR,45.454,-122.779
+Target Wilsonville,Wilsonville,OR,45.333,-122.767
+Target Hillsboro,Hillsboro,OR,45.508,-122.957
+Target Tanasbourne,Hillsboro,OR,45.539,-122.865
+Target Portland Cascade Station,Portland,OR,45.577,-122.565
+Target Portland East Washington Street,Portland,OR,45.516,-122.562
+Target Portland Hayden Island Dr,Portland,OR,45.614,-122.683
+Target Cedar Mill,Portland,OR,45.526,-122.808
+Target Abington Township,Abington,PA,40.125,-75.116
+Target Lower Macungie Twp,Allentown,PA,40.566,-75.561
+Target Altoona,Altoona,PA,40.459,-78.409
+Target Neshaminy,Bensalem,PA,40.138,-74.958
+Target Butler,Butler,PA,40.876,-79.942
+Target Carlisle,Carlisle,PA,40.196,-77.157
+Target Chambersburg,Chambersburg,PA,39.943,-77.632
+Target Cranberry,Cranberry Twp,PA,40.688,-80.085
+Target Dickson City,Dickson City,PA,41.468,-75.639
+Target Doylestown,Doylestown,PA,40.319,-75.131
+Target Lower Nazareth,Easton,PA,40.712,-75.288
+Target Erie,Erie,PA,42.055,-80.095
+Target Richland Twp North,Gibsonia,PA,40.642,-79.942
+Target Concord Township,Glen Mills,PA,39.881,-75.527
+Target Greensburg,Greensburg,PA,40.305,-79.589
+Target Hanover,Hanover,PA,39.827,-76.998
+Target Waterfront,Homestead,PA,40.411,-79.91
+Target King of Prussia,King of Prussia,PA,40.09,-75.384
+Target Lebanon Quentin Road,Lebanon,PA,40.313,-76.427
+Target Warwick Township,Lititz,PA,40.133,-76.308
+Target Oxford Valley,Langhorne,PA,40.176,-74.878
+Target Malvern,Malvern,PA,40.049,-75.52
+Target Monroeville,Monroeville,PA,40.434,-79.772
+Target Center Township,Monaca,PA,40.681,-80.312
+Target Mechanicsburg,Mechanicsburg,PA,40.247,-77.009
+Target Williamsport,Muncy,PA,41.244,-76.835
+Target Phoenixville,Phoenixville,PA,40.123,-75.475
+Target Montgomeryville,North Wales,PA,40.224,-75.24
+Target Plymouth Meeting,Plymouth Meeting,PA,40.102,-75.292
+Target North Huntingdon,North Huntingdon,PA,40.32,-79.691
+Target East Liberty,Pittsburgh,PA,40.461,-79.921
+Target Richland Twp,Quakertown,PA,40.46,-75.369
+Target West Pottsgrove Twp,Pottstown,PA,40.268,-75.655
+Target Royersford,Royersford,PA,40.211,-75.498
+Target Exeter Township,Reading,PA,40.308,-75.859
+Target Selinsgrove,Selinsgrove,PA,40.842,-76.839
+Target Stroudsburg,Stroudsburg,PA,40.996,-75.239
+Target Muhlenberg Township,Temple,PA,40.398,-75.93
+Target South Union Twp,Uniontown,PA,39.907,-79.758
+Target Devon,Wayne,PA,40.046,-75.409
+Target Washington,Washington,PA,40.187,-80.222
+Target Warrington,Warrington,PA,40.224,-75.137
+Target West Goshen,West Chester,PA,39.972,-75.586
+Target West Mifflin,West Mifflin,PA,40.349,-79.954
+Target Cheltenham,Wyncote,PA,40.076,-75.155
+Target Wilkes-Barre,Wilkes-barre Township,PA,41.238,-75.845
+Target Wynnewood,Wynnewood,PA,40.004,-75.284
+Target Spring Township,Wyomissing,PA,40.361,-75.985
+Target Allentown,Allentown,PA,40.613,-75.535
+Target Exton,Exton,PA,40.039,-75.629
+Target Hanover Township,Allentown,PA,40.639,-75.439
+Target Uwchlan Township,Exton,PA,40.053,-75.664
+Target Harrisburg North,Harrisburg,PA,40.312,-76.799
+Target Harrisburg East,Harrisburg,PA,40.246,-76.806
+Target Lancaster East,Lancaster,PA,40.026,-76.204
+Target Lancaster Central,Lancaster,PA,40.068,-76.311
+Target Philadelphia Roosevelt Blvd,Philadelphia,PA,40.103,-75.01
+Target Philadelphia Snyder Ave,Philadelphia,PA,39.924,-75.146
+Target Philadelphia Bridesburg,Philadelphia,PA,39.991,-75.089
+Target Philadelphia City Ave,Philadelphia,PA,40.007,-75.213
+Target Philadelphia Cottman,Philadelphia,PA,40.05,-75.058
+Target Philadelphia Rittenhouse Square,Philadelphia,PA,39.952,-75.172
+Target Philadelphia Roxborough,Philadelphia,PA,40.044,-75.232
+Target Philadelphia Art Museum,Philadelphia,PA,39.962,-75.173
+Target Philadelphia Broad And Washington,Philadelphia,PA,39.939,-75.167
+Target Philadelphia Northern Liberties,Philadelphia,PA,39.96,-75.148
+Target North Fayette,Pittsburgh,PA,40.446,-80.183
+Target McCandless,Pittsburgh,PA,40.585,-80.041
+Target Mount Nebo,Pittsburgh,PA,40.536,-80.069
+Target Ross Township,Pittsburgh,PA,40.526,-80.006
+Target Harmar,Pittsburgh,PA,40.538,-79.837
+Target Upper St. Clair,Pittsburgh,PA,40.344,-80.057
+Target Pittsburgh Downtown,Pittsburgh,PA,40.44,-79.999
+Target Springfield,Springfield,PA,39.915,-75.335
+Target Springfield West,Springfield,PA,39.914,-75.351
+Target State College,State College,PA,40.813,-77.906
+Target State College University Campus,State College,PA,40.792,-77.862
+Target York Galleria,York,PA,39.987,-76.68
+Target York West,York,PA,39.965,-76.778
+Target Smithfield,Smithfield,RI,41.874,-71.52
+Target Warwick Route 2,Warwick,RI,41.706,-71.494
+Target Aiken,Aiken,SC,33.507,-81.711
+Target Lincoln,Lincoln,RI,41.936,-71.476
+Target Warwick North,Warwick,RI,41.725,-71.478
+Target Hilton Head,Bluffton,SC,32.255,-80.85
+Target Boiling Springs,Boiling Springs,SC,35.045,-81.984
+Target Anderson,Anderson,SC,34.549,-82.68
+Target Florence,Florence,SC,34.194,-79.837
+Target Greenville,Greenville,SC,34.831,-82.308
+Target Indian Land,Indian Land,SC,34.962,-80.853
+Target Lexington,Lexington,SC,34.006,-81.194
+Target North Charleston,North Charleston,SC,32.932,-80.037
+Target Mt Pleasant,Mount Pleasant,SC,32.824,-79.818
+Target Rock Hill,Rock Hill,SC,34.939,-80.978
+Target Spartanburg,Spartanburg,SC,34.934,-82.009
+Target Greer,Taylors,SC,34.938,-82.279
+Target Simpsonville,Simpsonville,SC,34.706,-82.26
+Target Summerville,Summerville,SC,33.04,-80.158
+Target Charleston South,Charleston,SC,32.796,-80.033
+Target Charleston King Street,Charleston,SC,32.78,-79.934
+Target Columbia Harbison Blvd,Columbia,SC,34.066,-81.165
+Target Columbia Two Notch Rd,Columbia,SC,34.118,-80.877
+Target Columbia Garners Ferry,Columbia,SC,33.981,-80.969
+Target Myrtle Beach 17 and 21st Ave,Myrtle Beach,SC,33.714,-78.896
+Target Myrtle Beach 17 and 544,Myrtle Beach,SC,33.652,-78.984
+Target Aberdeen,Aberdeen,SD,45.458,-98.441
+Target Rapid City,Rapid City,SD,44.099,-103.189
+Target Watertown,Watertown,SD,44.888,-97.084
+Target Sioux Falls,Sioux Falls,SD,43.516,-96.771
+Target Sioux Falls East,Sioux Falls,SD,43.539,-96.655
+Target Brentwood,Brentwood,TN,36.043,-86.779
+Target Chattanooga East,Chattanooga,TN,35.025,-85.156
+Target Clarksville,Clarksville,TN,36.588,-87.288
+Target Cleveland,Cleveland,TN,35.218,-84.866
+Target Collierville,Collierville,TN,35.05,-89.691
+Target Germantown,Germantown,TN,35.065,-89.756
+Target Hendersonville,Hendersonville,TN,36.335,-86.627
+Target Chattanooga North,Hixson,TN,35.146,-85.252
+Target Jackson,Jackson,TN,35.687,-88.858
+Target Johnson City,Johnson City,TN,36.343,-82.375
+Target Rivergate,Madison,TN,36.304,-86.695
+Target Kingsport,Kingsport,TN,36.553,-82.492
+Target Maryville,Maryville,TN,35.752,-83.991
+Target Mt Juliet,Mount Juliet,TN,36.165,-86.514
+Target Murfreesboro,Murfreesboro,TN,35.846,-86.426
+Target Sevierville,Sevierville,TN,35.888,-83.576
+Target Smyrna,Smyrna,TN,35.98,-86.572
+Target Spring Hill,Spring Hill,TN,35.742,-86.937
+Target Cool Springs,Franklin,TN,35.966,-86.812
+Target Franklin,Franklin,TN,35.893,-86.881
+Target Knoxville West,Knoxville,TN,35.922,-84.048
+Target Knoxville NW,Knoxville,TN,36.008,-84.022
+Target Knoxville North,Knoxville,TN,36.037,-83.889
+Target Farragut,Knoxville,TN,35.9,-84.152
+Target Knoxville South,Knoxville,TN,35.863,-84.079
+Target Memphis Central,Memphis,TN,35.114,-89.903
+Target Nashville East,Nashville,TN,36.182,-86.637
+Target Memphis NE,Memphis,TN,35.203,-89.797
+Target Memphis East,Memphis,TN,35.101,-89.864
+Target White Bridge,Nashville,TN,36.131,-86.854
+Target Nashville West,Nashville,TN,36.135,-86.892
+Target Abilene,Abilene,TX,32.406,-99.768
+Target Addison,Addison,TX,32.951,-96.854
+Target Amarillo,Amarillo,TX,35.186,-101.934
+Target Arlington South,Arlington,TX,32.684,-97.136
+Target Balcones Heights Crossroads,Balcones Heights,TX,29.492,-98.551
+Target Baytown,Baytown,TX,29.772,-94.976
+Target Beaumont,Beaumont,TX,30.126,-94.153
+Target Bee Cave,Bee Cave,TX,30.318,-97.951
+Target Bryan,Bryan,TX,30.665,-96.322
+Target Brownsville North,Brownsville,TX,25.968,-97.51
+Target Burleson,Burleson,TX,32.524,-97.349
+Target Clear Lake Shores,Clear Lake Shores,TX,29.539,-95.022
+Target Cedar Hill,Cedar Hill,TX,32.603,-96.937
+Target College Station,College Station,TX,30.61,-96.315
+Target Cedar Park,Cedar Park,TX,30.529,-97.814
+Target Conroe,Conroe,TX,30.314,-95.474
+Target Corpus Christi,Corpus Christi,TX,27.71,-97.376
+Target Cypress,Cypress,TX,29.969,-95.696
+Target League City,Dickinson,TX,29.459,-95.084
+Target Euless,Euless,TX,32.881,-97.104
+Target Flower Mound,Flower Mound,TX,33.068,-97.084
+Target Galveston,Galveston,TX,29.291,-94.84
+Target Georgetown,Georgetown,TX,30.631,-97.699
+Target Garland East,Garland,TX,32.966,-96.646
+Target Grapevine,Grapevine,TX,32.931,-97.09
+Target Harker Heights,Harker Heights,TX,31.072,-97.669
+Target Harlingen,Harlingen,TX,26.183,-97.722
+Target Kyle,Kyle,TX,30.011,-97.864
+Target Hurst,Hurst,TX,32.837,-97.184
+Target Huntsville,Huntsville,TX,30.707,-95.566
+Target Lake Worth,Lake Worth,TX,32.814,-97.43
+Target Lake Jackson,Lake Jackson,TX,29.05,-95.465
+Target Longview,Longview,TX,32.547,-94.725
+Target Lufkin,Lufkin,TX,31.313,-94.72
+Target Westwood Village,Magnolia,TX,30.218,-95.568
+Target Mansfield,Mansfield,TX,32.59,-97.144
+Target McAllen North,Mcallen,TX,26.268,-98.216
+Target McKinney,Mckinney,TX,33.22,-96.638
+Target McKinney SW,Mckinney,TX,33.13,-96.731
+Target Mesquite,Mesquite,TX,32.814,-96.621
+Target Midland,Midland,TX,32.024,-102.145
+Target Mission,Mission,TX,26.198,-98.283
+Target New Braunfels,New Braunfels,TX,29.731,-98.074
+Target Missouri City,Missouri City,TX,29.568,-95.57
+Target New Caney,New Caney,TX,30.133,-95.233
+Target North Richland Hills,North Richland Hills,TX,32.907,-97.192
+Target Odessa,Odessa,TX,31.892,-102.347
+Target Pasadena,Pasadena,TX,29.65,-95.152
+Target Pearland,Pearland,TX,29.553,-95.383
+Target Pflugerville,Pflugerville,TX,30.467,-97.598
+Target Port Arthur,Port Arthur,TX,29.948,-93.989
+Target Portland Northshore,Portland,TX,27.898,-97.305
+Target Prosper,Prosper,TX,33.224,-96.803
+Target Richardson Sq Mall,Richardson,TX,32.94,-96.697
+Target Richmond Grand Pkwy SW,Richmond,TX,29.658,-95.71
+Target Rosenberg,Rosenberg,TX,29.548,-95.751
+Target Rockwall,Rockwall,TX,32.894,-96.468
+Target Round Rock,Round Rock,TX,30.479,-97.669
+Target San Angelo,San Angelo,TX,31.432,-100.501
+Target Rowlett,Rowlett,TX,32.908,-96.558
+Target San Antonio NE,Selma,TX,29.569,-98.327
+Target Sherman,Sherman,TX,33.68,-96.612
+Target Stafford Kirkwood Rd,Stafford,TX,29.637,-95.579
+Target Sugar Land,Sugar Land,TX,29.596,-95.627
+Target Temple,Temple,TX,31.092,-97.386
+Target Texarkana,Texarkana,TX,33.458,-94.092
+Target Woodlands,The Woodlands,TX,30.17,-95.453
+Target Houston Tomball North,Tomball,TX,30.092,-95.64
+Target Tyler,Tyler,TX,32.273,-95.31
+Target Victoria,Victoria,TX,28.866,-96.999
+Target Waco,Waco,TX,31.533,-97.193
+Target Waxahachie,Waxahachie,TX,32.418,-96.841
+Target Watauga,Watauga,TX,32.889,-97.257
+Target Weatherford,Weatherford,TX,32.727,-97.784
+Target Baybrook,Webster,TX,29.536,-95.151
+Target Wylie,Wylie,TX,33.009,-96.594
+Target Wichita Falls,Wichita Falls,TX,33.865,-98.534
+Target Allen North,Allen,TX,33.124,-96.661
+Target Allen,Allen,TX,33.099,-96.682
+Target Austin North,Austin,TX,30.363,-97.716
+Target Austin SW,Austin,TX,30.234,-97.829
+Target Austin South Lamar,Austin,TX,30.233,-97.792
+Target Austin East,Austin,TX,30.316,-97.706
+Target Austin Lakeline Mall Dr,Austin,TX,30.476,-97.797
+Target Austin Southpark,Austin,TX,30.166,-97.793
+Target Four Points,Austin,TX,30.403,-97.85
+Target Austin UT Campus,Austin,TX,30.284,-97.742
+Target Austin Arboretum,Austin,TX,30.393,-97.744
+Target Austin Saltillo,Austin,TX,30.264,-97.734
+Target North Dallas,Dallas,TX,32.928,-96.814
+Target Medallion,Dallas,TX,32.857,-96.75
+Target Cityplace Market,Dallas,TX,32.804,-96.791
+Target Love Field,Dallas,TX,32.862,-96.854
+Target North Dallas Coit Road,Dallas,TX,32.983,-96.77
+Target Dallas South,Dallas,TX,32.65,-96.863
+Target Northeast Dallas Skillman,Dallas,TX,32.866,-96.746
+Target Dallas Preston Center,Dallas,TX,32.865,-96.807
+Target El Paso West,El Paso,TX,31.82,-106.545
+Target Denton North,Denton,TX,33.227,-97.168
+Target Denton,Denton,TX,33.19,-97.099
+Target El Paso East George Dieter Dr,El Paso,TX,31.77,-106.305
+Target El Paso Central,El Paso,TX,31.782,-106.414
+Target El Paso Joe Battle Blvd,El Paso,TX,31.759,-106.265
+Target Eastchase,Fort Worth,TX,32.758,-97.17
+Target Fort Worth Central,Fort Worth,TX,32.755,-97.354
+Target Cityview,Fort Worth,TX,32.679,-97.413
+Target Ridgmar,Fort Worth,TX,32.749,-97.432
+Target Fort Worth,Fort Worth,TX,32.902,-97.324
+Target Grand Prairie,Grand Prairie,TX,32.678,-97.01
+Target Frisco North,Frisco,TX,33.173,-96.845
+Target Frisco,Frisco,TX,33.105,-96.812
+Target Grand Prairie S,Grand Prairie,TX,32.643,-97.061
+Target Houston Westchase,Houston,TX,29.735,-95.568
+Target Houston NW,Houston,TX,29.849,-95.502
+Target Katy,Houston,TX,29.782,-95.717
+Target Galleria,Houston,TX,29.745,-95.453
+Target Tomball Parkway,Houston,TX,30.0,-95.584
+Target Houston Memorial,Houston,TX,29.783,-95.542
+Target Houston South Main,Houston,TX,29.692,-95.419
+Target Copperfield,Houston,TX,29.878,-95.645
+Target Houston Meyerland,Houston,TX,29.687,-95.462
+Target Willowbrook,Houston,TX,29.968,-95.531
+Target Houston Central,Houston,TX,29.774,-95.385
+Target Steeplechase,Houston,TX,29.919,-95.605
+Target Westheimer,Houston,TX,29.735,-95.518
+Target Houston Eldridge Pkwy,Houston,TX,29.733,-95.627
+Target Houston South,Houston,TX,29.602,-95.264
+Target Humble,Humble,TX,30.019,-95.268
+Target Houston Montrose,Houston,TX,29.741,-95.41
+Target Atascocita,Humble,TX,30.0,-95.173
+Target Irving,Irving,TX,32.839,-96.991
+Target Irving North,Irving,TX,32.914,-96.962
+Target Laredo,Laredo,TX,27.57,-99.5
+Target Katy Cinco Ranch,Katy,TX,29.736,-95.776
+Target Katy Elyson,Katy,TX,29.874,-95.874
+Target Laredo East,Laredo,TX,27.516,-99.452
+Target Vista Ridge,Lewisville,TX,33.011,-96.968
+Target Lewisville State Highway 121,Lewisville,TX,33.064,-96.885
+Target Lubbock University Ave,Lubbock,TX,33.528,-101.872
+Target Lubbock Marsha Sharp,Lubbock,TX,33.549,-101.948
+Target McAllen,Mcallen,TX,26.186,-98.213
+Target McAllen Northwest,Mcallen,TX,26.245,-98.254
+Target Plano,Plano,TX,33.037,-96.708
+Target Plano West,Plano,TX,33.031,-96.827
+Target Bitters,San Antonio,TX,29.565,-98.48
+Target SW Military Drive,San Antonio,TX,29.356,-98.543
+Target San Antonio North,San Antonio,TX,29.612,-98.511
+Target San Antonio West,San Antonio,TX,29.548,-98.663
+Target San Antonio SE,San Antonio,TX,29.354,-98.436
+Target San Antonio Westover,San Antonio,TX,29.439,-98.65
+Target La Cantera,San Antonio,TX,29.606,-98.597
+Target Stone Oak,San Antonio,TX,29.653,-98.445
+Target San Antonio Culebra,San Antonio,TX,29.488,-98.709
+Target Park North,San Antonio,TX,29.519,-98.505
+Target Alamo Heights,San Antonio,TX,29.489,-98.447
+Target San Marcos,San Marcos,TX,29.846,-97.971
+Target Houston North Central,Spring,TX,30.05,-95.435
+Target San Marcos Downtown,San Marcos,TX,29.886,-97.941
+Target Spring Grand Parkway North,Spring,TX,30.087,-95.52
+Target American Fork,American Fork,UT,40.379,-111.815
+Target Centerville,Centerville,UT,40.918,-111.887
+Target Layton,Layton,UT,41.088,-111.981
+Target Orem State Street,Orem,UT,40.297,-111.7
+Target Riverdale,Riverdale,UT,41.176,-112.008
+Target St George,Saint George,UT,37.103,-113.554
+Target Sandy South Towne,Sandy,UT,40.567,-111.892
+Target South Jordan,South Jordan,UT,40.542,-111.978
+Target Spanish Fork,Spanish Fork,UT,40.122,-111.639
+Target Taylorsville,Taylorsville,UT,40.646,-111.94
+Target West Jordan SW,West Jordan,UT,40.61,-111.984
+Target West Valley City,West Valley City,UT,40.714,-112.023
+Target Provo Towne Centre,Provo,UT,40.218,-111.663
+Target Provo State St and Bulldog Blvd UT,Provo,UT,40.252,-111.666
+Target Fort Union,Salt Lake City,UT,40.623,-111.85
+Target Salt Lake City,Salt Lake City,UT,40.746,-111.9
+Target Salt Lake City Sugar House,Salt Lake City,UT,40.722,-111.856
+Target South Burlington,South Burlington,VT,44.466,-73.183
+Target Bridgeport,Bridgeport,WV,39.311,-80.274
+Target Barboursville,Barboursville,WV,38.42,-82.285
+Target Bristol,Bristol,VA,36.636,-82.11
+Target Chantilly,Chantilly,VA,38.895,-77.445
+Target Chester,Chester,VA,37.351,-77.41
+Target Charlottesville,Charlottesville,VA,38.129,-78.441
+Target Christiansburg,Christiansburg,VA,37.157,-80.423
+Target Colonial Heights,Colonial Heights,VA,37.249,-77.386
+Target Culpeper,Culpeper,VA,38.483,-77.967
+Target Dumfries,Dumfries,VA,38.598,-77.333
+Target Front Royal,Front Royal,VA,38.964,-78.193
+Target Danville,Danville,VA,36.602,-79.419
+Target Gainesville,Gainesville,VA,38.794,-77.607
+Target Hampton,Hampton,VA,37.042,-76.392
+Target Harrisonburg,Harrisonburg,VA,38.426,-78.844
+Target Henrico Staples Mill Rd,Henrico,VA,37.639,-77.511
+Target Teays Valley,Hurricane,WV,38.456,-81.931
+Target Leesburg,Leesburg,VA,39.115,-77.535
+Target Lynchburg,Lynchburg,VA,37.346,-79.191
+Target Manassas West,Manassas,VA,38.739,-77.532
+Target Martinsburg,Martinsburg,WV,39.438,-77.993
+Target Mechanicsville,Mechanicsville,VA,37.6,-77.349
+Target Newport News,Newport News,VA,37.108,-76.495
+Target Morgantown,Morgantown,WV,39.649,-80.0
+Target Norfolk,Norfolk,VA,36.865,-76.213
+Target Reston,Reston,VA,38.955,-77.37
+Target Roanoke,Roanoke,VA,37.3,-79.958
+Target Rosslyn,Rosslyn,VA,38.895,-77.074
+Target Charleston,South Charleston,WV,38.34,-81.713
+Target Springfield,Springfield,VA,38.776,-77.174
+Target Stafford,Stafford,VA,38.469,-77.408
+Target Wheeling,Triadelphia,WV,40.056,-80.599
+Target Waynesboro,Waynesboro,VA,38.057,-78.944
+Target Alexandria,Alexandria,VA,38.833,-77.05
+Target Alexandria Hybla Valley,Alexandria,VA,38.775,-77.083
+Target Pentagon City Army Navy Dr,Arlington,VA,38.866,-77.063
+Target Potomac Mills,Woodbridge,VA,38.655,-77.289
+Target Ballston,Arlington,VA,38.88,-77.114
+Target Greenbrier,Chesapeake,VA,36.771,-76.232
+Target Chesapeake Sq Mall,Chesapeake,VA,36.828,-76.414
+Target Fair Lakes,Fairfax,VA,38.855,-77.393
+Target Hillcrest,Chesapeake,VA,36.659,-76.234
+Target Fairfax,Fairfax,VA,38.798,-77.301
+Target Merrifield,Fairfax,VA,38.873,-77.229
+Target Skyline,Falls Church,VA,38.845,-77.119
+Target Falls Church,Falls Church,VA,38.868,-77.142
+Target Massaponax,Fredericksburg,VA,38.222,-77.506
+Target Fredericksburg,Fredericksburg,VA,38.3,-77.513
+Target Stafford South,Fredericksburg,VA,38.345,-77.494
+Target Virginia Center Commons,Glen Allen,VA,37.673,-77.463
+Target Glen Allen Broad St,Glen Allen,VA,37.652,-77.606
+Target Richmond Brandermill,Midlothian,VA,37.421,-77.634
+Target Midlothian Perimeter Dr,Midlothian,VA,37.512,-77.693
+Target Richmond Central,Richmond,VA,37.588,-77.5
+Target Richmond Midlothian Tpke,Richmond,VA,37.505,-77.607
+Target Forest Hill,Richmond,VA,37.535,-77.527
+Target Richmond East,Richmond,VA,37.527,-77.356
+Target Sterling,Sterling,VA,39.026,-77.401
+Target South Riding,Sterling,VA,38.952,-77.534
+Target Dulles,Sterling,VA,39.009,-77.439
+Target Princess Anne,Virginia Beach,VA,36.788,-76.109
+Target Hilltop,Virginia Beach,VA,36.847,-76.022
+Target Pembroke,Virginia Beach,VA,36.845,-76.134
+Target Red Mill,Virginia Beach,VA,36.755,-76.01
+Target Williamsburg,Williamsburg,VA,37.271,-76.761
+Target Williamsburg East,Williamsburg,VA,37.259,-76.641
+Target Winchester,Winchester,VA,39.154,-78.167
+Target Bonney Lake,Bonney Lake,WA,47.172,-122.172
+Target Bellingham,Bellingham,WA,48.787,-122.494
+Target Winchester North,Winchester,VA,39.222,-78.136
+Target Burlington,Burlington,WA,48.465,-122.339
+Target Everett,Everett,WA,47.91,-122.227
+Target Federal Way,Federal Way,WA,47.313,-122.306
+Target Gig Harbor,Gig Harbor,WA,47.361,-122.608
+Target Issaquah,Issaquah,WA,47.544,-122.05
+Target Kelso,Kelso,WA,46.143,-122.899
+Target Kennewick,Kennewick,WA,46.222,-119.222
+Target Kent,Kent,WA,47.366,-122.203
+Target Lake Stevens,Lake Stevens,WA,47.999,-122.102
+Target Lacey,Lacey,WA,47.043,-122.836
+Target Lakewood,Lakewood,WA,47.165,-122.51
+Target Lynnwood,Lynnwood,WA,47.833,-122.267
+Target Marysville,Marysville,WA,48.149,-122.192
+Target Redmond,Redmond,WA,47.672,-122.103
+Target Olympia,Olympia,WA,47.045,-122.935
+Target Richland,Richland,WA,46.259,-119.313
+Target Renton,Renton,WA,47.496,-122.2
+Target Silverdale,Silverdale,WA,47.658,-122.695
+Target South Center,Tukwila,WA,47.455,-122.259
+Target North Tacoma,Tacoma,WA,47.238,-122.48
+Target Wenatchee,Wenatchee,WA,47.438,-120.328
+Target Woodinville,Woodinville,WA,47.758,-122.155
+Target Yakima,Yakima,WA,46.606,-120.49
+Target Factoria,Bellevue,WA,47.574,-122.174
+Target Puyallup,Puyallup,WA,47.159,-122.295
+Target Bellevue 4th St and 116th Ave,Bellevue,WA,47.612,-122.184
+Target Puyallup South,Puyallup,WA,47.113,-122.292
+Target West Seattle,Seattle,WA,47.522,-122.369
+Target North Spokane,Spokane,WA,47.748,-117.4
+Target Northgate,Seattle,WA,47.709,-122.325
+Target Seattle Pike Plaza,Seattle,WA,47.608,-122.338
+Target Spokane Valley,Spokane,WA,47.656,-117.221
+Target Spokane South,Spokane,WA,47.609,-117.365
+Target Vancouver Plaza Dr,Vancouver,WA,45.651,-122.592
+Target Vancouver Hazel Dell Ave,Vancouver,WA,45.686,-122.668
+Target Vancouver Mill Plain Blvd,Vancouver,WA,45.617,-122.506
+Target Eau Claire,Eau Claire,WI,44.779,-91.435
+Target Delafield,Delafield,WI,43.051,-88.377
+Target Brookfield,Brookfield,WI,43.035,-88.071
+Target Fitchburg,Fitchburg,WI,43.015,-89.481
+Target Fond du Lac,Fond Du Lac,WI,43.791,-88.485
+Target Grafton,Grafton,WI,43.319,-87.925
+Target Glendale North Shore,Glendale,WI,43.121,-87.912
+Target Franklin,Franklin,WI,42.904,-88.038
+Target Hudson,Hudson,WI,44.964,-92.725
+Target Lake Geneva,Lake Geneva,WI,42.598,-88.416
+Target Marshfield,Marshfield,WI,44.684,-90.162
+Target Janesville,Janesville,WI,42.722,-88.999
+Target Menomonee Falls,Menomonee Falls,WI,43.17,-88.124
+Target Milwaukee Chase,Milwaukee,WI,42.992,-87.908
+Target Oak Creek,Oak Creek,WI,42.881,-87.913
+Target New Berlin,New Berlin,WI,42.959,-88.109
+Target LaCrosse,Onalaska,WI,43.874,-91.193
+Target Pleasant Prairie,Pleasant Prairie,WI,42.564,-87.928
+Target Oshkosh,Oshkosh,WI,43.998,-88.579
+Target Wausau,Schofield,WI,44.906,-89.592
+Target Racine,Racine,WI,42.699,-87.844
+Target Kohler,Sheboygan Falls,WI,43.716,-87.766
+Target Stevens Point,Stevens Point,WI,44.525,-89.523
+Target Sturgeon Bay,Sturgeon Bay,WI,44.823,-87.404
+Target Sun Prairie,Sun Prairie,WI,43.171,-89.267
+Target West Allis,West Allis,WI,42.992,-88.047
+Target Wauwatosa,Wauwatosa,WI,43.088,-88.066
+Target West Milwaukee,West Milwaukee,WI,43.015,-87.968
+Target Appleton,Appleton,WI,44.273,-88.471
+Target Appleton East,Appleton,WI,44.247,-88.359
+Target Bellevue,Green Bay,WI,44.466,-87.986
+Target Green Bay West,Green Bay,WI,44.491,-88.07
+Target Madison West,Madison,WI,43.062,-89.525
+Target Madison East,Madison,WI,43.119,-89.307
+Target Madison Hilldale,Madison,WI,43.075,-89.454
+Target Madison State Street,Madison,WI,43.075,-89.396
+Target Waukesha,Waukesha,WI,43.034,-88.177
+Target Waukesha South,Waukesha,WI,42.99,-88.259
+Target Casper,Casper,WY,42.847,-106.271
+Target Cheyenne,Cheyenne,WY,41.162,-104.8
+Target Jackson Hole,Jackson,WY,43.469,-110.792

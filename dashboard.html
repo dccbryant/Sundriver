@@ -94,69 +94,63 @@
   }
   #filter { min-width: 240px; }
   main { padding: 16px 24px 40px; }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 12px;
-  }
-  .card {
+  table.stores {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 14px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    overflow: hidden;
   }
-  .card-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-  }
-  .state-name {
-    font-weight: 600;
-    font-size: 15px;
-  }
-  .state-code {
-    color: var(--muted);
-    font-size: 11px;
-    letter-spacing: 0.04em;
-  }
-  .city {
-    color: var(--muted);
-    font-size: 12px;
-  }
-  .readings {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 4px;
-  }
-  .reading {
+  table.stores thead th {
+    text-align: left;
     background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 6px 8px;
-  }
-  .reading-label {
     color: var(--muted);
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-  .reading-value {
-    font-size: 18px;
     font-weight: 600;
-    font-variant-numeric: tabular-nums;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 1;
   }
-  .forecast {
+  table.stores tbody td {
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  table.stores tbody tr:last-child td { border-bottom: none; }
+  table.stores tbody tr:hover { background: rgba(255,255,255,0.02); }
+  @media (prefers-color-scheme: light) {
+    table.stores tbody tr:hover { background: rgba(0,0,0,0.02); }
+  }
+  td.store { font-weight: 500; }
+  td.muted { color: var(--muted); }
+  td.code  { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: var(--muted); }
+  td.num   {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+  }
+  td.forecast {
     color: var(--muted);
     font-size: 12px;
-    margin-top: 2px;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
-  .err {
+  td.err-cell {
     color: var(--hot);
     font-size: 11px;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .swatch {
     display: inline-block;
@@ -281,10 +275,10 @@
 </head>
 <body>
 <header>
-  <h1>Sundriver — US Weather &amp; UV Dashboard</h1>
+  <h1>Sundriver — Target Stores Weather &amp; UV Dashboard</h1>
   <div class="subtitle">
-    Hourly snapshot per US state, sourced from NOAA (api.weather.gov) and EPA (data.epa.gov).
-    Auto-refreshes every hour.
+    Hourly snapshot per Target store (1,989 locations), sourced from NOAA (api.weather.gov)
+    and EPA (data.epa.gov). Auto-refreshes every hour.
   </div>
   <div class="meta">
     <span class="meta-item">Last updated: <strong id="updated">—</strong></span>
@@ -303,10 +297,14 @@
     <span class="meta-item" id="gs-status">sheet: not configured</span>
   </div>
   <div class="controls">
-    <input id="filter" placeholder="Filter by state, city, or forecast…" />
+    <input id="filter" placeholder="Filter by store, city, state, or forecast…" />
+    <label class="meta-item">State
+      <select id="state-filter"><option value="">all</option></select>
+    </label>
     <label class="meta-item">Sort
       <select id="sort">
-        <option value="state">State (A–Z)</option>
+        <option value="state">State, City (A–Z)</option>
+        <option value="store">Store name (A–Z)</option>
         <option value="temp-desc">Temperature (hot → cold)</option>
         <option value="temp-asc">Temperature (cold → hot)</option>
         <option value="uv-desc">UV index (high → low)</option>
@@ -315,6 +313,7 @@
     </label>
     <label class="meta-item">Min °F <input id="min-temp" type="number" style="width:64px" /></label>
     <label class="meta-item">Min UV <input id="min-uv" type="number" style="width:54px" step="0.5" /></label>
+    <span class="meta-item" id="visible-count"></span>
   </div>
 </header>
 <main>
@@ -323,7 +322,13 @@
     If readings stay empty, either open this file in Firefox, or serve it with
     <code>python3 -m http.server</code> in this folder and visit <code>http://localhost:8000</code>.
   </div>
-  <div id="grid" class="grid"></div>
+  <div id="fetch-progress" class="banner" style="display:none">
+    <span id="progress-text">Fetching…</span>
+    <div style="background:var(--bg); border:1px solid var(--border); border-radius:4px; height:6px; margin-top:4px; overflow:hidden">
+      <div id="progress-bar" style="height:100%; width:0%; background:var(--accent); transition:width 0.2s"></div>
+    </div>
+  </div>
+  <div id="store-table-wrap"></div>
   <div id="settings-overlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="settings-title">
     <div class="panel">
       <h2 id="settings-title">Google Sheet integration</h2>
@@ -380,69 +385,2007 @@
   </div>
 </main>
 <script>
-const STATES = [
-  {state:"AL",name:"Alabama",city:"Montgomery",lat:32.3792,lon:-86.3077,zip:"36104"},
-  {state:"AK",name:"Alaska",city:"Juneau",lat:58.3019,lon:-134.4197,zip:"99801"},
-  {state:"AZ",name:"Arizona",city:"Phoenix",lat:33.4484,lon:-112.0740,zip:"85007"},
-  {state:"AR",name:"Arkansas",city:"Little Rock",lat:34.7465,lon:-92.2896,zip:"72201"},
-  {state:"CA",name:"California",city:"Sacramento",lat:38.5816,lon:-121.4944,zip:"95814"},
-  {state:"CO",name:"Colorado",city:"Denver",lat:39.7392,lon:-104.9903,zip:"80202"},
-  {state:"CT",name:"Connecticut",city:"Hartford",lat:41.7658,lon:-72.6734,zip:"06103"},
-  {state:"DE",name:"Delaware",city:"Dover",lat:39.1582,lon:-75.5244,zip:"19901"},
-  {state:"FL",name:"Florida",city:"Tallahassee",lat:30.4383,lon:-84.2807,zip:"32301"},
-  {state:"GA",name:"Georgia",city:"Atlanta",lat:33.7490,lon:-84.3880,zip:"30303"},
-  {state:"HI",name:"Hawaii",city:"Honolulu",lat:21.3070,lon:-157.8583,zip:"96813"},
-  {state:"ID",name:"Idaho",city:"Boise",lat:43.6150,lon:-116.2023,zip:"83702"},
-  {state:"IL",name:"Illinois",city:"Springfield",lat:39.7817,lon:-89.6501,zip:"62701"},
-  {state:"IN",name:"Indiana",city:"Indianapolis",lat:39.7684,lon:-86.1581,zip:"46204"},
-  {state:"IA",name:"Iowa",city:"Des Moines",lat:41.5868,lon:-93.6250,zip:"50309"},
-  {state:"KS",name:"Kansas",city:"Topeka",lat:39.0473,lon:-95.6752,zip:"66603"},
-  {state:"KY",name:"Kentucky",city:"Frankfort",lat:38.2009,lon:-84.8733,zip:"40601"},
-  {state:"LA",name:"Louisiana",city:"Baton Rouge",lat:30.4515,lon:-91.1871,zip:"70802"},
-  {state:"ME",name:"Maine",city:"Augusta",lat:44.3106,lon:-69.7795,zip:"04330"},
-  {state:"MD",name:"Maryland",city:"Annapolis",lat:38.9784,lon:-76.4922,zip:"21401"},
-  {state:"MA",name:"Massachusetts",city:"Boston",lat:42.3601,lon:-71.0589,zip:"02108"},
-  {state:"MI",name:"Michigan",city:"Lansing",lat:42.7325,lon:-84.5555,zip:"48933"},
-  {state:"MN",name:"Minnesota",city:"Saint Paul",lat:44.9537,lon:-93.0900,zip:"55102"},
-  {state:"MS",name:"Mississippi",city:"Jackson",lat:32.2988,lon:-90.1848,zip:"39201"},
-  {state:"MO",name:"Missouri",city:"Jefferson City",lat:38.5767,lon:-92.1735,zip:"65101"},
-  {state:"MT",name:"Montana",city:"Helena",lat:46.5891,lon:-112.0391,zip:"59601"},
-  {state:"NE",name:"Nebraska",city:"Lincoln",lat:40.8136,lon:-96.7026,zip:"68508"},
-  {state:"NV",name:"Nevada",city:"Carson City",lat:39.1638,lon:-119.7674,zip:"89701"},
-  {state:"NH",name:"New Hampshire",city:"Concord",lat:43.2081,lon:-71.5376,zip:"03301"},
-  {state:"NJ",name:"New Jersey",city:"Trenton",lat:40.2206,lon:-74.7597,zip:"08608"},
-  {state:"NM",name:"New Mexico",city:"Santa Fe",lat:35.6870,lon:-105.9378,zip:"87501"},
-  {state:"NY",name:"New York",city:"Albany",lat:42.6526,lon:-73.7562,zip:"12207"},
-  {state:"NC",name:"North Carolina",city:"Raleigh",lat:35.7796,lon:-78.6382,zip:"27601"},
-  {state:"ND",name:"North Dakota",city:"Bismarck",lat:46.8083,lon:-100.7837,zip:"58501"},
-  {state:"OH",name:"Ohio",city:"Columbus",lat:39.9612,lon:-82.9988,zip:"43215"},
-  {state:"OK",name:"Oklahoma",city:"Oklahoma City",lat:35.4676,lon:-97.5164,zip:"73102"},
-  {state:"OR",name:"Oregon",city:"Salem",lat:44.9429,lon:-123.0351,zip:"97301"},
-  {state:"PA",name:"Pennsylvania",city:"Harrisburg",lat:40.2732,lon:-76.8867,zip:"17101"},
-  {state:"RI",name:"Rhode Island",city:"Providence",lat:41.8240,lon:-71.4128,zip:"02903"},
-  {state:"SC",name:"South Carolina",city:"Columbia",lat:34.0007,lon:-81.0348,zip:"29201"},
-  {state:"SD",name:"South Dakota",city:"Pierre",lat:44.3683,lon:-100.3510,zip:"57501"},
-  {state:"TN",name:"Tennessee",city:"Nashville",lat:36.1627,lon:-86.7816,zip:"37219"},
-  {state:"TX",name:"Texas",city:"Austin",lat:30.2672,lon:-97.7431,zip:"78701"},
-  {state:"UT",name:"Utah",city:"Salt Lake City",lat:40.7608,lon:-111.8910,zip:"84111"},
-  {state:"VT",name:"Vermont",city:"Montpelier",lat:44.2601,lon:-72.5754,zip:"05602"},
-  {state:"VA",name:"Virginia",city:"Richmond",lat:37.5407,lon:-77.4360,zip:"23219"},
-  {state:"WA",name:"Washington",city:"Olympia",lat:47.0379,lon:-122.9007,zip:"98501"},
-  {state:"WV",name:"West Virginia",city:"Charleston",lat:38.3498,lon:-81.6326,zip:"25301"},
-  {state:"WI",name:"Wisconsin",city:"Madison",lat:43.0731,lon:-89.4012,zip:"53703"},
-  {state:"WY",name:"Wyoming",city:"Cheyenne",lat:41.1400,lon:-104.8202,zip:"82001"},
-  {state:"DC",name:"District of Columbia",city:"Washington",lat:38.9072,lon:-77.0369,zip:"20001"}
+const TARGETS = [
+  {n:"Target Bessemer",c:"Bessemer",s:"AL",la:33.334,lg:-86.99},
+  {n:"Target Daphne",c:"Daphne",s:"AL",la:30.602,lg:-87.896},
+  {n:"Target Alabaster",c:"Alabaster",s:"AL",la:33.224,lg:-86.804},
+  {n:"Target Auburn Toomers Corner",c:"Auburn",s:"AL",la:32.608,lg:-85.483},
+  {n:"Target Decatur",c:"Decatur",s:"AL",la:34.559,lg:-86.971},
+  {n:"Target Dothan",c:"Dothan",s:"AL",la:31.266,lg:-85.447},
+  {n:"Target Gulf Shores",c:"Gulf Shores",s:"AL",la:30.304,lg:-87.68},
+  {n:"Target Florence",c:"Florence",s:"AL",la:34.842,lg:-87.634},
+  {n:"Target Fultondale",c:"Fultondale",s:"AL",la:33.606,lg:-86.806},
+  {n:"Target Homewood",c:"Homewood",s:"AL",la:33.467,lg:-86.775},
+  {n:"Target Opelika",c:"Opelika",s:"AL",la:32.618,lg:-85.411},
+  {n:"Target Madison",c:"Madison",s:"AL",la:34.749,lg:-86.757},
+  {n:"Target Montgomery",c:"Montgomery",s:"AL",la:32.36,lg:-86.16},
+  {n:"Target Prattville",c:"Prattville",s:"AL",la:32.457,lg:-86.395},
+  {n:"Target Oxford",c:"Oxford",s:"AL",la:33.609,lg:-85.782},
+  {n:"Target Tuscaloosa",c:"Tuscaloosa",s:"AL",la:33.193,lg:-87.519},
+  {n:"Target Huntsville West",c:"Huntsville",s:"AL",la:34.741,lg:-86.681},
+  {n:"Target Hoover West",c:"Birmingham",s:"AL",la:33.362,lg:-86.853},
+  {n:"Target Birmingham 280 Corridor",c:"Birmingham",s:"AL",la:33.425,lg:-86.712},
+  {n:"Target Trussville",c:"Birmingham",s:"AL",la:33.602,lg:-86.639},
+  {n:"Target Huntsville South",c:"Huntsville",s:"AL",la:34.675,lg:-86.544},
+  {n:"Target Wasilla",c:"Wasilla",s:"AK",la:61.577,lg:-149.403},
+  {n:"Target Mobile West",c:"Mobile",s:"AL",la:30.673,lg:-88.226},
+  {n:"Target Bel-Air",c:"Mobile",s:"AL",la:30.671,lg:-88.12},
+  {n:"Target Anchorage NE",c:"Anchorage",s:"AK",la:61.227,lg:-149.746},
+  {n:"Target Bullhead City",c:"Bullhead City",s:"AZ",la:35.053,lg:-114.59},
+  {n:"Target Flagstaff",c:"Flagstaff",s:"AZ",la:35.184,lg:-111.66},
+  {n:"Target Anchorage South",c:"Anchorage",s:"AK",la:61.13,lg:-149.881},
+  {n:"Target Fountain Hills",c:"Fountain Hills",s:"AZ",la:33.574,lg:-111.718},
+  {n:"Target Oro Valley",c:"Oro Valley",s:"AZ",la:32.399,lg:-110.96},
+  {n:"Target Sierra Vista",c:"Sierra Vista",s:"AZ",la:31.556,lg:-110.256},
+  {n:"Target Prescott",c:"Prescott",s:"AZ",la:34.549,lg:-112.432},
+  {n:"Target Phoenix SW",c:"Tolleson",s:"AZ",la:33.423,lg:-112.27},
+  {n:"Target Yuma",c:"Yuma",s:"AZ",la:32.705,lg:-114.606},
+  {n:"Target Chandler Fashion Center",c:"Chandler",s:"AZ",la:33.296,lg:-111.9},
+  {n:"Target Gilbert Val Vista",c:"Gilbert",s:"AZ",la:33.334,lg:-111.757},
+  {n:"Target Chandler South",c:"Chandler",s:"AZ",la:33.252,lg:-111.841},
+  {n:"Target Gilbert SW",c:"Gilbert",s:"AZ",la:33.279,lg:-111.786},
+  {n:"Target Peoria SW",c:"Glendale",s:"AZ",la:33.555,lg:-112.26},
+  {n:"Target Glendale",c:"Glendale",s:"AZ",la:33.581,lg:-112.153},
+  {n:"Target Goodyear",c:"Goodyear",s:"AZ",la:33.463,lg:-112.356},
+  {n:"Target Goodyear West",c:"Goodyear",s:"AZ",la:33.437,lg:-112.427},
+  {n:"Target Mesa Central",c:"Mesa",s:"AZ",la:33.394,lg:-111.786},
+  {n:"Target Mesa East",c:"Mesa",s:"AZ",la:33.389,lg:-111.683},
+  {n:"Target Mesa Red Mountain",c:"Mesa",s:"AZ",la:33.454,lg:-111.683},
+  {n:"Target Gilbert Gateway",c:"Mesa",s:"AZ",la:33.324,lg:-111.69},
+  {n:"Target Mesa West",c:"Mesa",s:"AZ",la:33.392,lg:-111.865},
+  {n:"Target Peoria North",c:"Peoria",s:"AZ",la:33.636,lg:-112.228},
+  {n:"Target Peoria Lake Pleasant Pkwy",c:"Peoria",s:"AZ",la:33.71,lg:-112.275},
+  {n:"Target Paradise Valley",c:"Phoenix",s:"AZ",la:33.6,lg:-111.99},
+  {n:"Target Westridge",c:"Phoenix",s:"AZ",la:33.476,lg:-112.219},
+  {n:"Target Ahwatukee",c:"Phoenix",s:"AZ",la:33.322,lg:-111.981},
+  {n:"Target Phoenix I17 and SR101",c:"Phoenix",s:"AZ",la:33.666,lg:-112.119},
+  {n:"Target Arcadia Crossing",c:"Phoenix",s:"AZ",la:33.478,lg:-111.984},
+  {n:"Target Phoenix NE",c:"Phoenix",s:"AZ",la:33.678,lg:-111.975},
+  {n:"Target South Mountain",c:"Phoenix",s:"AZ",la:33.379,lg:-112.035},
+  {n:"Target Phoenix 7th Street and Bell",c:"Phoenix",s:"AZ",la:33.638,lg:-112.066},
+  {n:"Target Phoenix Spectrum",c:"Phoenix",s:"AZ",la:33.521,lg:-112.098},
+  {n:"Target Phoenix Uptown Camelback",c:"Phoenix",s:"AZ",la:33.508,lg:-112.046},
+  {n:"Target Queen Creek",c:"Queen Creek",s:"AZ",la:33.254,lg:-111.642},
+  {n:"Target Queen Creek Gantzel and Combs",c:"Queen Creek",s:"AZ",la:33.224,lg:-111.563},
+  {n:"Target Scottsdale Talking Stick Way",c:"Scottsdale",s:"AZ",la:33.541,lg:-111.887},
+  {n:"Target Scottsdale Road",c:"Scottsdale",s:"AZ",la:33.779,lg:-111.923},
+  {n:"Target Frank Lloyd Wright Blvd",c:"Scottsdale",s:"AZ",la:33.627,lg:-111.889},
+  {n:"Target Surprise",c:"Surprise",s:"AZ",la:33.637,lg:-112.354},
+  {n:"Target Surprise West Prasada",c:"Surprise",s:"AZ",la:33.612,lg:-112.413},
+  {n:"Target Tempe",c:"Tempe",s:"AZ",la:33.379,lg:-111.908},
+  {n:"Target Tucson NE",c:"Tucson",s:"AZ",la:32.249,lg:-110.853},
+  {n:"Target Marana",c:"Tucson",s:"AZ",la:32.336,lg:-111.049},
+  {n:"Target Tempe Rio Salado",c:"Tempe",s:"AZ",la:33.43,lg:-111.905},
+  {n:"Target Tucson SW",c:"Tucson",s:"AZ",la:32.16,lg:-110.99},
+  {n:"Target Tucson El Con Mall",c:"Tucson",s:"AZ",la:32.223,lg:-110.915},
+  {n:"Target Tucson SE",c:"Tucson",s:"AZ",la:32.207,lg:-110.786},
+  {n:"Target Bryant",c:"Bryant",s:"AR",la:34.604,lg:-92.53},
+  {n:"Target Tucson North",c:"Tucson",s:"AZ",la:32.28,lg:-110.976},
+  {n:"Target Fayetteville",c:"Fayetteville",s:"AR",la:36.121,lg:-94.146},
+  {n:"Target Conway",c:"Conway",s:"AR",la:35.087,lg:-92.415},
+  {n:"Target Fort Smith",c:"Fort Smith",s:"AR",la:35.341,lg:-94.388},
+  {n:"Target Jonesboro",c:"Jonesboro",s:"AR",la:35.823,lg:-90.666},
+  {n:"Target Little Rock North",c:"North Little Rock",s:"AR",la:34.788,lg:-92.229},
+  {n:"Target Little Rock West",c:"Little Rock",s:"AR",la:34.755,lg:-92.414},
+  {n:"Target Rogers",c:"Rogers",s:"AR",la:36.299,lg:-94.173},
+  {n:"Target Little Rock Univer",c:"Little Rock",s:"AR",la:34.749,lg:-92.345},
+  {n:"Target Alameda",c:"Alameda",s:"CA",la:37.789,lg:-122.279},
+  {n:"Target Albany",c:"Albany",s:"CA",la:37.883,lg:-122.306},
+  {n:"Target Alhambra",c:"Alhambra",s:"CA",la:34.091,lg:-118.147},
+  {n:"Target Aliso Viejo",c:"Aliso Viejo",s:"CA",la:33.571,lg:-117.705},
+  {n:"Target Atwater",c:"Atwater",s:"CA",la:37.341,lg:-120.611},
+  {n:"Target Antioch Slatten Ranch",c:"Antioch",s:"CA",la:37.964,lg:-121.738},
+  {n:"Target Auburn",c:"Auburn",s:"CA",la:38.943,lg:-121.095},
+  {n:"Target Azusa",c:"Azusa",s:"CA",la:34.135,lg:-117.908},
+  {n:"Target Baldwin Park",c:"Baldwin Park",s:"CA",la:34.07,lg:-117.977},
+  {n:"Target Brea",c:"Brea",s:"CA",la:33.919,lg:-117.888},
+  {n:"Target Camarillo",c:"Camarillo",s:"CA",la:34.217,lg:-119.073},
+  {n:"Target Buena Park",c:"Buena Park",s:"CA",la:33.857,lg:-118.002},
+  {n:"Target Los Angeles Topanga",c:"Canoga Park",s:"CA",la:34.191,lg:-118.604},
+  {n:"Target Capitola",c:"Capitola",s:"CA",la:36.976,lg:-121.967},
+  {n:"Target Palm Springs",c:"Cathedral City",s:"CA",la:33.788,lg:-116.48},
+  {n:"Target Chico",c:"Chico",s:"CA",la:39.726,lg:-121.802},
+  {n:"Target Colma",c:"Colma",s:"CA",la:37.674,lg:-122.464},
+  {n:"Target Birdcage-Citrus Heights",c:"Citrus Heights",s:"CA",la:38.673,lg:-121.275},
+  {n:"Target Commerce",c:"Commerce",s:"CA",la:34.018,lg:-118.151},
+  {n:"Target Compton-Rancho Dom",c:"Compton",s:"CA",la:33.88,lg:-118.219},
+  {n:"Target Corona",c:"Corona",s:"CA",la:33.827,lg:-117.516},
+  {n:"Target Cupertino De Anza Blvd",c:"Cupertino",s:"CA",la:37.324,lg:-122.036},
+  {n:"Target Cypress",c:"Cypress",s:"CA",la:33.804,lg:-118.013},
+  {n:"Target Davis",c:"Davis",s:"CA",la:38.554,lg:-121.699},
+  {n:"Target Diamond Bar",c:"Diamond Bar",s:"CA",la:34.005,lg:-117.821},
+  {n:"Target Duarte",c:"Duarte",s:"CA",la:34.138,lg:-117.983},
+  {n:"Target El Dorado Hills",c:"El Dorado Hills",s:"CA",la:38.65,lg:-121.063},
+  {n:"Target El Centro",c:"El Centro",s:"CA",la:32.816,lg:-115.57},
+  {n:"Target El Monte",c:"El Monte",s:"CA",la:34.072,lg:-118.022},
+  {n:"Target Elk Grove",c:"Elk Grove",s:"CA",la:38.426,lg:-121.415},
+  {n:"Target Encinitas",c:"Encinitas",s:"CA",la:33.063,lg:-117.265},
+  {n:"Target Oakland-Emeryville",c:"Emeryville",s:"CA",la:37.828,lg:-122.289},
+  {n:"Target Encino Ventura Blvd",c:"Encino",s:"CA",la:34.162,lg:-118.512},
+  {n:"Target Eureka",c:"Eureka",s:"CA",la:40.806,lg:-124.144},
+  {n:"Target Fairfield",c:"Fairfield",s:"CA",la:38.247,lg:-122.069},
+  {n:"Target Folsom",c:"Folsom",s:"CA",la:38.672,lg:-121.153},
+  {n:"Target Gardena",c:"Gardena",s:"CA",la:33.887,lg:-118.317},
+  {n:"Target Foothill Ranch",c:"Foothill Ranch",s:"CA",la:33.676,lg:-117.664},
+  {n:"Target Glendale",c:"Glendale",s:"CA",la:34.145,lg:-118.26},
+  {n:"Target Gilroy",c:"Gilroy",s:"CA",la:37.0,lg:-121.555},
+  {n:"Target Goleta",c:"Goleta",s:"CA",la:34.429,lg:-119.868},
+  {n:"Target Granada Hills",c:"Granada Hills",s:"CA",la:34.273,lg:-118.503},
+  {n:"Target Grass Valley",c:"Grass Valley",s:"CA",la:39.199,lg:-121.061},
+  {n:"Target Hawthorne",c:"Hawthorne",s:"CA",la:33.922,lg:-118.321},
+  {n:"Target Hanford",c:"Hanford",s:"CA",la:36.324,lg:-119.676},
+  {n:"Target Hemet",c:"Hemet",s:"CA",la:33.745,lg:-117.009},
+  {n:"Target Hesperia",c:"Hesperia",s:"CA",la:34.425,lg:-117.384},
+  {n:"Target Hollister",c:"Hollister",s:"CA",la:36.835,lg:-121.39},
+  {n:"Target LA Huntington Park",c:"Huntington Park",s:"CA",la:33.99,lg:-118.217},
+  {n:"Target Jurupa Valley",c:"Jurupa Valley",s:"CA",la:34.012,lg:-117.459},
+  {n:"Target La Canada Flintridge",c:"La Canada Flintridge",s:"CA",la:34.205,lg:-118.199},
+  {n:"Target La Habra",c:"La Habra",s:"CA",la:33.916,lg:-117.958},
+  {n:"Target UC San Diego Price Center",c:"La Jolla",s:"CA",la:32.876,lg:-117.239},
+  {n:"Target La Quinta",c:"La Quinta",s:"CA",la:33.709,lg:-116.29},
+  {n:"Target Grossmont",c:"La Mesa",s:"CA",la:32.778,lg:-117.011},
+  {n:"Target Laverne",c:"La Verne",s:"CA",la:34.11,lg:-117.76},
+  {n:"Target Lake Elsinore",c:"Lake Elsinore",s:"CA",la:33.689,lg:-117.343},
+  {n:"Target Lakewood Center Mall",c:"Lakewood",s:"CA",la:33.853,lg:-118.141},
+  {n:"Target Lancaster",c:"Lancaster",s:"CA",la:34.675,lg:-118.148},
+  {n:"Target Lathrop",c:"Lathrop",s:"CA",la:37.808,lg:-121.299},
+  {n:"Target Lincoln",c:"Lincoln",s:"CA",la:38.87,lg:-121.304},
+  {n:"Target Lawndale Hawthorne Blvd",c:"Lawndale",s:"CA",la:33.901,lg:-118.351},
+  {n:"Target Livermore",c:"Livermore",s:"CA",la:37.701,lg:-121.747},
+  {n:"Target Lodi",c:"Lodi",s:"CA",la:38.117,lg:-121.304},
+  {n:"Target Lomita",c:"Lomita",s:"CA",la:33.789,lg:-118.318},
+  {n:"Target Los Banos",c:"Los Banos",s:"CA",la:37.054,lg:-120.876},
+  {n:"Target Manhattan Beach",c:"Manhattan Beach",s:"CA",la:33.888,lg:-118.395},
+  {n:"Target Manteca",c:"Manteca",s:"CA",la:37.795,lg:-121.197},
+  {n:"Target Menifee",c:"Menifee",s:"CA",la:33.68,lg:-117.172},
+  {n:"Target Marina",c:"Marina",s:"CA",la:36.668,lg:-121.811},
+  {n:"Target Merced",c:"Merced",s:"CA",la:37.323,lg:-120.485},
+  {n:"Target Mission Hills CA",c:"Mission Hills",s:"CA",la:34.259,lg:-118.466},
+  {n:"Target Eastvale",c:"Mira Loma",s:"CA",la:33.976,lg:-117.555},
+  {n:"Target Montclair",c:"Montclair",s:"CA",la:34.09,lg:-117.691},
+  {n:"Target Moorpark",c:"Moorpark",s:"CA",la:34.278,lg:-118.867},
+  {n:"Target Moreno Valley East",c:"Moreno Valley",s:"CA",la:33.936,lg:-117.188},
+  {n:"Target Morgan Hill",c:"Morgan Hill",s:"CA",la:37.157,lg:-121.654},
+  {n:"Target Mountain View",c:"Mountain View",s:"CA",la:37.401,lg:-122.108},
+  {n:"Target Natl Cty Pl Bonita",c:"National City",s:"CA",la:32.657,lg:-117.067},
+  {n:"Target Novato",c:"Novato",s:"CA",la:38.09,lg:-122.553},
+  {n:"Target Norco",c:"Norco",s:"CA",la:33.901,lg:-117.564},
+  {n:"Target Oxnard West",c:"Oxnard",s:"CA",la:34.243,lg:-119.178},
+  {n:"Target Pacoima",c:"Pacoima",s:"CA",la:34.245,lg:-118.419},
+  {n:"Target Palm Desert",c:"Palm Desert",s:"CA",la:33.724,lg:-116.403},
+  {n:"Target Paso Robles",c:"Paso Robles",s:"CA",la:35.584,lg:-120.699},
+  {n:"Target Petaluma",c:"Petaluma",s:"CA",la:38.245,lg:-122.627},
+  {n:"Target Pico Rivera",c:"Pico Rivera",s:"CA",la:34.001,lg:-118.087},
+  {n:"Target Pinole",c:"Pinole",s:"CA",la:37.988,lg:-122.309},
+  {n:"Target Placerville",c:"Placerville",s:"CA",la:38.709,lg:-120.844},
+  {n:"Target Pomona",c:"Pomona",s:"CA",la:34.035,lg:-117.756},
+  {n:"Target Pleasant Hill",c:"Pleasant Hill",s:"CA",la:37.977,lg:-122.067},
+  {n:"Target Poway",c:"Poway",s:"CA",la:32.98,lg:-117.061},
+  {n:"Target Porterville",c:"Porterville",s:"CA",la:36.078,lg:-119.047},
+  {n:"Target Rancho Cordova",c:"Rancho Cordova",s:"CA",la:38.594,lg:-121.284},
+  {n:"Target Rancho Santa Margarita",c:"Rancho Santa Margarita",s:"CA",la:33.642,lg:-117.598},
+  {n:"Target Rancho Cucamonga",c:"Rancho Cucamonga",s:"CA",la:34.106,lg:-117.612},
+  {n:"Target Redlands",c:"Redlands",s:"CA",la:34.072,lg:-117.208},
+  {n:"Target Redding",c:"Redding",s:"CA",la:40.587,lg:-122.348},
+  {n:"Target Redwood City",c:"Redwood City",s:"CA",la:37.475,lg:-122.218},
+  {n:"Target Redondo Beach",c:"Redondo Beach",s:"CA",la:33.869,lg:-118.357},
+  {n:"Target Richmond",c:"Richmond",s:"CA",la:37.932,lg:-122.327},
+  {n:"Target Rocklin",c:"Rocklin",s:"CA",la:38.804,lg:-121.209},
+  {n:"Target Riverbank",c:"Riverbank",s:"CA",la:37.713,lg:-120.953},
+  {n:"Target Rohnert Park",c:"Rohnert Park",s:"CA",la:38.346,lg:-122.72},
+  {n:"Target Rolling Hills",c:"Rolling Hills Estates",s:"CA",la:33.773,lg:-118.376},
+  {n:"Target Rosemead",c:"Rosemead",s:"CA",la:34.075,lg:-118.07},
+  {n:"Target Puente Hills",c:"Rowland Heights",s:"CA",la:33.992,lg:-117.919},
+  {n:"Target Salinas",c:"Salinas",s:"CA",la:36.715,lg:-121.653},
+  {n:"Target Orange Show",c:"San Bernardino",s:"CA",la:34.078,lg:-117.292},
+  {n:"Target Tanforan",c:"San Bruno",s:"CA",la:37.637,lg:-122.417},
+  {n:"Target San Clemente",c:"San Clemente",s:"CA",la:33.463,lg:-117.606},
+  {n:"Target San Dimas",c:"San Dimas",s:"CA",la:34.104,lg:-117.824},
+  {n:"Target San Juan Capistrano",c:"San Juan Capistrano",s:"CA",la:33.498,lg:-117.664},
+  {n:"Target San Leandro Bayfair",c:"San Leandro",s:"CA",la:37.701,lg:-122.125},
+  {n:"Target San Luis Obispo",c:"San Luis Obispo",s:"CA",la:35.252,lg:-120.685},
+  {n:"Target San Mateo Fashion Island",c:"San Mateo",s:"CA",la:37.559,lg:-122.283},
+  {n:"Target San Pedro",c:"San Pedro",s:"CA",la:33.76,lg:-118.293},
+  {n:"Target San Rafael",c:"San Rafael",s:"CA",la:37.955,lg:-122.491},
+  {n:"Target San Ramon",c:"San Ramon",s:"CA",la:37.762,lg:-121.964},
+  {n:"Target Sand City",c:"Sand City",s:"CA",la:36.621,lg:-121.843},
+  {n:"Target Santa Barbara Galleria",c:"Santa Barbara",s:"CA",la:34.44,lg:-119.751},
+  {n:"Target Santa Clara",c:"Santa Clara",s:"CA",la:37.35,lg:-121.96},
+  {n:"Target Santa Fe Springs",c:"Santa Fe Springs",s:"CA",la:33.938,lg:-118.048},
+  {n:"Target Santa Clarita East",c:"Santa Clarita",s:"CA",la:34.395,lg:-118.465},
+  {n:"Target Santa Maria",c:"Santa Maria",s:"CA",la:34.923,lg:-120.434},
+  {n:"Target Santee",c:"Santee",s:"CA",la:32.842,lg:-116.983},
+  {n:"Target Marin City",c:"Sausalito",s:"CA",la:37.874,lg:-122.511},
+  {n:"Target Scotts Valley",c:"Scotts Valley",s:"CA",la:37.048,lg:-122.031},
+  {n:"Target Seal Beach",c:"Seal Beach",s:"CA",la:33.783,lg:-118.07},
+  {n:"Target Signal Hill",c:"Signal Hill",s:"CA",la:33.817,lg:-118.182},
+  {n:"Target South Gate",c:"South Gate",s:"CA",la:33.948,lg:-118.168},
+  {n:"Target South Lake Tahoe",c:"South Lake Tahoe",s:"CA",la:38.955,lg:-119.944},
+  {n:"Target Spring Valley Jamacha Rd",c:"Spring Valley",s:"CA",la:32.714,lg:-117.011},
+  {n:"Target Sunnyvale",c:"Sunnyvale",s:"CA",la:37.374,lg:-122.032},
+  {n:"Target San Fernando",c:"Sylmar",s:"CA",la:34.294,lg:-118.417},
+  {n:"Target Rancho California",c:"Temecula",s:"CA",la:33.507,lg:-117.146},
+  {n:"Target Thousand Oaks",c:"Thousand Oaks",s:"CA",la:34.191,lg:-118.934},
+  {n:"Target Torrance",c:"Torrance",s:"CA",la:33.827,lg:-118.346},
+  {n:"Target Tracy",c:"Tracy",s:"CA",la:37.758,lg:-121.458},
+  {n:"Target Tulare",c:"Tulare",s:"CA",la:36.225,lg:-119.315},
+  {n:"Target Turlock",c:"Turlock",s:"CA",la:37.52,lg:-120.879},
+  {n:"Target Tustin",c:"Tustin",s:"CA",la:33.7,lg:-117.827},
+  {n:"Target Upland",c:"Upland",s:"CA",la:34.133,lg:-117.641},
+  {n:"Target Vacaville",c:"Vacaville",s:"CA",la:38.361,lg:-121.962},
+  {n:"Target Vallejo",c:"Vallejo",s:"CA",la:38.132,lg:-122.223},
+  {n:"Target Valencia",c:"Valencia",s:"CA",la:34.421,lg:-118.562},
+  {n:"Target Walnut Creek",c:"Walnut Creek",s:"CA",la:37.905,lg:-122.064},
+  {n:"Target Watsonville",c:"Watsonville",s:"CA",la:36.915,lg:-121.774},
+  {n:"Target West Hills",c:"West Hills",s:"CA",la:34.19,lg:-118.625},
+  {n:"Target West Hollywood",c:"West Hollywood",s:"CA",la:34.09,lg:-118.345},
+  {n:"Target West Sacramento",c:"West Sacramento",s:"CA",la:38.549,lg:-121.537},
+  {n:"Target Westlake Village",c:"Westlake Village",s:"CA",la:34.148,lg:-118.794},
+  {n:"Target Woodland",c:"Woodland",s:"CA",la:38.673,lg:-121.725},
+  {n:"Target Whittier",c:"Whittier",s:"CA",la:33.943,lg:-117.997},
+  {n:"Target Woodland Hills",c:"Woodland Hills",s:"CA",la:34.167,lg:-118.586},
+  {n:"Target Yorba Linda",c:"Yorba Linda",s:"CA",la:33.888,lg:-117.828},
+  {n:"Target Yuba City",c:"Yuba City",s:"CA",la:39.147,lg:-121.633},
+  {n:"Target Anaheim Hills",c:"Anaheim",s:"CA",la:33.868,lg:-117.749},
+  {n:"Target Anaheim",c:"Anaheim",s:"CA",la:33.831,lg:-117.943},
+  {n:"Target Anaheim East",c:"Anaheim",s:"CA",la:33.838,lg:-117.886},
+  {n:"Target Apple Valley",c:"Apple Valley",s:"CA",la:34.471,lg:-117.245},
+  {n:"Target Apple Valley North",c:"Apple Valley",s:"CA",la:34.528,lg:-117.217},
+  {n:"Target Bakersfield NE",c:"Bakersfield",s:"CA",la:35.394,lg:-118.955},
+  {n:"Target Bakersfield NW",c:"Bakersfield",s:"CA",la:35.385,lg:-119.103},
+  {n:"Target Bakersfield Central",c:"Bakersfield",s:"CA",la:35.337,lg:-119.036},
+  {n:"Target Bakersfield West",c:"Bakersfield",s:"CA",la:35.35,lg:-119.125},
+  {n:"Target Berkeley Central",c:"Berkeley",s:"CA",la:37.87,lg:-122.267},
+  {n:"Target Burbank",c:"Burbank",s:"CA",la:34.19,lg:-118.33},
+  {n:"Target Berkeley Univ Ave",c:"Berkeley",s:"CA",la:37.87,lg:-122.284},
+  {n:"Target LA Burbank West",c:"Burbank",s:"CA",la:34.169,lg:-118.348},
+  {n:"Target Carson North",c:"Carson",s:"CA",la:33.844,lg:-118.262},
+  {n:"Target Carson",c:"Carson",s:"CA",la:33.809,lg:-118.286},
+  {n:"Target Cerritos South Street",c:"Cerritos",s:"CA",la:33.859,lg:-118.087},
+  {n:"Target Cerritos Bloomfield Avenue",c:"Cerritos",s:"CA",la:33.847,lg:-118.062},
+  {n:"Target Chino Philadelphia Street",c:"Chino",s:"CA",la:34.033,lg:-117.682},
+  {n:"Target Chino Hills Grand Avenue",c:"Chino",s:"CA",la:33.999,lg:-117.718},
+  {n:"Target Chula Vista Broadway",c:"Chula Vista",s:"CA",la:32.605,lg:-117.081},
+  {n:"Target Clovis NW",c:"Clovis",s:"CA",la:36.838,lg:-119.729},
+  {n:"Target Clovis",c:"Clovis",s:"CA",la:36.807,lg:-119.699},
+  {n:"Target Chula Vista East",c:"Chula Vista",s:"CA",la:32.651,lg:-116.969},
+  {n:"Target Costa Mesa",c:"Costa Mesa",s:"CA",la:33.682,lg:-117.919},
+  {n:"Target Culver City Jefferson",c:"Culver City",s:"CA",la:33.999,lg:-118.394},
+  {n:"Target Costa Mesa 17th St",c:"Costa Mesa",s:"CA",la:33.633,lg:-117.917},
+  {n:"Target Culver City Westfield Mall",c:"Culver City",s:"CA",la:33.985,lg:-118.395},
+  {n:"Target Daly City Serramonte",c:"Daly City",s:"CA",la:37.67,lg:-122.471},
+  {n:"Target Daly City Westlake",c:"Daly City",s:"CA",la:37.701,lg:-122.484},
+  {n:"Target El Cajon",c:"El Cajon",s:"CA",la:32.81,lg:-116.959},
+  {n:"Target Dublin",c:"Dublin",s:"CA",la:37.706,lg:-121.932},
+  {n:"Target Dublin East",c:"Dublin",s:"CA",la:37.703,lg:-121.854},
+  {n:"Target Rancho San Diego",c:"El Cajon",s:"CA",la:32.739,lg:-116.939},
+  {n:"Target Escondido",c:"Escondido",s:"CA",la:33.114,lg:-117.099},
+  {n:"Target Fontana North",c:"Fontana",s:"CA",la:34.152,lg:-117.472},
+  {n:"Target Escondido South",c:"Escondido",s:"CA",la:33.07,lg:-117.065},
+  {n:"Target Fontana",c:"Fontana",s:"CA",la:34.065,lg:-117.434},
+  {n:"Target Fremont Hub",c:"Fremont",s:"CA",la:37.545,lg:-121.985},
+  {n:"Target Fremont South",c:"Fremont",s:"CA",la:37.502,lg:-121.968},
+  {n:"Target Fresno West",c:"Fresno",s:"CA",la:36.81,lg:-119.847},
+  {n:"Target Blackstone and Nees Ave",c:"Fresno",s:"CA",la:36.847,lg:-119.787},
+  {n:"Target Fresno South",c:"Fresno",s:"CA",la:36.78,lg:-119.771},
+  {n:"Target Blackstone and Bullard",c:"Fresno",s:"CA",la:36.822,lg:-119.788},
+  {n:"Target Fresno Fancher Creek",c:"Fresno",s:"CA",la:36.743,lg:-119.7},
+  {n:"Target Fresno NW",c:"Fresno",s:"CA",la:36.834,lg:-119.913},
+  {n:"Target Fullerton Yorba Linda",c:"Fullerton",s:"CA",la:33.888,lg:-117.878},
+  {n:"Target West Fullerton",c:"Fullerton",s:"CA",la:33.88,lg:-117.961},
+  {n:"Target Fullerton South",c:"Fullerton",s:"CA",la:33.858,lg:-117.927},
+  {n:"Target Brookhurst",c:"Garden Grove",s:"CA",la:33.762,lg:-117.956},
+  {n:"Target Garden Grove Harbor",c:"Garden Grove",s:"CA",la:33.788,lg:-117.913},
+  {n:"Target Hayward",c:"Hayward",s:"CA",la:37.608,lg:-122.062},
+  {n:"Target Hayward North",c:"Hayward",s:"CA",la:37.666,lg:-122.121},
+  {n:"Target Huntington Beach East",c:"Huntington Beach",s:"CA",la:33.671,lg:-117.956},
+  {n:"Target Huntington Beach Garfield and Beach",c:"Huntington Beach",s:"CA",la:33.686,lg:-117.99},
+  {n:"Target Inglewood Florence and La Brea",c:"Inglewood",s:"CA",la:33.965,lg:-118.353},
+  {n:"Target Inglewood",c:"Inglewood",s:"CA",la:33.948,lg:-118.333},
+  {n:"Target Irvine",c:"Irvine",s:"CA",la:33.685,lg:-117.813},
+  {n:"Target Irvine North",c:"Irvine",s:"CA",la:33.727,lg:-117.785},
+  {n:"Target Irvine Spectrum",c:"Irvine",s:"CA",la:33.648,lg:-117.741},
+  {n:"Target Irvine University Town Center",c:"Irvine",s:"CA",la:33.65,lg:-117.839},
+  {n:"Target Long Beach Bellflower",c:"Long Beach",s:"CA",la:33.798,lg:-118.123},
+  {n:"Target Long Beach NW",c:"Long Beach",s:"CA",la:33.877,lg:-118.166},
+  {n:"Target Long Beach Bixby",c:"Long Beach",s:"CA",la:33.774,lg:-118.12},
+  {n:"Target Los Angeles",c:"Los Angeles",s:"CA",la:34.023,lg:-118.373},
+  {n:"Target Los Angeles Eagle Rock",c:"Los Angeles",s:"CA",la:34.141,lg:-118.224},
+  {n:"Target LA Sunset",c:"Los Angeles",s:"CA",la:34.097,lg:-118.31},
+  {n:"Target LA Westwood",c:"Los Angeles",s:"CA",la:34.063,lg:-118.444},
+  {n:"Target LA Beverly",c:"Los Angeles",s:"CA",la:34.075,lg:-118.376},
+  {n:"Target LA Central",c:"Los Angeles",s:"CA",la:34.049,lg:-118.261},
+  {n:"Target Los Angeles Koreatown",c:"Los Angeles",s:"CA",la:34.063,lg:-118.286},
+  {n:"Target LA Sawtelle",c:"Los Angeles",s:"CA",la:34.042,lg:-118.459},
+  {n:"Target Los Angeles USC Village",c:"Los Angeles",s:"CA",la:34.026,lg:-118.284},
+  {n:"Target LA Glassell Park",c:"Los Angeles",s:"CA",la:34.123,lg:-118.225},
+  {n:"Target LA Silver Lake",c:"Los Angeles",s:"CA",la:34.079,lg:-118.279},
+  {n:"Target Hollywood Galaxy",c:"Los Angeles",s:"CA",la:34.102,lg:-118.343},
+  {n:"Target LA LaBrea and 4th St",c:"Los Angeles",s:"CA",la:34.066,lg:-118.344},
+  {n:"Target LA 18th and La Cienega",c:"Los Angeles",s:"CA",la:34.044,lg:-118.377},
+  {n:"Target LA Westchester Sepulveda Blvd",c:"Los Angeles",s:"CA",la:33.956,lg:-118.396},
+  {n:"Target LA Mid City",c:"Los Angeles",s:"CA",la:34.049,lg:-118.344},
+  {n:"Target LA Bonnie Brae",c:"Los Angeles",s:"CA",la:34.069,lg:-118.267},
+  {n:"Target Alicia Parkway",c:"Mission Viejo",s:"CA",la:33.606,lg:-117.689},
+  {n:"Target Mission Viejo South",c:"Mission Viejo",s:"CA",la:33.563,lg:-117.672},
+  {n:"Target Mission Viejo N",c:"Mission Viejo",s:"CA",la:33.623,lg:-117.681},
+  {n:"Target Modesto McHenry Ave",c:"Modesto",s:"CA",la:37.687,lg:-120.996},
+  {n:"Target Modesto Sisk Rd",c:"Modesto",s:"CA",la:37.693,lg:-121.064},
+  {n:"Target Murrieta",c:"Murrieta",s:"CA",la:33.566,lg:-117.203},
+  {n:"Target Napa Soscol Ave",c:"Napa",s:"CA",la:38.283,lg:-122.275},
+  {n:"Target Murrieta North",c:"Murrieta",s:"CA",la:33.604,lg:-117.174},
+  {n:"Target Napa North",c:"Napa",s:"CA",la:38.322,lg:-122.308},
+  {n:"Target North Hollywood",c:"North Hollywood",s:"CA",la:34.188,lg:-118.371},
+  {n:"Target NoHo Valley Plaza",c:"North Hollywood",s:"CA",la:34.187,lg:-118.398},
+  {n:"Target Northridge",c:"Northridge",s:"CA",la:34.231,lg:-118.56},
+  {n:"Target Sherwood Forest",c:"Northridge",s:"CA",la:34.235,lg:-118.503},
+  {n:"Target Norwalk",c:"Norwalk",s:"CA",la:33.926,lg:-118.107},
+  {n:"Target Oceanside",c:"Oceanside",s:"CA",la:33.184,lg:-117.33},
+  {n:"Target Norwalk East",c:"Norwalk",s:"CA",la:33.918,lg:-118.075},
+  {n:"Target Oceanside East",c:"Oceanside",s:"CA",la:33.247,lg:-117.293},
+  {n:"Target Ontario",c:"Ontario",s:"CA",la:34.075,lg:-117.561},
+  {n:"Target North Ontario",c:"Ontario",s:"CA",la:34.076,lg:-117.618},
+  {n:"Target East Orange",c:"Orange",s:"CA",la:33.787,lg:-117.826},
+  {n:"Target Palmdale",c:"Palmdale",s:"CA",la:34.599,lg:-118.147},
+  {n:"Target Pasadena",c:"Pasadena",s:"CA",la:34.147,lg:-118.135},
+  {n:"Target Orange",c:"Orange",s:"CA",la:33.825,lg:-117.835},
+  {n:"Target Pasadena East",c:"Pasadena",s:"CA",la:34.147,lg:-118.084},
+  {n:"Target Palmdale East",c:"Palmdale",s:"CA",la:34.557,lg:-118.084},
+  {n:"Target Riverside",c:"Riverside",s:"CA",la:33.906,lg:-117.46},
+  {n:"Target Riverside Arlington",c:"Riverside",s:"CA",la:33.947,lg:-117.382},
+  {n:"Target Riverside SE",c:"Riverside",s:"CA",la:33.939,lg:-117.282},
+  {n:"Target Roseville Douglas Blvd",c:"Roseville",s:"CA",la:38.746,lg:-121.255},
+  {n:"Target Roseville Fairway Drive",c:"Roseville",s:"CA",la:38.791,lg:-121.29},
+  {n:"Target Sacramento Riverside",c:"Sacramento",s:"CA",la:38.562,lg:-121.497},
+  {n:"Target Sacramento Madison",c:"Sacramento",s:"CA",la:38.662,lg:-121.349},
+  {n:"Target Sacramento Arden",c:"Sacramento",s:"CA",la:38.601,lg:-121.402},
+  {n:"Target Sacramento SW",c:"Sacramento",s:"CA",la:38.459,lg:-121.414},
+  {n:"Target Sacramento Natomas",c:"Sacramento",s:"CA",la:38.641,lg:-121.499},
+  {n:"Target Sacramento Midtown",c:"Sacramento",s:"CA",la:38.578,lg:-121.484},
+  {n:"Target Sports Arena",c:"San Diego",s:"CA",la:32.752,lg:-117.212},
+  {n:"Target Sacramento East",c:"Sacramento",s:"CA",la:38.55,lg:-121.426},
+  {n:"Target Kearny Mesa",c:"San Diego",s:"CA",la:32.817,lg:-117.152},
+  {n:"Target Mira Mesa",c:"San Diego",s:"CA",la:32.91,lg:-117.146},
+  {n:"Target San Diego Mission Valley",c:"San Diego",s:"CA",la:32.768,lg:-117.151},
+  {n:"Target Balboa",c:"San Diego",s:"CA",la:32.822,lg:-117.179},
+  {n:"Target Lemon Grove",c:"San Diego",s:"CA",la:32.741,lg:-117.055},
+  {n:"Target San Diego Del Sur",c:"San Diego",s:"CA",la:33.02,lg:-117.126},
+  {n:"Target San Diego South Park",c:"San Diego",s:"CA",la:32.727,lg:-117.129},
+  {n:"Target San Diego North Park",c:"San Diego",s:"CA",la:32.748,lg:-117.129},
+  {n:"Target San Francisco Central",c:"San Francisco",s:"CA",la:37.785,lg:-122.404},
+  {n:"Target San Francisco West",c:"San Francisco",s:"CA",la:37.782,lg:-122.446},
+  {n:"Target San Francisco Stonestown",c:"San Francisco",s:"CA",la:37.727,lg:-122.478},
+  {n:"Target San Jose West",c:"San Jose",s:"CA",la:37.265,lg:-121.918},
+  {n:"Target Ocean Beach",c:"San Diego",s:"CA",la:32.746,lg:-117.249},
+  {n:"Target San Jose Landess",c:"San Jose",s:"CA",la:37.414,lg:-121.877},
+  {n:"Target San Jose Capitol",c:"San Jose",s:"CA",la:37.374,lg:-121.845},
+  {n:"Target San Jose Oakridge",c:"San Jose",s:"CA",la:37.252,lg:-121.861},
+  {n:"Target San Jose Westgate",c:"San Jose",s:"CA",la:37.293,lg:-121.989},
+  {n:"Target San Jose Story Road",c:"San Jose",s:"CA",la:37.34,lg:-121.84},
+  {n:"Target San Jose College Park",c:"San Jose",s:"CA",la:37.339,lg:-121.904},
+  {n:"Target San Jose East",c:"San Jose",s:"CA",la:37.307,lg:-121.813},
+  {n:"Target San Jose Central",c:"San Jose",s:"CA",la:37.305,lg:-121.862},
+  {n:"Target San Jose North",c:"San Jose",s:"CA",la:37.418,lg:-121.956},
+  {n:"Target San Jose South",c:"San Jose",s:"CA",la:37.251,lg:-121.803},
+  {n:"Target Santa Ana 17th Street",c:"Santa Ana",s:"CA",la:33.759,lg:-117.85},
+  {n:"Target Santa Ana South Coast",c:"Santa Ana",s:"CA",la:33.703,lg:-117.888},
+  {n:"Target Santa Ana NW",c:"Santa Ana",s:"CA",la:33.761,lg:-117.888},
+  {n:"Target Santa Rosa South",c:"Santa Rosa",s:"CA",la:38.417,lg:-122.709},
+  {n:"Target Santa Monica 16th and Wilshire",c:"Santa Monica",s:"CA",la:34.028,lg:-118.486},
+  {n:"Target Santa Monica Broadway and 5th St",c:"Santa Monica",s:"CA",la:34.016,lg:-118.493},
+  {n:"Target Santa Rosa North",c:"Santa Rosa",s:"CA",la:38.457,lg:-122.73},
+  {n:"Target Simi Valley Cochran Street",c:"Simi Valley",s:"CA",la:34.281,lg:-118.74},
+  {n:"Target Stockton North",c:"Stockton",s:"CA",la:38.052,lg:-121.372},
+  {n:"Target Stockton",c:"Stockton",s:"CA",la:37.992,lg:-121.315},
+  {n:"Target Simi Valley Tierra Rejada Road",c:"Simi Valley",s:"CA",la:34.273,lg:-118.798},
+  {n:"Target Sherman Oaks",c:"Van Nuys",s:"CA",la:34.175,lg:-118.466},
+  {n:"Target Van Nuys Raymer St",c:"Van Nuys",s:"CA",la:34.213,lg:-118.459},
+  {n:"Target Ventura Main Street",c:"Ventura",s:"CA",la:34.261,lg:-119.237},
+  {n:"Target Visalia",c:"Visalia",s:"CA",la:36.294,lg:-119.314},
+  {n:"Target Ventura Mall",c:"Ventura",s:"CA",la:34.27,lg:-119.249},
+  {n:"Target Visalia North",c:"Visalia",s:"CA",la:36.352,lg:-119.297},
+  {n:"Target Vista South Business Park Drive",c:"Vista",s:"CA",la:33.137,lg:-117.228},
+  {n:"Target Vista North University Drive",c:"Vista",s:"CA",la:33.169,lg:-117.215},
+  {n:"Target West Covina",c:"West Covina",s:"CA",la:34.073,lg:-117.885},
+  {n:"Target West Covina South",c:"West Covina",s:"CA",la:34.035,lg:-117.91},
+  {n:"Target Westminster",c:"Westminster",s:"CA",la:33.725,lg:-117.986},
+  {n:"Target Westminster Mall",c:"Westminster",s:"CA",la:33.746,lg:-118.012},
+  {n:"Target Boulder",c:"Boulder",s:"CO",la:40.022,lg:-105.257},
+  {n:"Target Arvada",c:"Arvada",s:"CO",la:39.84,lg:-105.085},
+  {n:"Target Brighton",c:"Brighton",s:"CO",la:39.956,lg:-104.781},
+  {n:"Target Castle Rock",c:"Castle Rock",s:"CO",la:39.408,lg:-104.856},
+  {n:"Target Edgewater",c:"Edgewater",s:"CO",la:39.747,lg:-105.055},
+  {n:"Target Glenwood Springs",c:"Glenwood Springs",s:"CO",la:39.556,lg:-107.343},
+  {n:"Target Glendale",c:"Glendale",s:"CO",la:39.708,lg:-104.937},
+  {n:"Target Greeley",c:"Greeley",s:"CO",la:40.394,lg:-104.75},
+  {n:"Target Grand Junction",c:"Grand Junction",s:"CO",la:39.091,lg:-108.602},
+  {n:"Target Denver SW",c:"Littleton",s:"CO",la:39.611,lg:-105.102},
+  {n:"Target Arapahoe",c:"Greenwood Village",s:"CO",la:39.593,lg:-104.882},
+  {n:"Target Lone Tree",c:"Lone Tree",s:"CO",la:39.535,lg:-104.884},
+  {n:"Target Longmont",c:"Longmont",s:"CO",la:40.153,lg:-105.134},
+  {n:"Target Loveland",c:"Loveland",s:"CO",la:40.409,lg:-105.004},
+  {n:"Target Montrose",c:"Montrose",s:"CO",la:38.444,lg:-107.869},
+  {n:"Target Parker",c:"Parker",s:"CO",la:39.513,lg:-104.773},
+  {n:"Target Sheridan",c:"Sheridan",s:"CO",la:39.65,lg:-105.006},
+  {n:"Target Pueblo",c:"Pueblo",s:"CO",la:38.303,lg:-104.606},
+  {n:"Target Silverthorne",c:"Silverthorne",s:"CO",la:39.638,lg:-106.078},
+  {n:"Target Superior",c:"Superior",s:"CO",la:39.956,lg:-105.17},
+  {n:"Target Wheat Ridge",c:"Wheat Ridge",s:"CO",la:39.788,lg:-105.113},
+  {n:"Target Aurora SE",c:"Aurora",s:"CO",la:39.636,lg:-104.79},
+  {n:"Target Thornton",c:"Thornton",s:"CO",la:39.917,lg:-104.975},
+  {n:"Target Aurora West",c:"Aurora",s:"CO",la:39.692,lg:-104.865},
+  {n:"Target Aurora",c:"Aurora",s:"CO",la:39.716,lg:-104.821},
+  {n:"Target Aurora Saddle Rock",c:"Aurora",s:"CO",la:39.581,lg:-104.722},
+  {n:"Target Aurora South",c:"Aurora",s:"CO",la:39.592,lg:-104.805},
+  {n:"Target Colorado Springs North",c:"Colorado Springs",s:"CO",la:38.905,lg:-104.781},
+  {n:"Target S Colorado Springs",c:"Colorado Springs",s:"CO",la:38.792,lg:-104.802},
+  {n:"Target Colorado Springs East",c:"Colorado Springs",s:"CO",la:38.888,lg:-104.718},
+  {n:"Target Denver Northfield Blvd",c:"Denver",s:"CO",la:39.783,lg:-104.895},
+  {n:"Target Colorado Springs NE",c:"Colorado Springs",s:"CO",la:38.974,lg:-104.746},
+  {n:"Target Denver University Hills Plaza",c:"Denver",s:"CO",la:39.671,lg:-104.939},
+  {n:"Target Denver Downtown",c:"Denver",s:"CO",la:39.745,lg:-104.992},
+  {n:"Target Denver SE",c:"Denver",s:"CO",la:39.654,lg:-104.9},
+  {n:"Target Denver Lowry",c:"Denver",s:"CO",la:39.715,lg:-104.904},
+  {n:"Target Fort Collins East",c:"Fort Collins",s:"CO",la:40.528,lg:-105.023},
+  {n:"Target Fort Collins",c:"Fort Collins",s:"CO",la:40.527,lg:-105.078},
+  {n:"Target Fort Collins Old Town",c:"Fort Collins",s:"CO",la:40.582,lg:-105.076},
+  {n:"Target Douglas County",c:"Highlands Ranch",s:"CO",la:39.565,lg:-104.966},
+  {n:"Target Highlands Ranch",c:"Highlands Ranch",s:"CO",la:39.55,lg:-105.006},
+  {n:"Target Denver West",c:"Lakewood",s:"CO",la:39.734,lg:-105.154},
+  {n:"Target Lakewood",c:"Lakewood",s:"CO",la:39.708,lg:-105.079},
+  {n:"Target Westminster",c:"Westminster",s:"CO",la:39.886,lg:-105.079},
+  {n:"Target Westminster Orchard Parkway",c:"Westminster",s:"CO",la:39.959,lg:-104.996},
+  {n:"Target Bethel",c:"Bethel",s:"CT",la:41.414,lg:-73.402},
+  {n:"Target Ansonia",c:"Ansonia",s:"CT",la:41.344,lg:-73.08},
+  {n:"Target Danbury Fair Mall",c:"Danbury",s:"CT",la:41.379,lg:-73.477},
+  {n:"Target Killingly",c:"Dayville",s:"CT",la:41.839,lg:-71.885},
+  {n:"Target Enfield",c:"Enfield",s:"CT",la:41.997,lg:-72.582},
+  {n:"Target Guilford",c:"Guilford",s:"CT",la:41.287,lg:-72.679},
+  {n:"Target South Windsor",c:"Manchester",s:"CT",la:41.809,lg:-72.549},
+  {n:"Target Meriden",c:"Meriden",s:"CT",la:41.553,lg:-72.816},
+  {n:"Target Lisbon",c:"Lisbon",s:"CT",la:41.585,lg:-71.997},
+  {n:"Target New Britain",c:"New Britain",s:"CT",la:41.711,lg:-72.764},
+  {n:"Target Milford",c:"Milford",s:"CT",la:41.234,lg:-73.038},
+  {n:"Target Newington",c:"Newington",s:"CT",la:41.661,lg:-72.725},
+  {n:"Target North Haven",c:"North Haven",s:"CT",la:41.355,lg:-72.872},
+  {n:"Target Norwalk Route 1",c:"Norwalk",s:"CT",la:41.096,lg:-73.45},
+  {n:"Target Orange",c:"Orange",s:"CT",la:41.257,lg:-73.011},
+  {n:"Target Stamford",c:"Stamford",s:"CT",la:41.055,lg:-73.542},
+  {n:"Target Southington",c:"Southington",s:"CT",la:41.611,lg:-72.902},
+  {n:"Target Torrington",c:"Torrington",s:"CT",la:41.819,lg:-73.075},
+  {n:"Target Waterbury",c:"Waterbury",s:"CT",la:41.583,lg:-73.034},
+  {n:"Target Waterford",c:"Waterford",s:"CT",la:41.378,lg:-72.149},
+  {n:"Target Bishops Corner",c:"West Hartford",s:"CT",la:41.785,lg:-72.746},
+  {n:"Target Windsor",c:"Windsor",s:"CT",la:41.893,lg:-72.65},
+  {n:"Target Trumbull",c:"Trumbull",s:"CT",la:41.234,lg:-73.152},
+  {n:"Target Trumbull West",c:"Trumbull",s:"CT",la:41.23,lg:-73.226},
+  {n:"Target Dover",c:"Dover",s:"DE",la:39.16,lg:-75.51},
+  {n:"Target Middletown Warwick Road",c:"Middletown",s:"DE",la:39.456,lg:-75.726},
+  {n:"Target Christiana",c:"Newark",s:"DE",la:39.678,lg:-75.65},
+  {n:"Target Brandywine",c:"Wilmington",s:"DE",la:39.831,lg:-75.54},
+  {n:"Target Wilmington Prices Corner",c:"Wilmington",s:"DE",la:39.737,lg:-75.624},
+  {n:"Target Altamonte Springs",c:"Altamonte Springs",s:"FL",la:28.663,lg:-81.418},
+  {n:"Target West Boca Raton",c:"Boca Raton",s:"FL",la:26.355,lg:-80.205},
+  {n:"Target Brandon",c:"Brandon",s:"FL",la:27.936,lg:-82.324},
+  {n:"Target Aventura",c:"Aventura",s:"FL",la:25.972,lg:-80.14},
+  {n:"Target Brooksville",c:"Brooksville",s:"FL",la:28.479,lg:-82.479},
+  {n:"Target Casselberry",c:"Casselberry",s:"FL",la:28.672,lg:-81.341},
+  {n:"Target Clermont",c:"Clermont",s:"FL",la:28.549,lg:-81.705},
+  {n:"Target Coral Gables",c:"Coral Gables",s:"FL",la:25.755,lg:-80.259},
+  {n:"Target NE Polk County",c:"Davenport",s:"FL",la:28.233,lg:-81.644},
+  {n:"Target Clearwater",c:"Clearwater",s:"FL",la:27.959,lg:-82.724},
+  {n:"Target Davie",c:"Davie",s:"FL",la:26.049,lg:-80.25},
+  {n:"Target Daytona Beach",c:"Daytona Beach",s:"FL",la:29.183,lg:-81.08},
+  {n:"Target Destin",c:"Destin",s:"FL",la:30.391,lg:-86.481},
+  {n:"Target Delray Beach",c:"Delray Beach",s:"FL",la:26.437,lg:-80.085},
+  {n:"Target Coconut Point",c:"Estero",s:"FL",la:26.407,lg:-81.806},
+  {n:"Target Ft Lauderdale",c:"Fort Lauderdale",s:"FL",la:26.168,lg:-80.116},
+  {n:"Target Hialeah",c:"Hialeah",s:"FL",la:25.854,lg:-80.318},
+  {n:"Target Gainesville",c:"Gainesville",s:"FL",la:29.621,lg:-82.384},
+  {n:"Target Greenacres",c:"Greenacres",s:"FL",la:26.618,lg:-80.137},
+  {n:"Target Hollywood",c:"Hollywood",s:"FL",la:26.011,lg:-80.175},
+  {n:"Target Homestead",c:"Homestead",s:"FL",la:25.479,lg:-80.442},
+  {n:"Target Jacksonville Beach",c:"Jacksonville Beach",s:"FL",la:30.255,lg:-81.399},
+  {n:"Target Lake Mary",c:"Lake Mary",s:"FL",la:28.755,lg:-81.348},
+  {n:"Target Lake Park/Palm Beach Gardens",c:"Lake Park",s:"FL",la:26.805,lg:-80.084},
+  {n:"Target Wellington South",c:"Lake Worth",s:"FL",la:26.593,lg:-80.203},
+  {n:"Target Largo",c:"Largo",s:"FL",la:27.893,lg:-82.784},
+  {n:"Target Lutz Dale Mabry Highway",c:"Lutz",s:"FL",la:28.173,lg:-82.47},
+  {n:"Target Mary Esther",c:"Mary Esther",s:"FL",la:30.411,lg:-86.659},
+  {n:"Target Lecanto",c:"Lecanto",s:"FL",la:28.894,lg:-82.486},
+  {n:"Target Melbourne",c:"Melbourne Village",s:"FL",la:28.08,lg:-80.666},
+  {n:"Target Merritt Island",c:"Merritt Island",s:"FL",la:28.384,lg:-80.706},
+  {n:"Target South Beach",c:"Miami Beach",s:"FL",la:25.775,lg:-80.136},
+  {n:"Target Miramar",c:"Miramar",s:"FL",la:25.98,lg:-80.372},
+  {n:"Target Miami Lakes",c:"Miami Gardens",s:"FL",la:25.94,lg:-80.291},
+  {n:"Target Mt Dora",c:"Mount Dora",s:"FL",la:28.82,lg:-81.668},
+  {n:"Target North Miami",c:"North Miami Beach",s:"FL",la:25.906,lg:-80.156},
+  {n:"Target Ocala",c:"Ocala",s:"FL",la:29.174,lg:-82.157},
+  {n:"Target Fleming Island",c:"Orange Park",s:"FL",la:30.104,lg:-81.707},
+  {n:"Target Orange City",c:"Orange City",s:"FL",la:28.916,lg:-81.292},
+  {n:"Target Oviedo",c:"Oviedo",s:"FL",la:28.658,lg:-81.236},
+  {n:"Target Pace",c:"Pace",s:"FL",la:30.601,lg:-87.126},
+  {n:"Target Palm Coast",c:"Palm Coast",s:"FL",la:29.477,lg:-81.218},
+  {n:"Target Panama City",c:"Panama City",s:"FL",la:30.192,lg:-85.649},
+  {n:"Target Boot Ranch",c:"Palm Harbor",s:"FL",la:28.064,lg:-82.708},
+  {n:"Target Pier Park",c:"Panama City Beach",s:"FL",la:30.219,lg:-85.869},
+  {n:"Target Pembroke Pines",c:"Pembroke Pines",s:"FL",la:26.009,lg:-80.299},
+  {n:"Target Plantation",c:"Plantation",s:"FL",la:26.118,lg:-80.259},
+  {n:"Target Pinellas Park",c:"Pinellas Park",s:"FL",la:27.836,lg:-82.684},
+  {n:"Target Port Charlotte",c:"Port Charlotte",s:"FL",la:27.012,lg:-82.143},
+  {n:"Target Port Orange",c:"Port Orange",s:"FL",la:29.11,lg:-81.029},
+  {n:"Target Port St Lucie",c:"Port Saint Lucie",s:"FL",la:27.27,lg:-80.427},
+  {n:"Target St Augustine",c:"Saint Augustine",s:"FL",la:29.868,lg:-81.324},
+  {n:"Target Riverview",c:"Riverview",s:"FL",la:27.896,lg:-82.334},
+  {n:"Target Sanford",c:"Sanford",s:"FL",la:28.798,lg:-81.337},
+  {n:"Target Spring Hill",c:"Spring Hill",s:"FL",la:28.496,lg:-82.598},
+  {n:"Target Stuart",c:"Stuart",s:"FL",la:27.237,lg:-80.272},
+  {n:"Target Sawgrass",c:"Sunrise",s:"FL",la:26.149,lg:-80.323},
+  {n:"Target Lady Lake",c:"The Villages",s:"FL",la:28.952,lg:-81.958},
+  {n:"Target Titusville",c:"Titusville",s:"FL",la:28.552,lg:-80.841},
+  {n:"Target Venice",c:"Venice",s:"FL",la:27.05,lg:-82.391},
+  {n:"Target Seven Springs",c:"Trinity",s:"FL",la:28.201,lg:-82.664},
+  {n:"Target Winter Park",c:"Winter Park",s:"FL",la:28.595,lg:-81.288},
+  {n:"Target Vero Beach",c:"Vero Beach",s:"FL",la:27.641,lg:-80.448},
+  {n:"Target Wildwood",c:"Wildwood",s:"FL",la:28.866,lg:-82.011},
+  {n:"Target Yulee",c:"Yulee",s:"FL",la:30.63,lg:-81.554},
+  {n:"Target Boynton Beach West",c:"Boynton Beach",s:"FL",la:26.525,lg:-80.166},
+  {n:"Target Boynton Beach SE",c:"Boynton Beach",s:"FL",la:26.534,lg:-80.088},
+  {n:"Target Bradenton",c:"Bradenton",s:"FL",la:27.432,lg:-82.578},
+  {n:"Target Bradenton Heritage Harbor",c:"Bradenton",s:"FL",la:27.496,lg:-82.471},
+  {n:"Target Bradenton Beach",c:"Bradenton",s:"FL",la:27.498,lg:-82.635},
+  {n:"Target Cape Coral",c:"Cape Coral",s:"FL",la:26.607,lg:-81.975},
+  {n:"Target Coral Springs",c:"Coral Springs",s:"FL",la:26.284,lg:-80.202},
+  {n:"Target Cape Coral North",c:"Cape Coral",s:"FL",la:26.669,lg:-81.933},
+  {n:"Target Coral Springs NW",c:"Coral Springs",s:"FL",la:26.297,lg:-80.252},
+  {n:"Target Deerfield Beach Hillsboro Blvd",c:"Deerfield Beach",s:"FL",la:26.317,lg:-80.153},
+  {n:"Target Deerfield Beach",c:"Deerfield Beach",s:"FL",la:26.302,lg:-80.093},
+  {n:"Target Ft Myers",c:"Fort Myers",s:"FL",la:26.543,lg:-81.868},
+  {n:"Target Lee County",c:"Fort Myers",s:"FL",la:26.483,lg:-81.787},
+  {n:"Target Fort Myers SW",c:"Fort Myers",s:"FL",la:26.51,lg:-81.945},
+  {n:"Target Southside",c:"Jacksonville",s:"FL",la:30.192,lg:-81.551},
+  {n:"Target Fort Myers North",c:"Fort Myers",s:"FL",la:26.616,lg:-81.802},
+  {n:"Target Regency",c:"Jacksonville",s:"FL",la:30.329,lg:-81.549},
+  {n:"Target Jacksonville Mandarin",c:"Jacksonville",s:"FL",la:30.188,lg:-81.63},
+  {n:"Target Jacksonville East",c:"Jacksonville",s:"FL",la:30.285,lg:-81.457},
+  {n:"Target Ortega",c:"Jacksonville",s:"FL",la:30.235,lg:-81.695},
+  {n:"Target Jacksonville St Johns",c:"Jacksonville",s:"FL",la:30.261,lg:-81.525},
+  {n:"Target Jacksonville West",c:"Jacksonville",s:"FL",la:30.199,lg:-81.825},
+  {n:"Target Orlando SW",c:"Kissimmee",s:"FL",la:28.344,lg:-81.614},
+  {n:"Target Lakeland South",c:"Lakeland",s:"FL",la:28.0,lg:-81.973},
+  {n:"Target Kissimmee West",c:"Kissimmee",s:"FL",la:28.332,lg:-81.472},
+  {n:"Target Lakeland North",c:"Lakeland",s:"FL",la:28.092,lg:-81.971},
+  {n:"Target Viera",c:"Melbourne",s:"FL",la:28.228,lg:-80.719},
+  {n:"Target Palm Bay",c:"Melbourne",s:"FL",la:28.039,lg:-80.661},
+  {n:"Target Kendall",c:"Miami",s:"FL",la:25.686,lg:-80.438},
+  {n:"Target Bird Road",c:"Miami",s:"FL",la:25.736,lg:-80.321},
+  {n:"Target Cutler Ridge",c:"Miami",s:"FL",la:25.576,lg:-80.375},
+  {n:"Target Miami Central",c:"Miami",s:"FL",la:25.809,lg:-80.195},
+  {n:"Target Miami SW 104th Street",c:"Miami",s:"FL",la:25.673,lg:-80.323},
+  {n:"Target Miami Flagler",c:"Miami",s:"FL",la:25.771,lg:-80.36},
+  {n:"Target Miami Grove Central",c:"Miami",s:"FL",la:25.741,lg:-80.238},
+  {n:"Target Dadeland",c:"Miami",s:"FL",la:25.693,lg:-80.305},
+  {n:"Target Miami Downtown",c:"Miami",s:"FL",la:25.78,lg:-80.198},
+  {n:"Target Miami NW 7th Street",c:"Miami",s:"FL",la:25.78,lg:-80.259},
+  {n:"Target Naples",c:"Naples",s:"FL",la:26.209,lg:-81.771},
+  {n:"Target East Colonial",c:"Orlando",s:"FL",la:28.556,lg:-81.345},
+  {n:"Target Naples North",c:"Naples",s:"FL",la:26.27,lg:-81.74},
+  {n:"Target Waterford Lakes",c:"Orlando",s:"FL",la:28.552,lg:-81.201},
+  {n:"Target Orlando Millenia",c:"Orlando",s:"FL",la:28.494,lg:-81.43},
+  {n:"Target Orlando Sand Lake Rd",c:"Orlando",s:"FL",la:28.449,lg:-81.391},
+  {n:"Target Orlando - Sodo",c:"Orlando",s:"FL",la:28.515,lg:-81.38},
+  {n:"Target Hunters Creek",c:"Orlando",s:"FL",la:28.37,lg:-81.408},
+  {n:"Target Orlando Vineland",c:"Orlando",s:"FL",la:28.396,lg:-81.485},
+  {n:"Target Pensacola",c:"Pensacola",s:"FL",la:30.468,lg:-87.209},
+  {n:"Target Pensacola NE",c:"Pensacola",s:"FL",la:30.529,lg:-87.224},
+  {n:"Target Saint Petersburg",c:"Saint Petersburg",s:"FL",la:27.812,lg:-82.756},
+  {n:"Target Pensacola West",c:"Pensacola",s:"FL",la:30.363,lg:-87.358},
+  {n:"Target St Petersburg Gateway",c:"Saint Petersburg",s:"FL",la:27.847,lg:-82.644},
+  {n:"Target Sarasota Tamiami Trail",c:"Sarasota",s:"FL",la:27.228,lg:-82.493},
+  {n:"Target North Sarasota Fruitville Rd",c:"Sarasota",s:"FL",la:27.336,lg:-82.463},
+  {n:"Target Tallahassee",c:"Tallahassee",s:"FL",la:30.433,lg:-84.245},
+  {n:"Target University Parkway",c:"Sarasota",s:"FL",la:27.387,lg:-82.459},
+  {n:"Target Tallahassee North",c:"Tallahassee",s:"FL",la:30.561,lg:-84.215},
+  {n:"Target Tallahassee FL State U",c:"Tallahassee",s:"FL",la:30.448,lg:-84.314},
+  {n:"Target University Plaza",c:"Tampa",s:"FL",la:28.072,lg:-82.428},
+  {n:"Target North Dale Mabry",c:"Tampa",s:"FL",la:28.089,lg:-82.505},
+  {n:"Target Tampa",c:"Tampa",s:"FL",la:28.028,lg:-82.549},
+  {n:"Target Gandy",c:"Tampa",s:"FL",la:27.895,lg:-82.505},
+  {n:"Target Tampa Central Walter's Crossing",c:"Tampa",s:"FL",la:27.957,lg:-82.509},
+  {n:"Target New Tampa",c:"Wesley Chapel",s:"FL",la:28.173,lg:-82.356},
+  {n:"Target Tampa West",c:"Tampa",s:"FL",la:28.016,lg:-82.613},
+  {n:"Target Wesley Chapel Grove",c:"Wesley Chapel",s:"FL",la:28.237,lg:-82.356},
+  {n:"Target Royal Palm Beach",c:"West Palm Beach",s:"FL",la:26.711,lg:-80.203},
+  {n:"Target West Palm Beach",c:"West Palm Beach",s:"FL",la:26.723,lg:-80.085},
+  {n:"Target Orlando Flamingo Crossings",c:"Winter Garden",s:"FL",la:28.38,lg:-81.617},
+  {n:"Target Winter Garden",c:"Winter Garden",s:"FL",la:28.521,lg:-81.585},
+  {n:"Target Albany",c:"Albany",s:"GA",la:31.621,lg:-84.226},
+  {n:"Target Acworth",c:"Acworth",s:"GA",la:34.04,lg:-84.684},
+  {n:"Target Augusta",c:"Augusta",s:"GA",la:33.49,lg:-82.081},
+  {n:"Target Alpharetta",c:"Alpharetta",s:"GA",la:34.046,lg:-84.287},
+  {n:"Target Austell",c:"Austell",s:"GA",la:33.852,lg:-84.603},
+  {n:"Target Brunswick",c:"Brunswick",s:"GA",la:31.201,lg:-81.48},
+  {n:"Target Winder",c:"Bethlehem",s:"GA",la:33.943,lg:-83.753},
+  {n:"Target Canton",c:"Canton",s:"GA",la:34.237,lg:-84.455},
+  {n:"Target Buford",c:"Buford",s:"GA",la:34.07,lg:-83.982},
+  {n:"Target Carrollton",c:"Carrollton",s:"GA",la:33.559,lg:-85.077},
+  {n:"Target Cartersville",c:"Cartersville",s:"GA",la:34.173,lg:-84.786},
+  {n:"Target Columbus",c:"Columbus",s:"GA",la:32.533,lg:-84.969},
+  {n:"Target Cumming",c:"Cumming",s:"GA",la:34.186,lg:-84.134},
+  {n:"Target Douglasville",c:"Douglasville",s:"GA",la:33.726,lg:-84.735},
+  {n:"Target Conyers",c:"Conyers",s:"GA",la:33.633,lg:-84.017},
+  {n:"Target East Point",c:"East Point",s:"GA",la:33.659,lg:-84.499},
+  {n:"Target Evans",c:"Evans",s:"GA",la:33.527,lg:-82.118},
+  {n:"Target Fayetteville",c:"Fayetteville",s:"GA",la:33.482,lg:-84.439},
+  {n:"Target Gainesville",c:"Gainesville",s:"GA",la:34.277,lg:-83.818},
+  {n:"Target Flowery Branch",c:"Flowery Branch",s:"GA",la:34.18,lg:-83.911},
+  {n:"Target Hiram",c:"Hiram",s:"GA",la:33.886,lg:-84.744},
+  {n:"Target Johns Creek State St and 141",c:"Johns Creek",s:"GA",la:34.013,lg:-84.186},
+  {n:"Target Cobb",c:"Kennesaw",s:"GA",la:34.009,lg:-84.573},
+  {n:"Target McDonough",c:"Mcdonough",s:"GA",la:33.468,lg:-84.217},
+  {n:"Target Lawrenceville",c:"Lawrenceville",s:"GA",la:33.971,lg:-84.017},
+  {n:"Target Milton",c:"Milton",s:"GA",la:34.099,lg:-84.269},
+  {n:"Target Newnan",c:"Newnan",s:"GA",la:33.393,lg:-84.758},
+  {n:"Target Peachtree Corners",c:"Peachtree Corners",s:"GA",la:33.952,lg:-84.232},
+  {n:"Target Peachtree City",c:"Peachtree City",s:"GA",la:33.441,lg:-84.591},
+  {n:"Target Roswell",c:"Roswell",s:"GA",la:34.064,lg:-84.398},
+  {n:"Target Sandy Springs Prado",c:"Sandy Springs",s:"GA",la:33.907,lg:-84.38},
+  {n:"Target Smyrna",c:"Smyrna",s:"GA",la:33.898,lg:-84.479},
+  {n:"Target Snellville",c:"Snellville",s:"GA",la:33.877,lg:-84.015},
+  {n:"Target Valdosta",c:"Valdosta",s:"GA",la:30.843,lg:-83.316},
+  {n:"Target Suwanee Peachtree Pkwy",c:"Suwanee",s:"GA",la:34.097,lg:-84.173},
+  {n:"Target Northlake",c:"Tucker",s:"GA",la:33.845,lg:-84.246},
+  {n:"Target Warner Robins",c:"Warner Robins",s:"GA",la:32.618,lg:-83.685},
+  {n:"Target Woodstock",c:"Woodstock",s:"GA",la:34.085,lg:-84.546},
+  {n:"Target Athens",c:"Athens",s:"GA",la:33.942,lg:-83.441},
+  {n:"Target Athens Broad Street",c:"Athens",s:"GA",la:33.958,lg:-83.376},
+  {n:"Target North Druid Hills",c:"Atlanta",s:"GA",la:33.828,lg:-84.325},
+  {n:"Target Buckhead",c:"Atlanta",s:"GA",la:33.852,lg:-84.36},
+  {n:"Target Atlanta Edgewood",c:"Atlanta",s:"GA",la:33.757,lg:-84.346},
+  {n:"Target Atlanta Midtown",c:"Atlanta",s:"GA",la:33.793,lg:-84.399},
+  {n:"Target Buckhead South",c:"Atlanta",s:"GA",la:33.824,lg:-84.363},
+  {n:"Target Cobb NE",c:"Marietta",s:"GA",la:34.035,lg:-84.46},
+  {n:"Target Atlanta Perimeter",c:"Atlanta",s:"GA",la:33.931,lg:-84.341},
+  {n:"Target West Marietta",c:"Marietta",s:"GA",la:33.944,lg:-84.626},
+  {n:"Target Marietta East",c:"Marietta",s:"GA",la:33.985,lg:-84.429},
+  {n:"Target Savannah East",c:"Savannah",s:"GA",la:32.041,lg:-81.069},
+  {n:"Target Savannah",c:"Savannah",s:"GA",la:31.984,lg:-81.175},
+  {n:"Target Hawaii-Hilo",c:"Hilo",s:"HI",la:19.701,lg:-155.06},
+  {n:"Target Maui-Kahului",c:"Kahului",s:"HI",la:20.874,lg:-156.455},
+  {n:"Target Oahu-Kailua",c:"Kailua",s:"HI",la:21.392,lg:-157.74},
+  {n:"Target Hawaii-Kona",c:"Kailua Kona",s:"HI",la:19.648,lg:-156.003},
+  {n:"Target Oahu Windward Mall",c:"Kaneohe",s:"HI",la:21.42,lg:-157.805},
+  {n:"Target Oahu-Kapolei",c:"Kapolei",s:"HI",la:21.332,lg:-158.093},
+  {n:"Target Lihue Kauai",c:"Lihue",s:"HI",la:21.968,lg:-159.377},
+  {n:"Target Oahu-Honolulu Salt Lake",c:"Honolulu",s:"HI",la:21.355,lg:-157.929},
+  {n:"Target Oahu Honolulu Ala Moana",c:"Honolulu",s:"HI",la:21.293,lg:-157.842},
+  {n:"Target Oahu Waikiki",c:"Honolulu",s:"HI",la:21.278,lg:-157.826},
+  {n:"Target Coeur d'Alene",c:"Coeur D'alene",s:"ID",la:47.735,lg:-116.791},
+  {n:"Target Idaho Falls",c:"Idaho Falls",s:"ID",la:43.477,lg:-111.984},
+  {n:"Target Moscow West Pullman Road",c:"Moscow",s:"ID",la:46.733,lg:-117.028},
+  {n:"Target Nampa",c:"Nampa",s:"ID",la:43.61,lg:-116.589},
+  {n:"Target Boise",c:"Boise",s:"ID",la:43.61,lg:-116.286},
+  {n:"Target Boise Eagle Road",c:"Boise",s:"ID",la:43.661,lg:-116.352},
+  {n:"Target Twin Falls",c:"Twin Falls",s:"ID",la:42.591,lg:-114.46},
+  {n:"Target Alton",c:"Alton",s:"IL",la:38.921,lg:-90.17},
+  {n:"Target Algonquin",c:"Algonquin",s:"IL",la:42.163,lg:-88.336},
+  {n:"Target Arlington Heights",c:"Arlington Heights",s:"IL",la:42.112,lg:-87.977},
+  {n:"Target Batavia",c:"Batavia",s:"IL",la:41.852,lg:-88.343},
+  {n:"Target Belleville",c:"Belleville",s:"IL",la:38.519,lg:-90.024},
+  {n:"Target Bolingbrook",c:"Bolingbrook",s:"IL",la:41.705,lg:-88.122},
+  {n:"Target Broadview",c:"Broadview",s:"IL",la:41.855,lg:-87.851},
+  {n:"Target Bradley",c:"Bourbonnais",s:"IL",la:41.207,lg:-87.853},
+  {n:"Target Cicero",c:"Cicero",s:"IL",la:41.84,lg:-87.741},
+  {n:"Target Crestwood",c:"Crestwood",s:"IL",la:41.657,lg:-87.746},
+  {n:"Target Crystal Lake",c:"Crystal Lake",s:"IL",la:42.229,lg:-88.305},
+  {n:"Target DeKalb",c:"Dekalb",s:"IL",la:41.956,lg:-88.725},
+  {n:"Target Decatur",c:"Decatur",s:"IL",la:39.891,lg:-88.958},
+  {n:"Target Edwardsville",c:"Edwardsville",s:"IL",la:38.783,lg:-89.949},
+  {n:"Target East Peoria",c:"East Peoria",s:"IL",la:40.663,lg:-89.573},
+  {n:"Target Galesburg",c:"Galesburg",s:"IL",la:40.976,lg:-90.388},
+  {n:"Target Elgin",c:"Elgin",s:"IL",la:42.026,lg:-88.341},
+  {n:"Target Fairview Heights",c:"Fairview Heights",s:"IL",la:38.572,lg:-89.987},
+  {n:"Target Glendale Heights",c:"Glendale Heights",s:"IL",la:41.938,lg:-88.099},
+  {n:"Target Glenview",c:"Glenview",s:"IL",la:42.105,lg:-87.814},
+  {n:"Target Highland Park",c:"Highland Park",s:"IL",la:42.192,lg:-87.825},
+  {n:"Target Gurnee",c:"Gurnee",s:"IL",la:42.383,lg:-87.966},
+  {n:"Target Hillside",c:"Hillside",s:"IL",la:41.867,lg:-87.883},
+  {n:"Target Hodgkins",c:"Hodgkins",s:"IL",la:41.781,lg:-87.859},
+  {n:"Target Hoffman Estates",c:"Hoffman Estates",s:"IL",la:42.074,lg:-88.194},
+  {n:"Target Homewood",c:"Homewood",s:"IL",la:41.569,lg:-87.634},
+  {n:"Target Joliet",c:"Joliet",s:"IL",la:41.577,lg:-88.154},
+  {n:"Target Lake Zurich",c:"Lake Zurich",s:"IL",la:42.187,lg:-88.104},
+  {n:"Target Lake Bluff",c:"Lake Bluff",s:"IL",la:42.28,lg:-87.883},
+  {n:"Target Lemont",c:"Lemont",s:"IL",la:41.644,lg:-88.004},
+  {n:"Target Lombard",c:"Lombard",s:"IL",la:41.845,lg:-88.003},
+  {n:"Target Marion",c:"Marion",s:"IL",la:37.748,lg:-88.976},
+  {n:"Target Machesney Park",c:"Machesney Park",s:"IL",la:42.367,lg:-89.028},
+  {n:"Target SW Moline",c:"Moline",s:"IL",la:41.469,lg:-90.524},
+  {n:"Target Mundelein",c:"Mundelein",s:"IL",la:42.284,lg:-88.045},
+  {n:"Target Melrose Park",c:"Melrose Park",s:"IL",la:41.906,lg:-87.844},
+  {n:"Target New Lenox",c:"New Lenox",s:"IL",la:41.507,lg:-87.921},
+  {n:"Target Naperville",c:"Naperville",s:"IL",la:41.772,lg:-88.204},
+  {n:"Target North Aurora",c:"North Aurora",s:"IL",la:41.798,lg:-88.365},
+  {n:"Target Bloomington Normal",c:"Normal",s:"IL",la:40.505,lg:-88.956},
+  {n:"Target Norridge",c:"Norridge",s:"IL",la:41.955,lg:-87.808},
+  {n:"Target Oak Lawn",c:"Oak Lawn",s:"IL",la:41.721,lg:-87.725},
+  {n:"Target OakPark",c:"Oak Park",s:"IL",la:41.888,lg:-87.804},
+  {n:"Target Orland Park",c:"Orland Park",s:"IL",la:41.603,lg:-87.851},
+  {n:"Target Oswego",c:"Oswego",s:"IL",la:41.697,lg:-88.316},
+  {n:"Target Peoria",c:"Peoria",s:"IL",la:40.75,lg:-89.635},
+  {n:"Target Palatine",c:"Palatine",s:"IL",la:42.138,lg:-88.028},
+  {n:"Target Peru",c:"Peru",s:"IL",la:41.362,lg:-89.129},
+  {n:"Target Plainfield",c:"Plainfield",s:"IL",la:41.65,lg:-88.206},
+  {n:"Target Quincy",c:"Quincy",s:"IL",la:39.936,lg:-91.356},
+  {n:"Target Rockford",c:"Rockford",s:"IL",la:42.27,lg:-88.989},
+  {n:"Target Rosemont",c:"Rosemont",s:"IL",la:42.007,lg:-87.886},
+  {n:"Target Shorewood",c:"Shorewood",s:"IL",la:41.542,lg:-88.201},
+  {n:"Target Shiloh",c:"Shiloh",s:"IL",la:38.573,lg:-89.923},
+  {n:"Target Skokie IL",c:"Skokie",s:"IL",la:42.04,lg:-87.751},
+  {n:"Target South Elgin",c:"South Elgin",s:"IL",la:41.975,lg:-88.342},
+  {n:"Target Springfield",c:"Springfield",s:"IL",la:39.75,lg:-89.711},
+  {n:"Target Streamwood",c:"Streamwood",s:"IL",la:42.017,lg:-88.201},
+  {n:"Target St Charles",c:"St Charles",s:"IL",la:41.918,lg:-88.264},
+  {n:"Target Tinley Park",c:"Tinley Park",s:"IL",la:41.544,lg:-87.797},
+  {n:"Target Villa Park",c:"Villa Park",s:"IL",la:41.907,lg:-87.977},
+  {n:"Target Vernon Hills",c:"Vernon Hills",s:"IL",la:42.242,lg:-87.957},
+  {n:"Target Warrenville",c:"Warrenville",s:"IL",la:41.801,lg:-88.169},
+  {n:"Target Waukegan",c:"Waukegan",s:"IL",la:42.408,lg:-87.856},
+  {n:"Target Wheaton",c:"Wheaton",s:"IL",la:41.859,lg:-88.14},
+  {n:"Target Wheeling",c:"Wheeling",s:"IL",la:42.154,lg:-87.951},
+  {n:"Target Willowbrook",c:"Willowbrook",s:"IL",la:41.75,lg:-87.944},
+  {n:"Target Woodridge",c:"Woodridge",s:"IL",la:41.771,lg:-88.039},
+  {n:"Target Yorkville",c:"Yorkville",s:"IL",la:41.663,lg:-88.465},
+  {n:"Target Wood Dale",c:"Wood Dale",s:"IL",la:41.967,lg:-87.993},
+  {n:"Target Champaign",c:"Champaign",s:"IL",la:40.142,lg:-88.255},
+  {n:"Target Champaign Campustown",c:"Champaign",s:"IL",la:40.11,lg:-88.23},
+  {n:"Target Chicago Near North Elston",c:"Chicago",s:"IL",la:41.929,lg:-87.685},
+  {n:"Target Chicago Mid North",c:"Chicago",s:"IL",la:41.945,lg:-87.702},
+  {n:"Target Bedford Park",c:"Chicago",s:"IL",la:41.764,lg:-87.742},
+  {n:"Target Chicago South Pulaski",c:"Chicago",s:"IL",la:41.812,lg:-87.722},
+  {n:"Target Chicago Brickyard",c:"Chicago",s:"IL",la:41.93,lg:-87.789},
+  {n:"Target Chicago South Loop",c:"Chicago",s:"IL",la:41.868,lg:-87.631},
+  {n:"Target Chicago Peterson Ave",c:"Chicago",s:"IL",la:41.991,lg:-87.682},
+  {n:"Target Chicago McKinley Park",c:"Chicago",s:"IL",la:41.836,lg:-87.675},
+  {n:"Target Chicago Wilson Yard",c:"Chicago",s:"IL",la:41.964,lg:-87.656},
+  {n:"Target Chicago Gold Coast",c:"Chicago",s:"IL",la:41.904,lg:-87.644},
+  {n:"Target Chicago West Loop",c:"Chicago",s:"IL",la:41.878,lg:-87.655},
+  {n:"Target Chicago State St.",c:"Chicago",s:"IL",la:41.882,lg:-87.627},
+  {n:"Target Chicago Streeterville",c:"Chicago",s:"IL",la:41.891,lg:-87.617},
+  {n:"Target Chicago Lakeview Belmont Stn",c:"Chicago",s:"IL",la:41.94,lg:-87.651},
+  {n:"Target Chicago Hyde Park IL",c:"Chicago",s:"IL",la:41.8,lg:-87.594},
+  {n:"Target Chicago Lincoln Park North",c:"Chicago",s:"IL",la:41.931,lg:-87.645},
+  {n:"Target Rogers Park",c:"Chicago",s:"IL",la:41.999,lg:-87.661},
+  {n:"Target Chicago Lakeview Ashland",c:"Chicago",s:"IL",la:41.942,lg:-87.669},
+  {n:"Target Chicago Wicker Park",c:"Chicago",s:"IL",la:41.904,lg:-87.67},
+  {n:"Target Chicago Mayfair",c:"Chicago",s:"IL",la:41.975,lg:-87.744},
+  {n:"Target Chicago Lincoln Park South Webster",c:"Chicago",s:"IL",la:41.922,lg:-87.643},
+  {n:"Target Chicago Logan Square Milwaukee",c:"Chicago",s:"IL",la:41.926,lg:-87.703},
+  {n:"Target Chicago River North",c:"Chicago",s:"IL",la:41.893,lg:-87.633},
+  {n:"Target Chicago Portage Park",c:"Chicago",s:"IL",la:41.954,lg:-87.746},
+  {n:"Target Evanston",c:"Evanston",s:"IL",la:42.021,lg:-87.706},
+  {n:"Target Niles",c:"Niles",s:"IL",la:42.013,lg:-87.78},
+  {n:"Target Evanston Downtown",c:"Evanston",s:"IL",la:42.048,lg:-87.682},
+  {n:"Target Golf Mill",c:"Niles",s:"IL",la:42.05,lg:-87.837},
+  {n:"Target West Schaumburg",c:"Schaumburg",s:"IL",la:42.023,lg:-88.146},
+  {n:"Target Waterford Park",c:"Clarksville",s:"IN",la:38.328,lg:-85.765},
+  {n:"Target Woodfield",c:"Schaumburg",s:"IL",la:42.038,lg:-88.049},
+  {n:"Target Avon",c:"Avon",s:"IN",la:39.764,lg:-86.342},
+  {n:"Target Bloomington",c:"Bloomington",s:"IN",la:39.162,lg:-86.495},
+  {n:"Target Columbus",c:"Columbus",s:"IN",la:39.219,lg:-85.885},
+  {n:"Target Goshen",c:"Goshen",s:"IN",la:41.622,lg:-85.906},
+  {n:"Target Greenwood South",c:"Greenwood",s:"IN",la:39.603,lg:-86.157},
+  {n:"Target Fishers",c:"Fishers",s:"IN",la:39.96,lg:-86.01},
+  {n:"Target Mishawaka",c:"Granger",s:"IN",la:41.718,lg:-86.176},
+  {n:"Target Highland",c:"Highland",s:"IN",la:41.524,lg:-87.468},
+  {n:"Target Kokomo",c:"Kokomo",s:"IN",la:40.475,lg:-86.11},
+  {n:"Target Lake County",c:"Merrillville",s:"IN",la:41.469,lg:-87.303},
+  {n:"Target Lafayette",c:"Lafayette",s:"IN",la:40.42,lg:-86.847},
+  {n:"Target Muncie",c:"Muncie",s:"IN",la:40.222,lg:-85.381},
+  {n:"Target Munster",c:"Munster",s:"IN",la:41.568,lg:-87.507},
+  {n:"Target New Albany",c:"New Albany",s:"IN",la:38.308,lg:-85.842},
+  {n:"Target Plainfield",c:"Plainfield",s:"IN",la:39.716,lg:-86.355},
+  {n:"Target South Bend",c:"South Bend",s:"IN",la:41.627,lg:-86.229},
+  {n:"Target Valparaiso",c:"Valparaiso",s:"IN",la:41.467,lg:-87.032},
+  {n:"Target St John",c:"Saint John",s:"IN",la:41.44,lg:-87.468},
+  {n:"Target West Lafayette State Street",c:"West Lafayette",s:"IN",la:40.424,lg:-86.908},
+  {n:"Target Carmel East 151st Street",c:"Carmel",s:"IN",la:40.008,lg:-86.129},
+  {n:"Target Carmel West",c:"Carmel",s:"IN",la:39.937,lg:-86.233},
+  {n:"Target Evansville Lloyd Expressway",c:"Evansville",s:"IN",la:37.975,lg:-87.47},
+  {n:"Target Evansville North",c:"Evansville",s:"IN",la:38.016,lg:-87.576},
+  {n:"Target Ft Wayne NE",c:"Fort Wayne",s:"IN",la:41.122,lg:-85.064},
+  {n:"Target Ft Wayne Glenbrook",c:"Fort Wayne",s:"IN",la:41.111,lg:-85.139},
+  {n:"Target Eagle Creek",c:"Indianapolis",s:"IN",la:39.824,lg:-86.236},
+  {n:"Target Fort Wayne SW",c:"Fort Wayne",s:"IN",la:41.077,lg:-85.204},
+  {n:"Target Washington Square",c:"Indianapolis",s:"IN",la:39.778,lg:-85.987},
+  {n:"Target Nora Plaza",c:"Indianapolis",s:"IN",la:39.914,lg:-86.137},
+  {n:"Target Southport",c:"Indianapolis",s:"IN",la:39.665,lg:-86.083},
+  {n:"Target Indy Glendale",c:"Indianapolis",s:"IN",la:39.866,lg:-86.123},
+  {n:"Target Altoona",c:"Altoona",s:"IA",la:41.641,lg:-93.504},
+  {n:"Target Ames",c:"Ames",s:"IA",la:42.019,lg:-93.608},
+  {n:"Target Ankeny",c:"Ankeny",s:"IA",la:41.709,lg:-93.578},
+  {n:"Target Cedar Falls",c:"Cedar Falls",s:"IA",la:42.481,lg:-92.444},
+  {n:"Target Davenport",c:"Davenport",s:"IA",la:41.573,lg:-90.526},
+  {n:"Target Council Bluffs",c:"Council Bluffs",s:"IA",la:41.22,lg:-95.839},
+  {n:"Target Coralville",c:"Coralville",s:"IA",la:41.692,lg:-91.606},
+  {n:"Target Dubuque",c:"Dubuque",s:"IA",la:42.491,lg:-90.723},
+  {n:"Target Fort Dodge",c:"Fort Dodge",s:"IA",la:42.505,lg:-94.153},
+  {n:"Target Mason City",c:"Mason City",s:"IA",la:43.15,lg:-93.253},
+  {n:"Target Iowa City Downtown",c:"Iowa City",s:"IA",la:41.66,lg:-91.534},
+  {n:"Target Sioux City",c:"Sioux City",s:"IA",la:42.451,lg:-96.334},
+  {n:"Target Waterloo",c:"Waterloo",s:"IA",la:42.466,lg:-92.327},
+  {n:"Target Urbandale",c:"Urbandale",s:"IA",la:41.647,lg:-93.767},
+  {n:"Target Waukee",c:"Waukee",s:"IA",la:41.612,lg:-93.857},
+  {n:"Target Burlington",c:"West Burlington",s:"IA",la:40.821,lg:-91.172},
+  {n:"Target Cedar Rapids North",c:"Cedar Rapids",s:"IA",la:42.037,lg:-91.652},
+  {n:"Target Cedar Rapids South",c:"Cedar Rapids",s:"IA",la:41.944,lg:-91.717},
+  {n:"Target South Des Moines",c:"Des Moines",s:"IA",la:41.526,lg:-93.602},
+  {n:"Target Des Moines North",c:"Des Moines",s:"IA",la:41.63,lg:-93.7},
+  {n:"Target Valley West",c:"West Des Moines",s:"IA",la:41.6,lg:-93.753},
+  {n:"Target West Des Moines SW",c:"West Des Moines",s:"IA",la:41.561,lg:-93.78},
+  {n:"Target Derby",c:"Derby",s:"KS",la:37.569,lg:-97.242},
+  {n:"Target Garden City",c:"Garden City",s:"KS",la:37.98,lg:-100.843},
+  {n:"Target KC Speedway",c:"Kansas City",s:"KS",la:39.127,lg:-94.832},
+  {n:"Target Manhattan",c:"Manhattan",s:"KS",la:39.171,lg:-96.606},
+  {n:"Target Lawrence",c:"Lawrence",s:"KS",la:38.926,lg:-95.261},
+  {n:"Target Mission",c:"Mission",s:"KS",la:39.018,lg:-94.665},
+  {n:"Target Salina",c:"Salina",s:"KS",la:38.784,lg:-97.609},
+  {n:"Target Shawnee",c:"Shawnee",s:"KS",la:39.01,lg:-94.768},
+  {n:"Target Topeka",c:"Topeka",s:"KS",la:39.028,lg:-95.76},
+  {n:"Target Olathe South",c:"Olathe",s:"KS",la:38.849,lg:-94.82},
+  {n:"Target Olathe",c:"Olathe",s:"KS",la:38.91,lg:-94.764},
+  {n:"Target Overland Park South",c:"Overland Park",s:"KS",la:38.853,lg:-94.682},
+  {n:"Target Overland Park",c:"Overland Park",s:"KS",la:38.908,lg:-94.675},
+  {n:"Target Overland Park West",c:"Overland Park",s:"KS",la:38.951,lg:-94.72},
+  {n:"Target Wichita NE",c:"Wichita",s:"KS",la:37.724,lg:-97.212},
+  {n:"Target Wichita Maple",c:"Wichita",s:"KS",la:37.678,lg:-97.432},
+  {n:"Target Bowling Green",c:"Bowling Green",s:"KY",la:36.949,lg:-86.436},
+  {n:"Target Wichita NW",c:"Wichita",s:"KS",la:37.733,lg:-97.465},
+  {n:"Target Elizabethtown",c:"Elizabethtown",s:"KY",la:37.729,lg:-85.88},
+  {n:"Target Florence",c:"Florence",s:"KY",la:39.02,lg:-84.634},
+  {n:"Target Newport",c:"Newport",s:"KY",la:39.089,lg:-84.478},
+  {n:"Target Owensboro",c:"Owensboro",s:"KY",la:37.717,lg:-87.123},
+  {n:"Target Lexington",c:"Lexington",s:"KY",la:37.993,lg:-84.526},
+  {n:"Target Lexington SE",c:"Lexington",s:"KY",la:38.022,lg:-84.415},
+  {n:"Target Lexington Campus",c:"Lexington",s:"KY",la:38.043,lg:-84.504},
+  {n:"Target Jeffersontown",c:"Louisville",s:"KY",la:38.215,lg:-85.595},
+  {n:"Target Bashford Manor",c:"Louisville",s:"KY",la:38.198,lg:-85.671},
+  {n:"Target Springhurst",c:"Louisville",s:"KY",la:38.297,lg:-85.558},
+  {n:"Target Louisville Jefferson Pavilion",c:"Louisville",s:"KY",la:38.146,lg:-85.673},
+  {n:"Target St Matthews",c:"Louisville",s:"KY",la:38.258,lg:-85.644},
+  {n:"Target Alexandria",c:"Alexandria",s:"LA",la:31.28,lg:-92.458},
+  {n:"Target Bossier City",c:"Bossier City",s:"LA",la:32.559,lg:-93.707},
+  {n:"Target Middletown",c:"Louisville",s:"KY",la:38.243,lg:-85.51},
+  {n:"Target Covington",c:"Covington",s:"LA",la:30.443,lg:-90.142},
+  {n:"Target Hammond",c:"Hammond",s:"LA",la:30.481,lg:-90.462},
+  {n:"Target Harvey",c:"Harvey",s:"LA",la:29.889,lg:-90.056},
+  {n:"Target Houma",c:"Houma",s:"LA",la:29.611,lg:-90.757},
+  {n:"Target Kenner",c:"Kenner",s:"LA",la:30.019,lg:-90.249},
+  {n:"Target Lake Charles",c:"Lake Charles",s:"LA",la:30.199,lg:-93.248},
+  {n:"Target Mandeville",c:"Mandeville",s:"LA",la:30.39,lg:-90.086},
+  {n:"Target Monroe",c:"Monroe",s:"LA",la:32.5,lg:-92.07},
+  {n:"Target Metairie",c:"Metairie",s:"LA",la:30.003,lg:-90.184},
+  {n:"Target Baton Rouge Siegen",c:"Baton Rouge",s:"LA",la:30.385,lg:-91.061},
+  {n:"Target Shreveport",c:"Shreveport",s:"LA",la:32.44,lg:-93.72},
+  {n:"Target Baton Rouge East",c:"Baton Rouge",s:"LA",la:30.441,lg:-91.022},
+  {n:"Target Lafayette",c:"Lafayette",s:"LA",la:30.16,lg:-92.049},
+  {n:"Target Lafayette N",c:"Lafayette",s:"LA",la:30.266,lg:-91.996},
+  {n:"Target Auburn Center St",c:"Auburn",s:"ME",la:44.124,lg:-70.223},
+  {n:"Target Augusta",c:"Augusta",s:"ME",la:44.313,lg:-69.806},
+  {n:"Target Biddeford",c:"Biddeford",s:"ME",la:43.474,lg:-70.515},
+  {n:"Target South Portland",c:"South Portland",s:"ME",la:43.634,lg:-70.347},
+  {n:"Target Topsham",c:"Topsham",s:"ME",la:43.934,lg:-69.985},
+  {n:"Target Bangor",c:"Bangor",s:"ME",la:44.842,lg:-68.742},
+  {n:"Target Aberdeen",c:"Aberdeen",s:"MD",la:39.521,lg:-76.179},
+  {n:"Target Abingdon",c:"Abingdon",s:"MD",la:39.46,lg:-76.316},
+  {n:"Target Annapolis",c:"Annapolis",s:"MD",la:38.98,lg:-76.542},
+  {n:"Target Baltimore East",c:"Baltimore",s:"MD",la:39.275,lg:-76.566},
+  {n:"Target Bel Air",c:"Bel Air",s:"MD",la:39.526,lg:-76.351},
+  {n:"Target Bethesda",c:"Bethesda",s:"MD",la:38.978,lg:-77.091},
+  {n:"Target Brandywine",c:"Brandywine",s:"MD",la:38.672,lg:-76.873},
+  {n:"Target Timonium",c:"Cockeysville",s:"MD",la:39.462,lg:-76.634},
+  {n:"Target Lexington Park",c:"California",s:"MD",la:38.297,lg:-76.514},
+  {n:"Target Columbia",c:"Columbia",s:"MD",la:39.197,lg:-76.814},
+  {n:"Target Forestville",c:"District Heights",s:"MD",la:38.849,lg:-76.887},
+  {n:"Target Ellicott City",c:"Ellicott City",s:"MD",la:39.25,lg:-76.817},
+  {n:"Target Easton",c:"Easton",s:"MD",la:38.782,lg:-76.087},
+  {n:"Target Frederick",c:"Frederick",s:"MD",la:39.382,lg:-77.398},
+  {n:"Target Gaithersburg",c:"Gaithersburg",s:"MD",la:39.119,lg:-77.203},
+  {n:"Target Crofton",c:"Gambrills",s:"MD",la:39.035,lg:-76.684},
+  {n:"Target Hagerstown",c:"Hagerstown",s:"MD",la:39.62,lg:-77.773},
+  {n:"Target Germantown",c:"Germantown",s:"MD",la:39.198,lg:-77.245},
+  {n:"Target Greenbelt",c:"Greenbelt",s:"MD",la:38.999,lg:-76.907},
+  {n:"Target Prince Georges Plaza",c:"Hyattsville",s:"MD",la:38.969,lg:-76.957},
+  {n:"Target LaPlata",c:"La Plata",s:"MD",la:38.541,lg:-76.983},
+  {n:"Target Middle River",c:"Middle River",s:"MD",la:39.335,lg:-76.449},
+  {n:"Target Laurel",c:"Laurel",s:"MD",la:39.097,lg:-76.81},
+  {n:"Target White Marsh",c:"Nottingham",s:"MD",la:39.371,lg:-76.451},
+  {n:"Target Owings Mills",c:"Owings Mills",s:"MD",la:39.433,lg:-76.799},
+  {n:"Target Oxon Hill",c:"Oxon Hill",s:"MD",la:38.806,lg:-76.983},
+  {n:"Target Pikesville",c:"Pikesville",s:"MD",la:39.385,lg:-76.732},
+  {n:"Target Rockville",c:"Rockville",s:"MD",la:39.056,lg:-77.115},
+  {n:"Target Kent Island",c:"Stevensville",s:"MD",la:38.977,lg:-76.319},
+  {n:"Target Towson",c:"Towson",s:"MD",la:39.394,lg:-76.58},
+  {n:"Target Salisbury",c:"Salisbury",s:"MD",la:38.416,lg:-75.56},
+  {n:"Target Largo",c:"Upper Marlboro",s:"MD",la:38.898,lg:-76.828},
+  {n:"Target Waldorf",c:"Waldorf",s:"MD",la:38.625,lg:-76.919},
+  {n:"Target Lanham",c:"Bowie",s:"MD",la:38.954,lg:-76.825},
+  {n:"Target Westminster",c:"Westminster",s:"MD",la:39.567,lg:-76.974},
+  {n:"Target Bowie",c:"Bowie",s:"MD",la:38.953,lg:-76.723},
+  {n:"Target Glen Burnie",c:"Glen Burnie",s:"MD",la:39.133,lg:-76.634},
+  {n:"Target Glen Burnie North",c:"Glen Burnie",s:"MD",la:39.192,lg:-76.613},
+  {n:"Target Wheaton",c:"Silver Spring",s:"MD",la:39.037,lg:-77.054},
+  {n:"Target Abington",c:"Abington",s:"MA",la:42.111,lg:-70.928},
+  {n:"Target Silver Spring",c:"Silver Spring",s:"MD",la:39.053,lg:-76.953},
+  {n:"Target Braintree",c:"Braintree",s:"MA",la:42.219,lg:-71.026},
+  {n:"Target Burlington MA",c:"Burlington",s:"MA",la:42.485,lg:-71.187},
+  {n:"Target Danvers",c:"Danvers",s:"MA",la:42.553,lg:-70.938},
+  {n:"Target Everett",c:"Everett",s:"MA",la:42.401,lg:-71.07},
+  {n:"Target Hadley",c:"Hadley",s:"MA",la:42.357,lg:-72.547},
+  {n:"Target Framingham",c:"Framingham",s:"MA",la:42.306,lg:-71.398},
+  {n:"Target Hanover",c:"Hanover",s:"MA",la:42.137,lg:-70.839},
+  {n:"Target Haverhill",c:"Haverhill",s:"MA",la:42.788,lg:-71.115},
+  {n:"Target Holyoke",c:"Holyoke",s:"MA",la:42.167,lg:-72.641},
+  {n:"Target Lanesborough",c:"Lanesborough",s:"MA",la:42.493,lg:-73.202},
+  {n:"Target Kingston",c:"Kingston",s:"MA",la:41.97,lg:-70.716},
+  {n:"Target Hyannis Cape Cod",c:"Hyannis",s:"MA",la:41.667,lg:-70.295},
+  {n:"Target Leominster",c:"Leominster",s:"MA",la:42.528,lg:-71.714},
+  {n:"Target Lowell",c:"Lowell",s:"MA",la:42.624,lg:-71.317},
+  {n:"Target Medford MA",c:"Medford",s:"MA",la:42.423,lg:-71.089},
+  {n:"Target Methuen",c:"Methuen",s:"MA",la:42.74,lg:-71.161},
+  {n:"Target Milford",c:"Milford",s:"MA",la:42.161,lg:-71.498},
+  {n:"Target Millbury",c:"Millbury",s:"MA",la:42.195,lg:-71.776},
+  {n:"Target North Attleborough",c:"North Attleboro",s:"MA",la:41.942,lg:-71.349},
+  {n:"Target North Dartmouth",c:"North Dartmouth",s:"MA",la:41.64,lg:-71.008},
+  {n:"Target Plainville",c:"Plainville",s:"MA",la:42.034,lg:-71.31},
+  {n:"Target North Quincy T Station",c:"Quincy",s:"MA",la:42.276,lg:-71.03},
+  {n:"Target Revere",c:"Revere",s:"MA",la:42.401,lg:-71.001},
+  {n:"Target Boston Roslindale",c:"Roslindale",s:"MA",la:42.288,lg:-71.126},
+  {n:"Target Salem Highland Ave",c:"Salem",s:"MA",la:42.504,lg:-70.919},
+  {n:"Target Saugus",c:"Saugus",s:"MA",la:42.482,lg:-71.024},
+  {n:"Target Seekonk",c:"Seekonk",s:"MA",la:41.796,lg:-71.321},
+  {n:"Target Somerville",c:"Somerville",s:"MA",la:42.377,lg:-71.091},
+  {n:"Target Stoneham Redstone",c:"Stoneham",s:"MA",la:42.495,lg:-71.103},
+  {n:"Target Easton",c:"South Easton",s:"MA",la:42.028,lg:-71.144},
+  {n:"Target Stoughton",c:"Stoughton",s:"MA",la:42.153,lg:-71.073},
+  {n:"Target Swansea",c:"Swansea",s:"MA",la:41.749,lg:-71.207},
+  {n:"Target Taunton",c:"Taunton",s:"MA",la:41.878,lg:-71.069},
+  {n:"Target Wareham",c:"Wareham",s:"MA",la:41.776,lg:-70.745},
+  {n:"Target Watertown",c:"Watertown",s:"MA",la:42.364,lg:-71.159},
+  {n:"Target Westwood",c:"Westwood",s:"MA",la:42.205,lg:-71.155},
+  {n:"Target Westborough",c:"Westborough",s:"MA",la:42.28,lg:-71.655},
+  {n:"Target Wilmington",c:"Wilmington",s:"MA",la:42.59,lg:-71.161},
+  {n:"Target Woburn",c:"Woburn",s:"MA",la:42.519,lg:-71.135},
+  {n:"Target Worcester",c:"Worcester",s:"MA",la:42.292,lg:-71.775},
+  {n:"Target Boston Fenway",c:"Boston",s:"MA",la:42.344,lg:-71.098},
+  {n:"Target Boston Packards Corner",c:"Boston",s:"MA",la:42.35,lg:-71.114},
+  {n:"Target Cambridge Central Square",c:"Cambridge",s:"MA",la:42.364,lg:-71.103},
+  {n:"Target Boston Beacon Hill",c:"Boston",s:"MA",la:42.361,lg:-71.063},
+  {n:"Target Cambridge Porter Square",c:"Cambridge",s:"MA",la:42.389,lg:-71.119},
+  {n:"Target Boston South Bay",c:"Dorchester",s:"MA",la:42.329,lg:-71.063},
+  {n:"Target Boston Dorchester Fields Corner",c:"Dorchester",s:"MA",la:42.299,lg:-71.063},
+  {n:"Target Marlborough",c:"Marlborough",s:"MA",la:42.359,lg:-71.607},
+  {n:"Target Allen Park",c:"Allen Park",s:"MI",la:42.285,lg:-83.207},
+  {n:"Target Marlborough East",c:"Marlborough",s:"MA",la:42.348,lg:-71.506},
+  {n:"Target Battle Creek",c:"Battle Creek",s:"MI",la:42.26,lg:-85.185},
+  {n:"Target Auburn Hills",c:"Auburn Hills",s:"MI",la:42.706,lg:-83.292},
+  {n:"Target Bloomfield Township",c:"Bloomfield Hills",s:"MI",la:42.603,lg:-83.293},
+  {n:"Target Brighton",c:"Brighton",s:"MI",la:42.545,lg:-83.793},
+  {n:"Target Grand Rapids South",c:"Caledonia",s:"MI",la:42.846,lg:-85.616},
+  {n:"Target Chesterfield",c:"Chesterfield",s:"MI",la:42.677,lg:-82.829},
+  {n:"Target Clinton Pointe",c:"Clinton Township",s:"MI",la:42.545,lg:-82.903},
+  {n:"Target East Lansing Downtown",c:"East Lansing",s:"MI",la:42.735,lg:-84.482},
+  {n:"Target Dearborn",c:"Dearborn",s:"MI",la:42.328,lg:-83.199},
+  {n:"Target Dearborn Heights",c:"Dearborn Heights",s:"MI",la:42.328,lg:-83.302},
+  {n:"Target Farmington Hills",c:"Farmington Hills",s:"MI",la:42.452,lg:-83.344},
+  {n:"Target Flint",c:"Flint",s:"MI",la:42.983,lg:-83.749},
+  {n:"Target Fenton",c:"Fenton",s:"MI",la:42.788,lg:-83.738},
+  {n:"Target Port Huron",c:"Fort Gratiot",s:"MI",la:43.034,lg:-82.456},
+  {n:"Target Grand Rapids East",c:"Grand Rapids",s:"MI",la:42.908,lg:-85.541},
+  {n:"Target Grandville",c:"Grandville",s:"MI",la:42.882,lg:-85.74},
+  {n:"Target Hartland Township",c:"Howell",s:"MI",la:42.635,lg:-83.757},
+  {n:"Target Jackson",c:"Jackson",s:"MI",la:42.268,lg:-84.43},
+  {n:"Target Holland",c:"Holland",s:"MI",la:42.831,lg:-86.092},
+  {n:"Target Kalamazoo West",c:"Kalamazoo",s:"MI",la:42.298,lg:-85.655},
+  {n:"Target Macomb Twp",c:"Macomb",s:"MI",la:42.631,lg:-82.912},
+  {n:"Target Madison Heights",c:"Madison Heights",s:"MI",la:42.528,lg:-83.108},
+  {n:"Target Marquette",c:"Marquette",s:"MI",la:46.552,lg:-87.46},
+  {n:"Target Midland",c:"Midland",s:"MI",la:43.659,lg:-84.246},
+  {n:"Target Mt Pleasant",c:"Mount Pleasant",s:"MI",la:43.577,lg:-84.766},
+  {n:"Target Norton Shores",c:"Muskegon",s:"MI",la:43.16,lg:-86.209},
+  {n:"Target Okemos",c:"Okemos",s:"MI",la:42.725,lg:-84.413},
+  {n:"Target Novi",c:"Novi",s:"MI",la:42.488,lg:-83.534},
+  {n:"Target Portage",c:"Portage",s:"MI",la:42.218,lg:-85.588},
+  {n:"Target Rochester",c:"Rochester Hills",s:"MI",la:42.638,lg:-83.129},
+  {n:"Target Shelby Township",c:"Shelby Township",s:"MI",la:42.711,lg:-83.033},
+  {n:"Target Saginaw",c:"Saginaw",s:"MI",la:43.48,lg:-83.971},
+  {n:"Target Southfield",c:"Southfield",s:"MI",la:42.513,lg:-83.225},
+  {n:"Target Sterling Heights W",c:"Sterling Heights",s:"MI",la:42.562,lg:-83.085},
+  {n:"Target Southland",c:"Taylor",s:"MI",la:42.204,lg:-83.256},
+  {n:"Target Troy",c:"Troy",s:"MI",la:42.545,lg:-83.189},
+  {n:"Target Traverse City",c:"Traverse City",s:"MI",la:44.726,lg:-85.638},
+  {n:"Target Lakeside",c:"Utica",s:"MI",la:42.628,lg:-82.997},
+  {n:"Target Commerce Township",c:"Walled Lake",s:"MI",la:42.534,lg:-83.442},
+  {n:"Target Grand Rapids North",c:"Walker",s:"MI",la:43.022,lg:-85.687},
+  {n:"Target Warren",c:"Warren",s:"MI",la:42.503,lg:-83.083},
+  {n:"Target Westland",c:"Westland",s:"MI",la:42.337,lg:-83.391},
+  {n:"Target Woodhaven",c:"Woodhaven",s:"MI",la:42.137,lg:-83.225},
+  {n:"Target Wyoming",c:"Wyoming",s:"MI",la:42.865,lg:-85.686},
+  {n:"Target Ypsilanti Carpenter Road",c:"Ypsilanti",s:"MI",la:42.236,lg:-83.677},
+  {n:"Target Ann Arbor State Street",c:"Ann Arbor",s:"MI",la:42.279,lg:-83.74},
+  {n:"Target Ann Arbor",c:"Ann Arbor",s:"MI",la:42.244,lg:-83.769},
+  {n:"Target Canton Ford Road",c:"Canton",s:"MI",la:42.323,lg:-83.471},
+  {n:"Target Canton Michigan Avenue",c:"Canton",s:"MI",la:42.27,lg:-83.503},
+  {n:"Target Northville",c:"Livonia",s:"MI",la:42.434,lg:-83.431},
+  {n:"Target Lansing South",c:"Lansing",s:"MI",la:42.663,lg:-84.543},
+  {n:"Target West Lansing",c:"Lansing",s:"MI",la:42.738,lg:-84.629},
+  {n:"Target Livonia",c:"Livonia",s:"MI",la:42.367,lg:-83.335},
+  {n:"Target Alexandria",c:"Alexandria",s:"MN",la:45.85,lg:-95.387},
+  {n:"Target Brainerd",c:"Baxter",s:"MN",la:46.363,lg:-94.241},
+  {n:"Target Bemidji",c:"Bemidji",s:"MN",la:47.493,lg:-94.91},
+  {n:"Target Andover",c:"Andover",s:"MN",la:45.219,lg:-93.316},
+  {n:"Target Blaine",c:"Blaine",s:"MN",la:45.165,lg:-93.233},
+  {n:"Target Bloomington 79th and Penn",c:"Bloomington",s:"MN",la:44.86,lg:-93.311},
+  {n:"Target Brooklyn Park",c:"Brooklyn Park",s:"MN",la:45.091,lg:-93.379},
+  {n:"Target Buffalo",c:"Buffalo",s:"MN",la:45.164,lg:-93.855},
+  {n:"Target Burnsville",c:"Burnsville",s:"MN",la:44.749,lg:-93.289},
+  {n:"Target Cambridge",c:"Cambridge",s:"MN",la:45.575,lg:-93.201},
+  {n:"Target Champlin",c:"Champlin",s:"MN",la:45.173,lg:-93.388},
+  {n:"Target Chanhassen",c:"Chanhassen",s:"MN",la:44.862,lg:-93.542},
+  {n:"Target Crystal",c:"Crystal",s:"MN",la:45.052,lg:-93.365},
+  {n:"Target Chaska",c:"Chaska",s:"MN",la:44.828,lg:-93.601},
+  {n:"Target Cottage Grove",c:"Cottage Grove",s:"MN",la:44.815,lg:-92.929},
+  {n:"Target Duluth",c:"Duluth",s:"MN",la:46.809,lg:-92.168},
+  {n:"Target Eagan",c:"Eagan",s:"MN",la:44.792,lg:-93.206},
+  {n:"Target Edina",c:"Edina",s:"MN",la:44.875,lg:-93.322},
+  {n:"Target Forest Lake",c:"Forest Lake",s:"MN",la:45.275,lg:-93.001},
+  {n:"Target Eden Prairie",c:"Eden Prairie",s:"MN",la:44.856,lg:-93.426},
+  {n:"Target Fridley",c:"Fridley",s:"MN",la:45.066,lg:-93.251},
+  {n:"Target Grand Rapids",c:"Grand Rapids",s:"MN",la:47.209,lg:-93.527},
+  {n:"Target Hutchinson",c:"Hutchinson",s:"MN",la:44.869,lg:-94.376},
+  {n:"Target Inver Grove Heights",c:"Inver Grove Heights",s:"MN",la:44.836,lg:-93.088},
+  {n:"Target Lakeville",c:"Lakeville",s:"MN",la:44.685,lg:-93.289},
+  {n:"Target Mankato",c:"Mankato",s:"MN",la:44.17,lg:-93.953},
+  {n:"Target Medina",c:"Medina",s:"MN",la:45.045,lg:-93.53},
+  {n:"Target Lino Lakes",c:"Lino Lakes",s:"MN",la:45.184,lg:-93.105},
+  {n:"Target Maple Grove North",c:"Maple Grove",s:"MN",la:45.137,lg:-93.476},
+  {n:"Target Monticello",c:"Monticello",s:"MN",la:45.294,lg:-93.773},
+  {n:"Target North St Paul",c:"North Saint Paul",s:"MN",la:45.012,lg:-93.007},
+  {n:"Target Moorhead",c:"Moorhead",s:"MN",la:46.875,lg:-96.728},
+  {n:"Target Northfield",c:"Northfield",s:"MN",la:44.434,lg:-93.186},
+  {n:"Target Oakdale",c:"Oakdale",s:"MN",la:44.996,lg:-92.945},
+  {n:"Target Otsego",c:"Otsego",s:"MN",la:45.279,lg:-93.564},
+  {n:"Target Plymouth",c:"Plymouth",s:"MN",la:45.031,lg:-93.451},
+  {n:"Target Owatonna",c:"Owatonna",s:"MN",la:44.087,lg:-93.249},
+  {n:"Target Red Wing",c:"Red Wing",s:"MN",la:44.569,lg:-92.583},
+  {n:"Target Richfield",c:"Richfield",s:"MN",la:44.886,lg:-93.248},
+  {n:"Target Roseville T1",c:"Roseville",s:"MN",la:45.008,lg:-93.165},
+  {n:"Target Rogers Diamond Lake Road",c:"Rogers",s:"MN",la:45.197,lg:-93.554},
+  {n:"Target Savage",c:"Savage",s:"MN",la:44.743,lg:-93.379},
+  {n:"Target Shakopee",c:"Shakopee",s:"MN",la:44.776,lg:-93.501},
+  {n:"Target Shoreview",c:"Shoreview",s:"MN",la:45.056,lg:-93.145},
+  {n:"Target Knollwood Hwy 7",c:"St.louis Park",s:"MN",la:44.936,lg:-93.392},
+  {n:"Target Stillwater",c:"Stillwater",s:"MN",la:45.037,lg:-92.839},
+  {n:"Target Vadnais Heights",c:"Vadnais Heights",s:"MN",la:45.05,lg:-93.062},
+  {n:"Target Virginia",c:"Virginia",s:"MN",la:47.511,lg:-92.55},
+  {n:"Target Waconia",c:"Waconia",s:"MN",la:44.841,lg:-93.771},
+  {n:"Target West St Paul",c:"West St Paul",s:"MN",la:44.893,lg:-93.078},
+  {n:"Target Willmar",c:"Willmar",s:"MN",la:45.098,lg:-95.041},
+  {n:"Target Winona",c:"Winona",s:"MN",la:44.032,lg:-91.622},
+  {n:"Target Coon Rapids",c:"Coon Rapids",s:"MN",la:45.194,lg:-93.35},
+  {n:"Target Northtown",c:"Coon Rapids",s:"MN",la:45.127,lg:-93.268},
+  {n:"Target St Louis Park Hwy 100",c:"Minneapolis",s:"MN",la:44.937,lg:-93.347},
+  {n:"Target East Lake Street and Hwy 55",c:"Minneapolis",s:"MN",la:44.949,lg:-93.236},
+  {n:"Target Minneapolis NE",c:"Minneapolis",s:"MN",la:45.005,lg:-93.229},
+  {n:"Target Mpls Nicollet Mall",c:"Minneapolis",s:"MN",la:44.975,lg:-93.274},
+  {n:"Target Minneapolis Dinkytown",c:"Minneapolis",s:"MN",la:44.982,lg:-93.235},
+  {n:"Target Ridgedale",c:"Minnetonka",s:"MN",la:44.97,lg:-93.447},
+  {n:"Target Rochester",c:"Rochester",s:"MN",la:44.063,lg:-92.504},
+  {n:"Target Minnetonka",c:"Minnetonka",s:"MN",la:44.917,lg:-93.505},
+  {n:"Target St Cloud Crossroads",c:"Saint Cloud",s:"MN",la:45.557,lg:-94.209},
+  {n:"Target Rochester South",c:"Rochester",s:"MN",la:43.954,lg:-92.465},
+  {n:"Target St Cloud East",c:"Saint Cloud",s:"MN",la:45.565,lg:-94.145},
+  {n:"Target East St Paul",c:"Saint Paul",s:"MN",la:44.95,lg:-93.029},
+  {n:"Target St Paul Midway",c:"Saint Paul",s:"MN",la:44.953,lg:-93.156},
+  {n:"Target Woodbury Commerce Drive",c:"Woodbury",s:"MN",la:44.94,lg:-92.909},
+  {n:"Target St. Paul Highland Park",c:"Saint Paul",s:"MN",la:44.918,lg:-93.188},
+  {n:"Target Woodbury Valley Creek Plaza",c:"Woodbury",s:"MN",la:44.927,lg:-92.96},
+  {n:"Target D'Iberville",c:"D'iberville",s:"MS",la:30.455,lg:-88.9},
+  {n:"Target Flowood",c:"Flowood",s:"MS",la:32.343,lg:-90.061},
+  {n:"Target Horn Lake",c:"Horn Lake",s:"MS",la:34.966,lg:-90.005},
+  {n:"Target North Jackson",c:"Jackson",s:"MS",la:32.399,lg:-90.148},
+  {n:"Target Olive Branch West",c:"Olive Branch",s:"MS",la:34.963,lg:-89.898},
+  {n:"Target Hattiesburg",c:"Hattiesburg",s:"MS",la:31.324,lg:-89.382},
+  {n:"Target Arnold",c:"Arnold",s:"MO",la:38.413,lg:-90.396},
+  {n:"Target Ballwin",c:"Ballwin",s:"MO",la:38.595,lg:-90.547},
+  {n:"Target Blue Springs",c:"Blue Springs",s:"MO",la:39.023,lg:-94.248},
+  {n:"Target Belton",c:"Belton",s:"MO",la:38.816,lg:-94.516},
+  {n:"Target Branson",c:"Branson",s:"MO",la:36.674,lg:-93.226},
+  {n:"Target Brentwood",c:"Brentwood",s:"MO",la:38.628,lg:-90.343},
+  {n:"Target Bridgeton",c:"Bridgeton",s:"MO",la:38.754,lg:-90.427},
+  {n:"Target Cape Girardeau",c:"Cape Girardeau",s:"MO",la:37.299,lg:-89.579},
+  {n:"Target Dardenne Prairie",c:"Dardenne Prairie",s:"MO",la:38.766,lg:-90.763},
+  {n:"Target Fenton",c:"Fenton",s:"MO",la:38.503,lg:-90.448},
+  {n:"Target Columbia",c:"Columbia",s:"MO",la:38.965,lg:-92.374},
+  {n:"Target Florissant",c:"Florissant",s:"MO",la:38.804,lg:-90.307},
+  {n:"Target Independence",c:"Independence",s:"MO",la:39.051,lg:-94.369},
+  {n:"Target Jefferson City",c:"Jefferson City",s:"MO",la:38.58,lg:-92.214},
+  {n:"Target Joplin",c:"Joplin",s:"MO",la:37.085,lg:-94.474},
+  {n:"Target Kirkwood",c:"Kirkwood",s:"MO",la:38.565,lg:-90.404},
+  {n:"Target Lees Summit",c:"Lees Summit",s:"MO",la:38.928,lg:-94.412},
+  {n:"Target O'Fallon",c:"O Fallon",s:"MO",la:38.778,lg:-90.697},
+  {n:"Target Osage Beach",c:"Osage Beach",s:"MO",la:38.161,lg:-92.603},
+  {n:"Target St Charles",c:"Saint Charles",s:"MO",la:38.788,lg:-90.563},
+  {n:"Target St Peters",c:"Saint Peters",s:"MO",la:38.739,lg:-90.637},
+  {n:"Target St Joseph",c:"St Joseph",s:"MO",la:39.816,lg:-94.812},
+  {n:"Target Springfield",c:"Springfield",s:"MO",la:37.152,lg:-93.263},
+  {n:"Target Washington",c:"Washington",s:"MO",la:38.536,lg:-90.984},
+  {n:"Target Wentzville",c:"Wentzville",s:"MO",la:38.818,lg:-90.881},
+  {n:"Target Town And Country",c:"Chesterfield",s:"MO",la:38.62,lg:-90.518},
+  {n:"Target Chesterfield",c:"Chesterfield",s:"MO",la:38.667,lg:-90.584},
+  {n:"Target Kansas City North",c:"Kansas City",s:"MO",la:39.249,lg:-94.595},
+  {n:"Target Kansas City Chouteau",c:"Kansas City",s:"MO",la:39.174,lg:-94.533},
+  {n:"Target Stateline",c:"Kansas City",s:"MO",la:38.88,lg:-94.607},
+  {n:"Target Ward Parkway",c:"Kansas City",s:"MO",la:38.971,lg:-94.607},
+  {n:"Target Liberty",c:"Kansas City",s:"MO",la:39.247,lg:-94.464},
+  {n:"Target South County",c:"Saint Louis",s:"MO",la:38.506,lg:-90.34},
+  {n:"Target Kansas City Skyview Ave",c:"Kansas City",s:"MO",la:39.258,lg:-94.655},
+  {n:"Target Hampton Village",c:"Saint Louis",s:"MO",la:38.592,lg:-90.295},
+  {n:"Target St. Louis Midtown",c:"Saint Louis",s:"MO",la:38.627,lg:-90.236},
+  {n:"Target Bozeman",c:"Bozeman",s:"MT",la:45.711,lg:-111.071},
+  {n:"Target Great Falls",c:"Great Falls",s:"MT",la:47.493,lg:-111.272},
+  {n:"Target Helena",c:"Helena",s:"MT",la:46.621,lg:-112.019},
+  {n:"Target Billings West",c:"Billings",s:"MT",la:45.771,lg:-108.582},
+  {n:"Target Kalispell",c:"Kalispell",s:"MT",la:48.236,lg:-114.326},
+  {n:"Target Missoula",c:"Missoula",s:"MT",la:46.888,lg:-114.037},
+  {n:"Target Bellevue",c:"Bellevue",s:"NE",la:41.142,lg:-95.97},
+  {n:"Target Billings Heights",c:"Billings",s:"MT",la:45.806,lg:-108.473},
+  {n:"Target Grand Island",c:"Grand Island",s:"NE",la:40.932,lg:-98.381},
+  {n:"Target Norfolk",c:"Norfolk",s:"NE",la:42.02,lg:-97.43},
+  {n:"Target Kearney",c:"Kearney",s:"NE",la:40.722,lg:-99.086},
+  {n:"Target Scottsbluff",c:"Scottsbluff",s:"NE",la:41.867,lg:-103.641},
+  {n:"Target Papillion",c:"Papillion",s:"NE",la:41.165,lg:-96.045},
+  {n:"Target Lincoln",c:"Lincoln",s:"NE",la:40.816,lg:-96.655},
+  {n:"Target Lincoln South",c:"Lincoln",s:"NE",la:40.76,lg:-96.641},
+  {n:"Target Lincoln SW",c:"Lincoln",s:"NE",la:40.728,lg:-96.666},
+  {n:"Target Omaha West",c:"Omaha",s:"NE",la:41.236,lg:-96.194},
+  {n:"Target Omaha NW",c:"Omaha",s:"NE",la:41.295,lg:-96.117},
+  {n:"Target Omaha North",c:"Omaha",s:"NE",la:41.319,lg:-96.028},
+  {n:"Target Omaha Far NW",c:"Omaha",s:"NE",la:41.289,lg:-96.18},
+  {n:"Target Omaha",c:"Omaha",s:"NE",la:41.261,lg:-96.025},
+  {n:"Target N Las Vegas Deer SP",c:"North Las Vegas",s:"NV",la:36.289,lg:-115.134},
+  {n:"Target Carson City",c:"Carson City",s:"NV",la:39.1,lg:-119.778},
+  {n:"Target Omaha Far SW",c:"Omaha",s:"NE",la:41.214,lg:-96.108},
+  {n:"Target Reno South",c:"Reno",s:"NV",la:39.463,lg:-119.781},
+  {n:"Target Sparks South",c:"Sparks",s:"NV",la:39.535,lg:-119.717},
+  {n:"Target Henderson Stephanie Street",c:"Henderson",s:"NV",la:36.065,lg:-115.048},
+  {n:"Target Las Vegas East",c:"Las Vegas",s:"NV",la:36.158,lg:-115.061},
+  {n:"Target Henderson Lake Mead Pkwy",c:"Henderson",s:"NV",la:36.036,lg:-114.994},
+  {n:"Target Las Vegas Flamingo",c:"Las Vegas",s:"NV",la:36.117,lg:-115.139},
+  {n:"Target Henderson Green Valley Ranch Pkwy",c:"Henderson",s:"NV",la:36.003,lg:-115.085},
+  {n:"Target West Las Vegas",c:"Las Vegas",s:"NV",la:36.125,lg:-115.242},
+  {n:"Target Las Vegas NW",c:"Las Vegas",s:"NV",la:36.219,lg:-115.249},
+  {n:"Target Las Vegas Boca Park",c:"Las Vegas",s:"NV",la:36.162,lg:-115.287},
+  {n:"Target Las Vegas Centennial Hills",c:"Las Vegas",s:"NV",la:36.28,lg:-115.264},
+  {n:"Target Las Vegas Silverado Ranch",c:"Las Vegas",s:"NV",la:36.012,lg:-115.122},
+  {n:"Target Las Vegas Blue Diamond",c:"Las Vegas",s:"NV",la:36.041,lg:-115.195},
+  {n:"Target Las Vegas Summerlin South",c:"Las Vegas",s:"NV",la:36.114,lg:-115.308},
+  {n:"Target Las Vegas N Decatur",c:"Las Vegas",s:"NV",la:36.271,lg:-115.207},
+  {n:"Target Las Vegas Showcase",c:"Las Vegas",s:"NV",la:36.105,lg:-115.172},
+  {n:"Target Bedford",c:"Bedford",s:"NH",la:42.941,lg:-71.474},
+  {n:"Target Concord",c:"Concord",s:"NH",la:43.218,lg:-71.485},
+  {n:"Target Hooksett",c:"Hooksett",s:"NH",la:43.045,lg:-71.46},
+  {n:"Target Greenland",c:"Greenland",s:"NH",la:43.049,lg:-70.819},
+  {n:"Target Keene",c:"Keene",s:"NH",la:42.928,lg:-72.302},
+  {n:"Target Salem Broadway",c:"Salem",s:"NH",la:42.765,lg:-71.215},
+  {n:"Target Somersworth",c:"Somersworth",s:"NH",la:43.235,lg:-70.885},
+  {n:"Target Nashua",c:"Nashua",s:"NH",la:42.703,lg:-71.437},
+  {n:"Target West Lebanon Main St",c:"West Lebanon",s:"NH",la:43.633,lg:-72.318},
+  {n:"Target Brick",c:"Brick",s:"NJ",la:40.059,lg:-74.15},
+  {n:"Target Nashua NW",c:"Nashua",s:"NH",la:42.798,lg:-71.537},
+  {n:"Target Bridgewater",c:"Bridgewater",s:"NJ",la:40.562,lg:-74.555},
+  {n:"Target Burlington",c:"Burlington",s:"NJ",la:40.035,lg:-74.824},
+  {n:"Target Cherry Hill",c:"Cherry Hill",s:"NJ",la:39.935,lg:-75.025},
+  {n:"Target Clark",c:"Clark",s:"NJ",la:40.628,lg:-74.308},
+  {n:"Target Clifton",c:"Clifton",s:"NJ",la:40.824,lg:-74.135},
+  {n:"Target Closter NJ",c:"Closter",s:"NJ",la:40.971,lg:-73.957},
+  {n:"Target Delran",c:"Delran",s:"NJ",la:40.013,lg:-74.959},
+  {n:"Target Deptford",c:"Deptford",s:"NJ",la:39.83,lg:-75.091},
+  {n:"Target East Hanover",c:"East Hanover",s:"NJ",la:40.811,lg:-74.383},
+  {n:"Target East Windsor",c:"East Windsor",s:"NJ",la:40.278,lg:-74.541},
+  {n:"Target Edgewater",c:"Edgewater",s:"NJ",la:40.814,lg:-73.982},
+  {n:"Target Eatontown Plaza",c:"Eatontown",s:"NJ",la:40.291,lg:-74.049},
+  {n:"Target Menlo Park",c:"Edison",s:"NJ",la:40.55,lg:-74.334},
+  {n:"Target Flemington",c:"Flemington",s:"NJ",la:40.506,lg:-74.849},
+  {n:"Target Fairfield",c:"Fairfield",s:"NJ",la:40.89,lg:-74.272},
+  {n:"Target Washington Twp",c:"Hackettstown",s:"NJ",la:40.847,lg:-74.809},
+  {n:"Target Hackensack",c:"Hackensack",s:"NJ",la:40.899,lg:-74.039},
+  {n:"Target Haddon Township",c:"Haddon Township",s:"NJ",la:39.901,lg:-75.062},
+  {n:"Target Howell Township",c:"Howell",s:"NJ",la:40.132,lg:-74.22},
+  {n:"Target Jersey City",c:"Jersey City",s:"NJ",la:40.731,lg:-74.035},
+  {n:"Target Linden",c:"Linden",s:"NJ",la:40.621,lg:-74.248},
+  {n:"Target Stafford Township",c:"Manahawkin",s:"NJ",la:39.71,lg:-74.284},
+  {n:"Target Kearny",c:"Kearny",s:"NJ",la:40.76,lg:-74.159},
+  {n:"Target Manalapan",c:"Manalapan",s:"NJ",la:40.242,lg:-74.371},
+  {n:"Target Marlton",c:"Marlton",s:"NJ",la:39.867,lg:-74.923},
+  {n:"Target Milltown",c:"Milltown",s:"NJ",la:40.441,lg:-74.426},
+  {n:"Target Millville",c:"Millville",s:"NJ",la:39.421,lg:-75.041},
+  {n:"Target Mays Landing",c:"Mays Landing",s:"NJ",la:39.452,lg:-74.631},
+  {n:"Target Middletown",c:"Middletown",s:"NJ",la:40.412,lg:-74.135},
+  {n:"Target Mount Laurel",c:"Mount Laurel",s:"NJ",la:39.969,lg:-74.911},
+  {n:"Target South Brunswick",c:"Monmouth Junction",s:"NJ",la:40.381,lg:-74.576},
+  {n:"Target North Bergen Commons",c:"North Bergen",s:"NJ",la:40.801,lg:-74.022},
+  {n:"Target North Brunswick",c:"North Brunswick",s:"NJ",la:40.435,lg:-74.504},
+  {n:"Target Ocean Township",c:"Ocean",s:"NJ",la:40.23,lg:-74.044},
+  {n:"Target Parsippany",c:"Parsippany",s:"NJ",la:40.863,lg:-74.389},
+  {n:"Target Old Bridge Route 9",c:"Old Bridge",s:"NJ",la:40.42,lg:-74.309},
+  {n:"Target Paramus",c:"Paramus",s:"NJ",la:40.916,lg:-74.061},
+  {n:"Target Greenwich Township",c:"Phillipsburg",s:"NJ",la:40.674,lg:-75.134},
+  {n:"Target Princeton",c:"Princeton",s:"NJ",la:40.306,lg:-74.677},
+  {n:"Target Riverdale Rt 23 and Falston",c:"Riverdale",s:"NJ",la:40.99,lg:-74.326},
+  {n:"Target Rockaway",c:"Rockaway",s:"NJ",la:40.906,lg:-74.559},
+  {n:"Target Mantua",c:"Sewell",s:"NJ",la:39.765,lg:-75.132},
+  {n:"Target Gloucester Township",c:"Sicklerville",s:"NJ",la:39.743,lg:-74.996},
+  {n:"Target Somers Point",c:"Somers Point",s:"NJ",la:39.328,lg:-74.595},
+  {n:"Target South Plainfield",c:"South Plainfield",s:"NJ",la:40.549,lg:-74.427},
+  {n:"Target Toms River",c:"Toms River",s:"NJ",la:39.99,lg:-74.174},
+  {n:"Target Union",c:"Union",s:"NJ",la:40.687,lg:-74.308},
+  {n:"Target Union North",c:"Vauxhall",s:"NJ",la:40.719,lg:-74.279},
+  {n:"Target Turnersville",c:"Turnersville",s:"NJ",la:39.733,lg:-75.04},
+  {n:"Target Voorhees",c:"Voorhees",s:"NJ",la:39.85,lg:-74.984},
+  {n:"Target Wall Township",c:"Wall Township",s:"NJ",la:40.159,lg:-74.059},
+  {n:"Target Watchung",c:"Watchung",s:"NJ",la:40.642,lg:-74.422},
+  {n:"Target Las Cruces",c:"Las Cruces",s:"NM",la:32.318,lg:-106.744},
+  {n:"Target Farmington",c:"Farmington",s:"NM",la:36.769,lg:-108.148},
+  {n:"Target Rio Rancho",c:"Rio Rancho",s:"NM",la:35.252,lg:-106.651},
+  {n:"Target Santa Fe",c:"Santa Fe",s:"NM",la:35.64,lg:-106.013},
+  {n:"Target Roswell",c:"Roswell",s:"NM",la:33.428,lg:-104.522},
+  {n:"Target Albuquerque Lomas",c:"Albuquerque",s:"NM",la:35.088,lg:-106.516},
+  {n:"Target Albuquerque Wyoming",c:"Albuquerque",s:"NM",la:35.129,lg:-106.547},
+  {n:"Target Coors",c:"Albuquerque",s:"NM",la:35.186,lg:-106.665},
+  {n:"Target Paseo",c:"Albuquerque",s:"NM",la:35.172,lg:-106.582},
+  {n:"Target Boulevard Mall",c:"Amherst",s:"NY",la:43.001,lg:-78.822},
+  {n:"Target Albuquerque Uptown",c:"Albuquerque",s:"NM",la:35.101,lg:-106.568},
+  {n:"Target Amsterdam",c:"Amsterdam",s:"NY",la:42.965,lg:-74.19},
+  {n:"Target Queens Astoria 31st and Ditmars",c:"Astoria",s:"NY",la:40.775,lg:-73.911},
+  {n:"Target Bay Shore",c:"Bay Shore",s:"NY",la:40.726,lg:-73.277},
+  {n:"Target Batavia",c:"Batavia",s:"NY",la:43.016,lg:-78.202},
+  {n:"Target Brooklyn Fulton St",c:"Brooklyn",s:"NY",la:40.691,lg:-73.983},
+  {n:"Target Central Islip",c:"Central Islip",s:"NY",la:40.773,lg:-73.202},
+  {n:"Target North Buffalo",c:"Buffalo",s:"NY",la:42.956,lg:-78.874},
+  {n:"Target Cicero",c:"Cicero",s:"NY",la:43.162,lg:-76.123},
+  {n:"Target Walden Galleria",c:"Cheektowaga",s:"NY",la:42.911,lg:-78.772},
+  {n:"Target Clifton Park",c:"Clifton Park",s:"NY",la:42.857,lg:-73.772},
+  {n:"Target College Point",c:"College Point",s:"NY",la:40.782,lg:-73.838},
+  {n:"Target Colonie Northway",c:"Colonie",s:"NY",la:42.707,lg:-73.822},
+  {n:"Target Commack",c:"Commack",s:"NY",la:40.839,lg:-73.287},
+  {n:"Target Copiague",c:"Copiague",s:"NY",la:40.688,lg:-73.406},
+  {n:"Target Losson Road",c:"Depew",s:"NY",la:42.879,lg:-78.699},
+  {n:"Target Big Flats",c:"Elmira",s:"NY",la:42.153,lg:-76.873},
+  {n:"Target Elmont",c:"Elmont",s:"NY",la:40.709,lg:-73.704},
+  {n:"Target Penfield",c:"Fairport",s:"NY",la:43.128,lg:-77.443},
+  {n:"Target Fayetteville",c:"Fayetteville",s:"NY",la:43.031,lg:-76.02},
+  {n:"Target Farmingdale",c:"Farmingdale",s:"NY",la:40.752,lg:-73.419},
+  {n:"Target Forest Hills",c:"Forest Hills",s:"NY",la:40.721,lg:-73.848},
+  {n:"Target Flushing",c:"Flushing",s:"NY",la:40.758,lg:-73.835},
+  {n:"Target Hicksville",c:"Hicksville",s:"NY",la:40.772,lg:-73.533},
+  {n:"Target Freeport",c:"Freeport",s:"NY",la:40.656,lg:-73.572},
+  {n:"Target Huntington",c:"Huntington Station",s:"NY",la:40.828,lg:-73.408},
+  {n:"Target Lansing",c:"Ithaca",s:"NY",la:42.485,lg:-76.491},
+  {n:"Target Queens Jamaica Avenue",c:"Jamaica",s:"NY",la:40.704,lg:-73.799},
+  {n:"Target Jamestown",c:"Jamestown",s:"NY",la:42.094,lg:-79.293},
+  {n:"Target Latham",c:"Latham",s:"NY",la:42.757,lg:-73.771},
+  {n:"Target Kingston",c:"Kingston",s:"NY",la:41.967,lg:-73.985},
+  {n:"Target Lawrence Five Towns",c:"Lawrence",s:"NY",la:40.626,lg:-73.739},
+  {n:"Target Levittown",c:"Levittown",s:"NY",la:40.725,lg:-73.493},
+  {n:"Target Clay",c:"Liverpool",s:"NY",la:43.188,lg:-76.247},
+  {n:"Target LIC Court Square",c:"Long Island City",s:"NY",la:40.747,lg:-73.944},
+  {n:"Target Middletown",c:"Middletown",s:"NY",la:41.453,lg:-74.37},
+  {n:"Target Medford",c:"Medford",s:"NY",la:40.825,lg:-72.989},
+  {n:"Target Mt Kisco",c:"Mount Kisco",s:"NY",la:41.216,lg:-73.722},
+  {n:"Target Monroe",c:"Monroe",s:"NY",la:41.318,lg:-74.155},
+  {n:"Target New Hartford",c:"New Hartford",s:"NY",la:43.084,lg:-75.316},
+  {n:"Target Mt Vernon",c:"Mount Vernon",s:"NY",la:40.901,lg:-73.818},
+  {n:"Target Lake Success",c:"New Hyde Park",s:"NY",la:40.753,lg:-73.696},
+  {n:"Target Newburgh",c:"Newburgh",s:"NY",la:41.504,lg:-74.063},
+  {n:"Target Niagara Falls",c:"Niagara Falls",s:"NY",la:43.09,lg:-78.98},
+  {n:"Target Orchard Park",c:"Orchard Park",s:"NY",la:42.792,lg:-78.784},
+  {n:"Target Port Chester",c:"Port Chester",s:"NY",la:40.992,lg:-73.674},
+  {n:"Target Plattsburgh",c:"Plattsburgh",s:"NY",la:44.702,lg:-73.491},
+  {n:"Target Port Washington North",c:"Port Washington",s:"NY",la:40.841,lg:-73.704},
+  {n:"Target Queensbury",c:"Queensbury",s:"NY",la:43.328,lg:-73.676},
+  {n:"Target Poughkeepsie",c:"Poughkeepsie",s:"NY",la:41.626,lg:-73.92},
+  {n:"Target East Greenbush",c:"Rensselaer",s:"NY",la:42.645,lg:-73.701},
+  {n:"Target Riverhead",c:"Riverhead",s:"NY",la:40.933,lg:-72.681},
+  {n:"Target Sayville",c:"Sayville",s:"NY",la:40.766,lg:-73.068},
+  {n:"Target Selden",c:"Selden",s:"NY",la:40.866,lg:-73.051},
+  {n:"Target South Setauket",c:"South Setauket",s:"NY",la:40.886,lg:-73.099},
+  {n:"Target Saratoga Springs",c:"Saratoga Springs",s:"NY",la:43.099,lg:-73.744},
+  {n:"Target Spring Valley",c:"Spring Valley",s:"NY",la:41.105,lg:-74.023},
+  {n:"Target Camillus",c:"Syracuse",s:"NY",la:43.047,lg:-76.236},
+  {n:"Target Valley Stream",c:"Valley Stream",s:"NY",la:40.664,lg:-73.72},
+  {n:"Target Binghamton Vestal",c:"Vestal",s:"NY",la:42.094,lg:-76.001},
+  {n:"Target Watertown",c:"Watertown",s:"NY",la:43.97,lg:-75.962},
+  {n:"Target Victor",c:"Victor",s:"NY",la:43.034,lg:-77.448},
+  {n:"Target Clarkstown",c:"West Nyack",s:"NY",la:41.098,lg:-73.959},
+  {n:"Target Webster",c:"Webster",s:"NY",la:43.211,lg:-77.451},
+  {n:"Target Westbury",c:"Westbury",s:"NY",la:40.742,lg:-73.601},
+  {n:"Target Eastern Hills",c:"Williamsville",s:"NY",la:42.964,lg:-78.695},
+  {n:"Target White Plains",c:"White Plains",s:"NY",la:41.032,lg:-73.765},
+  {n:"Target Yonkers Cross County",c:"Yonkers",s:"NY",la:40.929,lg:-73.852},
+  {n:"Target Bronx Riverdale",c:"Bronx",s:"NY",la:40.873,lg:-73.908},
+  {n:"Target Bronx Terminal",c:"Bronx",s:"NY",la:40.82,lg:-73.93},
+  {n:"Target Bronx-Throggs Neck",c:"Bronx",s:"NY",la:40.823,lg:-73.837},
+  {n:"Target Bronx Fordham Road",c:"Bronx",s:"NY",la:40.862,lg:-73.896},
+  {n:"Target Atlantic Terminal",c:"Brooklyn",s:"NY",la:40.684,lg:-73.976},
+  {n:"Target Gateway",c:"Brooklyn",s:"NY",la:40.653,lg:-73.87},
+  {n:"Target Brooklyn Junction",c:"Brooklyn",s:"NY",la:40.632,lg:-73.947},
+  {n:"Target Brooklyn Midwood",c:"Brooklyn",s:"NY",la:40.608,lg:-73.96},
+  {n:"Target Brooklyn Bensonhurst",c:"Brooklyn",s:"NY",la:40.619,lg:-73.989},
+  {n:"Target Brooklyn Kings Hwy",c:"Brooklyn",s:"NY",la:40.636,lg:-73.927},
+  {n:"Target Brooklyn Bay Parkway",c:"Brooklyn",s:"NY",la:40.594,lg:-74.001},
+  {n:"Target Brooklyn Flatbush and Church",c:"Brooklyn",s:"NY",la:40.65,lg:-73.959},
+  {n:"Target Brooklyn Kings Plaza",c:"Brooklyn",s:"NY",la:40.61,lg:-73.92},
+  {n:"Target Queens Place",c:"Elmhurst",s:"NY",la:40.735,lg:-73.875},
+  {n:"Target Jackson Heights",c:"Elmhurst",s:"NY",la:40.747,lg:-73.884},
+  {n:"Target Manhattan East Village",c:"New York",s:"NY",la:40.73,lg:-73.98},
+  {n:"Target Tribeca",c:"New York",s:"NY",la:40.715,lg:-74.011},
+  {n:"Target Manhattan Hells Kitchen",c:"New York",s:"NY",la:40.761,lg:-73.995},
+  {n:"Target Manhattan Herald Square",c:"New York",s:"NY",la:40.75,lg:-73.989},
+  {n:"Target Lower East Side Grand and Clinton",c:"New York",s:"NY",la:40.716,lg:-73.987},
+  {n:"Target Kips Bay",c:"New York",s:"NY",la:40.742,lg:-73.978},
+  {n:"Target Upper East Side 70th and 3rd",c:"New York",s:"NY",la:40.768,lg:-73.962},
+  {n:"Target Manhattan Washington Heights",c:"New York",s:"NY",la:40.849,lg:-73.934},
+  {n:"Target Upper West Side 61st and Broadway",c:"New York",s:"NY",la:40.77,lg:-73.983},
+  {n:"Target Harlem 125th St",c:"New York",s:"NY",la:40.808,lg:-73.947},
+  {n:"Target Times Square 42nd Street",c:"New York",s:"NY",la:40.757,lg:-73.988},
+  {n:"Target Upper East Side 86th and Lex",c:"New York",s:"NY",la:40.779,lg:-73.955},
+  {n:"Target Manhattan Union Square",c:"New York",s:"NY",la:40.735,lg:-73.99},
+  {n:"Target Chelsea 23rd and 8th",c:"New York",s:"NY",la:40.745,lg:-73.998},
+  {n:"Target Upper West Side 98th and Columbus",c:"New York City",s:"NY",la:40.794,lg:-73.966},
+  {n:"Target Greece",c:"Rochester",s:"NY",la:43.203,lg:-77.692},
+  {n:"Target Manhattan Soho",c:"New York City",s:"NY",la:40.725,lg:-73.997},
+  {n:"Target Henrietta",c:"Rochester",s:"NY",la:43.078,lg:-77.632},
+  {n:"Target Irondequoit",c:"Rochester",s:"NY",la:43.197,lg:-77.574},
+  {n:"Target Niskayuna",c:"Schenectady",s:"NY",la:42.775,lg:-73.89},
+  {n:"Target Staten Island",c:"Staten Island",s:"NY",la:40.528,lg:-74.232},
+  {n:"Target Chili",c:"Rochester",s:"NY",la:43.105,lg:-77.746},
+  {n:"Target Glenville",c:"Schenectady",s:"NY",la:42.867,lg:-73.93},
+  {n:"Target Staten Island Cntl",c:"Staten Island",s:"NY",la:40.575,lg:-74.168},
+  {n:"Target Staten Island Forest Ave",c:"Staten Island",s:"NY",la:40.624,lg:-74.139},
+  {n:"Target Apex",c:"Apex",s:"NC",la:35.745,lg:-78.878},
+  {n:"Target Asheville South",c:"Arden",s:"NC",la:35.449,lg:-82.536},
+  {n:"Target Burlington",c:"Burlington",s:"NC",la:36.066,lg:-79.52},
+  {n:"Target Asheville",c:"Asheville",s:"NC",la:35.573,lg:-82.522},
+  {n:"Target Kannapolis",c:"Concord",s:"NC",la:35.417,lg:-80.679},
+  {n:"Target UNC Franklin St",c:"Chapel Hill",s:"NC",la:35.912,lg:-79.058},
+  {n:"Target Fayetteville",c:"Fayetteville",s:"NC",la:35.058,lg:-78.972},
+  {n:"Target Gastonia",c:"Gastonia",s:"NC",la:35.262,lg:-81.135},
+  {n:"Target Goldsboro",c:"Goldsboro",s:"NC",la:35.38,lg:-77.939},
+  {n:"Target Greenville",c:"Greenville",s:"NC",la:35.579,lg:-77.383},
+  {n:"Target Hickory",c:"Hickory",s:"NC",la:35.7,lg:-81.308},
+  {n:"Target High Point",c:"High Point",s:"NC",la:35.994,lg:-80.008},
+  {n:"Target Holly Springs",c:"Holly Springs",s:"NC",la:35.663,lg:-78.849},
+  {n:"Target Huntersville",c:"Huntersville",s:"NC",la:35.443,lg:-80.862},
+  {n:"Target Kernersville",c:"Kernersville",s:"NC",la:36.112,lg:-80.089},
+  {n:"Target Outer Banks",c:"Kill Devil Hills",s:"NC",la:36.038,lg:-75.673},
+  {n:"Target Jacksonville",c:"Jacksonville",s:"NC",la:34.788,lg:-77.404},
+  {n:"Target Knightdale",c:"Knightdale",s:"NC",la:35.798,lg:-78.509},
+  {n:"Target Charlotte SE",c:"Matthews",s:"NC",la:35.122,lg:-80.706},
+  {n:"Target Monroe",c:"Monroe",s:"NC",la:35.02,lg:-80.581},
+  {n:"Target Mooresville",c:"Mooresville",s:"NC",la:35.598,lg:-80.871},
+  {n:"Target Morrisville",c:"Morrisville",s:"NC",la:35.807,lg:-78.816},
+  {n:"Target New Bern",c:"New Bern",s:"NC",la:35.102,lg:-77.096},
+  {n:"Target Rocky Mount",c:"Rocky Mount",s:"NC",la:35.972,lg:-77.813},
+  {n:"Target Southern Pines",c:"Southern Pines",s:"NC",la:35.168,lg:-79.419},
+  {n:"Target Wesley Chapel",c:"Wesley Chapel",s:"NC",la:34.999,lg:-80.696},
+  {n:"Target Wake Forest",c:"Wake Forest",s:"NC",la:35.974,lg:-78.542},
+  {n:"Target Wilmington",c:"Wilmington",s:"NC",la:34.249,lg:-77.881},
+  {n:"Target Cary",c:"Cary",s:"NC",la:35.758,lg:-78.738},
+  {n:"Target Cary West",c:"Cary",s:"NC",la:35.844,lg:-78.885},
+  {n:"Target Pineville",c:"Charlotte",s:"NC",la:35.108,lg:-80.879},
+  {n:"Target Wilson",c:"Wilson",s:"NC",la:35.742,lg:-77.964},
+  {n:"Target NE Charlotte",c:"Charlotte",s:"NC",la:35.293,lg:-80.746},
+  {n:"Target Charlotte Stonecrest",c:"Charlotte",s:"NC",la:35.058,lg:-80.816},
+  {n:"Target Charlotte East",c:"Charlotte",s:"NC",la:35.209,lg:-80.694},
+  {n:"Target Charlotte North",c:"Charlotte",s:"NC",la:35.35,lg:-80.86},
+  {n:"Target Charlotte Blakeney",c:"Charlotte",s:"NC",la:35.037,lg:-80.808},
+  {n:"Target Charlotte SW",c:"Charlotte",s:"NC",la:35.1,lg:-80.985},
+  {n:"Target Durham",c:"Durham",s:"NC",la:35.967,lg:-78.959},
+  {n:"Target Charlotte Midtown",c:"Charlotte",s:"NC",la:35.215,lg:-80.835},
+  {n:"Target Durham Renaissance Pkwy",c:"Durham",s:"NC",la:35.903,lg:-78.957},
+  {n:"Target Garner",c:"Garner",s:"NC",la:35.715,lg:-78.639},
+  {n:"Target White Oak Garner",c:"Garner",s:"NC",la:35.687,lg:-78.579},
+  {n:"Target Greensboro Wendover",c:"Greensboro",s:"NC",la:36.057,lg:-79.907},
+  {n:"Target Greensboro Lawndale",c:"Greensboro",s:"NC",la:36.105,lg:-79.822},
+  {n:"Target Greensboro New Garden",c:"Greensboro",s:"NC",la:36.113,lg:-79.877},
+  {n:"Target Raleigh Hwy 70",c:"Raleigh",s:"NC",la:35.869,lg:-78.719},
+  {n:"Target Raleigh Brier Creek",c:"Raleigh",s:"NC",la:35.903,lg:-78.785},
+  {n:"Target Raleigh Capital Blvd",c:"Raleigh",s:"NC",la:35.866,lg:-78.568},
+  {n:"Target Raleigh North Hills",c:"Raleigh",s:"NC",la:35.836,lg:-78.642},
+  {n:"Target Raleigh Six Forks Rd",c:"Raleigh",s:"NC",la:35.898,lg:-78.653},
+  {n:"Target Raleigh NC State Hillsborough St",c:"Raleigh",s:"NC",la:35.788,lg:-78.669},
+  {n:"Target Winston-Salem Hanes Mall",c:"Winston Salem",s:"NC",la:36.069,lg:-80.321},
+  {n:"Target Winston-Salem University Parkway",c:"Winston Salem",s:"NC",la:36.168,lg:-80.279},
+  {n:"Target Bismarck",c:"Bismarck",s:"ND",la:46.799,lg:-100.784},
+  {n:"Target Fargo",c:"Fargo",s:"ND",la:46.86,lg:-96.852},
+  {n:"Target Grand Forks",c:"Grand Forks",s:"ND",la:47.887,lg:-97.08},
+  {n:"Target Minot",c:"Minot",s:"ND",la:48.206,lg:-101.31},
+  {n:"Target Green",c:"Akron",s:"OH",la:40.983,lg:-81.495},
+  {n:"Target Amherst",c:"Amherst",s:"OH",la:41.409,lg:-82.237},
+  {n:"Target Bainbridge",c:"Aurora",s:"OH",la:41.357,lg:-81.386},
+  {n:"Target Avon OH",c:"Avon",s:"OH",la:41.462,lg:-82.01},
+  {n:"Target Beavercreek",c:"Beavercreek",s:"OH",la:39.765,lg:-84.05},
+  {n:"Target Blue Ash",c:"Blue Ash",s:"OH",la:39.224,lg:-84.395},
+  {n:"Target Boardman",c:"Boardman",s:"OH",la:41.024,lg:-80.647},
+  {n:"Target Cuyahoga Falls",c:"Cuyahoga Falls",s:"OH",la:41.121,lg:-81.477},
+  {n:"Target Columbus NW",c:"Dublin",s:"OH",la:40.09,lg:-83.09},
+  {n:"Target Elyria",c:"Elyria",s:"OH",la:41.389,lg:-82.109},
+  {n:"Target Fairlawn",c:"Fairlawn",s:"OH",la:41.128,lg:-81.605},
+  {n:"Target Fairview Park",c:"Fairview Park",s:"OH",la:41.458,lg:-81.851},
+  {n:"Target Grove City",c:"Grove City",s:"OH",la:39.877,lg:-83.037},
+  {n:"Target Fairfield Township",c:"Hamilton",s:"OH",la:39.388,lg:-84.505},
+  {n:"Target Holland Mall Drive",c:"Holland",s:"OH",la:41.616,lg:-83.695},
+  {n:"Target Huber Heights",c:"Huber Heights",s:"OH",la:39.871,lg:-84.133},
+  {n:"Target Heath",c:"Heath",s:"OH",la:40.023,lg:-82.454},
+  {n:"Target Mansfield",c:"Mansfield",s:"OH",la:40.786,lg:-82.594},
+  {n:"Target Lancaster",c:"Lancaster",s:"OH",la:39.731,lg:-82.621},
+  {n:"Target Medina",c:"Medina",s:"OH",la:41.155,lg:-81.865},
+  {n:"Target Massillon",c:"Massillon",s:"OH",la:40.801,lg:-81.497},
+  {n:"Target Mayfield Heights",c:"Mayfield Heights",s:"OH",la:41.525,lg:-81.435},
+  {n:"Target Milford",c:"Milford",s:"OH",la:39.163,lg:-84.274},
+  {n:"Target Mentor",c:"Mentor",s:"OH",la:41.686,lg:-81.293},
+  {n:"Target Niles",c:"Niles",s:"OH",la:41.213,lg:-80.755},
+  {n:"Target North Olmsted",c:"North Olmsted",s:"OH",la:41.42,lg:-81.896},
+  {n:"Target Macedonia",c:"Northfield",s:"OH",la:41.312,lg:-81.526},
+  {n:"Target Canton",c:"North Canton",s:"OH",la:40.862,lg:-81.431},
+  {n:"Target Parma",c:"Parma",s:"OH",la:41.378,lg:-81.736},
+  {n:"Target Powell",c:"Powell",s:"OH",la:40.143,lg:-83.095},
+  {n:"Target Sandusky",c:"Sandusky",s:"OH",la:41.421,lg:-82.673},
+  {n:"Target Rossford",c:"Rossford",s:"OH",la:41.546,lg:-83.591},
+  {n:"Target South Lebanon",c:"South Lebanon",s:"OH",la:39.379,lg:-84.22},
+  {n:"Target Springdale",c:"Springdale",s:"OH",la:39.288,lg:-84.454},
+  {n:"Target Stow",c:"Stow",s:"OH",la:41.156,lg:-81.411},
+  {n:"Target Streetsboro",c:"Streetsboro",s:"OH",la:41.237,lg:-81.353},
+  {n:"Target Strongsville",c:"Strongsville",s:"OH",la:41.314,lg:-81.83},
+  {n:"Target University Heights",c:"University Heights",s:"OH",la:41.501,lg:-81.527},
+  {n:"Target Wadsworth",c:"Wadsworth",s:"OH",la:41.04,lg:-81.69},
+  {n:"Target West Chester Township",c:"West Chester",s:"OH",la:39.356,lg:-84.361},
+  {n:"Target Willoughby",c:"Willoughby",s:"OH",la:41.629,lg:-81.429},
+  {n:"Target Whitehall",c:"Whitehall",s:"OH",la:39.971,lg:-82.896},
+  {n:"Target Columbus New Albany",c:"Westerville",s:"OH",la:40.081,lg:-82.848},
+  {n:"Target Woodmere Village Square",c:"Woodmere",s:"OH",la:41.463,lg:-81.486},
+  {n:"Target Beechmont Area",c:"Cincinnati",s:"OH",la:39.074,lg:-84.313},
+  {n:"Target Fields Ertel",c:"Cincinnati",s:"OH",la:39.294,lg:-84.303},
+  {n:"Target Colerain",c:"Cincinnati",s:"OH",la:39.236,lg:-84.589},
+  {n:"Target Cincinnati Central",c:"Cincinnati",s:"OH",la:39.162,lg:-84.426},
+  {n:"Target Western Hills",c:"Cincinnati",s:"OH",la:39.145,lg:-84.62},
+  {n:"Target Cleveland West",c:"Cleveland",s:"OH",la:41.468,lg:-81.771},
+  {n:"Target UC Calhoun St",c:"Cincinnati",s:"OH",la:39.128,lg:-84.516},
+  {n:"Target Columbus Central",c:"Columbus",s:"OH",la:39.994,lg:-83.027},
+  {n:"Target Cleveland South",c:"Cleveland",s:"OH",la:41.458,lg:-81.689},
+  {n:"Target Columbus NE",c:"Columbus",s:"OH",la:40.057,lg:-82.921},
+  {n:"Target Columbus Ohio State U",c:"Columbus",s:"OH",la:40.001,lg:-83.008},
+  {n:"Target Graceland",c:"Columbus",s:"OH",la:40.065,lg:-83.021},
+  {n:"Target Polaris",c:"Columbus",s:"OH",la:40.146,lg:-82.98},
+  {n:"Target Dayton South",c:"Dayton",s:"OH",la:39.633,lg:-84.213},
+  {n:"Target Sugarcreek Township",c:"Dayton",s:"OH",la:39.658,lg:-84.105},
+  {n:"Target Hilliard",c:"Hilliard",s:"OH",la:40.038,lg:-83.124},
+  {n:"Target Columbus Far SW",c:"Hilliard",s:"OH",la:39.991,lg:-83.149},
+  {n:"Target Reynoldsburg",c:"Reynoldsburg",s:"OH",la:39.934,lg:-82.793},
+  {n:"Target Columbus East Broad Street",c:"Reynoldsburg",s:"OH",la:39.988,lg:-82.785},
+  {n:"Target Toledo Alexis Road",c:"Toledo",s:"OH",la:41.721,lg:-83.56},
+  {n:"Target Toledo Monroe Street",c:"Toledo",s:"OH",la:41.7,lg:-83.653},
+  {n:"Target Broken Arrow",c:"Broken Arrow",s:"OK",la:36.067,lg:-95.774},
+  {n:"Target Lawton",c:"Lawton",s:"OK",la:34.629,lg:-98.495},
+  {n:"Target Edmond",c:"Edmond",s:"OK",la:35.65,lg:-97.464},
+  {n:"Target Midwest City",c:"Midwest City",s:"OK",la:35.437,lg:-97.396},
+  {n:"Target Moore",c:"Moore",s:"OK",la:35.318,lg:-97.5},
+  {n:"Target Norman",c:"Norman",s:"OK",la:35.236,lg:-97.483},
+  {n:"Target Owasso",c:"Owasso",s:"OK",la:36.29,lg:-95.844},
+  {n:"Target Yukon",c:"Yukon",s:"OK",la:35.481,lg:-97.763},
+  {n:"Target Oklahoma City North",c:"Oklahoma City",s:"OK",la:35.524,lg:-97.564},
+  {n:"Target Quail Springs",c:"Oklahoma City",s:"OK",la:35.612,lg:-97.547},
+  {n:"Target Oklahoma City NW",c:"Oklahoma City",s:"OK",la:35.556,lg:-97.64},
+  {n:"Target Tulsa",c:"Tulsa",s:"OK",la:36.138,lg:-95.92},
+  {n:"Target Tulsa SE",c:"Tulsa",s:"OK",la:36.062,lg:-95.857},
+  {n:"Target Tulsa Hills",c:"Tulsa",s:"OK",la:36.055,lg:-96.001},
+  {n:"Target Tulsa South",c:"Tulsa",s:"OK",la:36.019,lg:-95.884},
+  {n:"Target Beaverton",c:"Beaverton",s:"OR",la:45.488,lg:-122.788},
+  {n:"Target Bend",c:"Bend",s:"OR",la:44.104,lg:-121.299},
+  {n:"Target Albany",c:"Albany",s:"OR",la:44.63,lg:-123.078},
+  {n:"Target Clackamas",c:"Clackamas",s:"OR",la:45.432,lg:-122.571},
+  {n:"Target Eugene",c:"Eugene",s:"OR",la:44.049,lg:-123.171},
+  {n:"Target Fairview",c:"Fairview",s:"OR",la:45.532,lg:-122.442},
+  {n:"Target Medford",c:"Medford",s:"OR",la:42.348,lg:-122.877},
+  {n:"Target Keizer",c:"Keizer",s:"OR",la:45.012,lg:-122.995},
+  {n:"Target Salem",c:"Salem",s:"OR",la:44.939,lg:-122.987},
+  {n:"Target Sherwood",c:"Sherwood",s:"OR",la:45.366,lg:-122.838},
+  {n:"Target Springfield",c:"Springfield",s:"OR",la:44.072,lg:-123.045},
+  {n:"Target Washington Square",c:"Tigard",s:"OR",la:45.454,lg:-122.779},
+  {n:"Target Wilsonville",c:"Wilsonville",s:"OR",la:45.333,lg:-122.767},
+  {n:"Target Hillsboro",c:"Hillsboro",s:"OR",la:45.508,lg:-122.957},
+  {n:"Target Tanasbourne",c:"Hillsboro",s:"OR",la:45.539,lg:-122.865},
+  {n:"Target Portland Cascade Station",c:"Portland",s:"OR",la:45.577,lg:-122.565},
+  {n:"Target Portland East Washington Street",c:"Portland",s:"OR",la:45.516,lg:-122.562},
+  {n:"Target Portland Hayden Island Dr",c:"Portland",s:"OR",la:45.614,lg:-122.683},
+  {n:"Target Cedar Mill",c:"Portland",s:"OR",la:45.526,lg:-122.808},
+  {n:"Target Abington Township",c:"Abington",s:"PA",la:40.125,lg:-75.116},
+  {n:"Target Lower Macungie Twp",c:"Allentown",s:"PA",la:40.566,lg:-75.561},
+  {n:"Target Altoona",c:"Altoona",s:"PA",la:40.459,lg:-78.409},
+  {n:"Target Neshaminy",c:"Bensalem",s:"PA",la:40.138,lg:-74.958},
+  {n:"Target Butler",c:"Butler",s:"PA",la:40.876,lg:-79.942},
+  {n:"Target Carlisle",c:"Carlisle",s:"PA",la:40.196,lg:-77.157},
+  {n:"Target Chambersburg",c:"Chambersburg",s:"PA",la:39.943,lg:-77.632},
+  {n:"Target Cranberry",c:"Cranberry Twp",s:"PA",la:40.688,lg:-80.085},
+  {n:"Target Dickson City",c:"Dickson City",s:"PA",la:41.468,lg:-75.639},
+  {n:"Target Doylestown",c:"Doylestown",s:"PA",la:40.319,lg:-75.131},
+  {n:"Target Lower Nazareth",c:"Easton",s:"PA",la:40.712,lg:-75.288},
+  {n:"Target Erie",c:"Erie",s:"PA",la:42.055,lg:-80.095},
+  {n:"Target Richland Twp North",c:"Gibsonia",s:"PA",la:40.642,lg:-79.942},
+  {n:"Target Concord Township",c:"Glen Mills",s:"PA",la:39.881,lg:-75.527},
+  {n:"Target Greensburg",c:"Greensburg",s:"PA",la:40.305,lg:-79.589},
+  {n:"Target Hanover",c:"Hanover",s:"PA",la:39.827,lg:-76.998},
+  {n:"Target Waterfront",c:"Homestead",s:"PA",la:40.411,lg:-79.91},
+  {n:"Target King of Prussia",c:"King of Prussia",s:"PA",la:40.09,lg:-75.384},
+  {n:"Target Lebanon Quentin Road",c:"Lebanon",s:"PA",la:40.313,lg:-76.427},
+  {n:"Target Warwick Township",c:"Lititz",s:"PA",la:40.133,lg:-76.308},
+  {n:"Target Oxford Valley",c:"Langhorne",s:"PA",la:40.176,lg:-74.878},
+  {n:"Target Malvern",c:"Malvern",s:"PA",la:40.049,lg:-75.52},
+  {n:"Target Monroeville",c:"Monroeville",s:"PA",la:40.434,lg:-79.772},
+  {n:"Target Center Township",c:"Monaca",s:"PA",la:40.681,lg:-80.312},
+  {n:"Target Mechanicsburg",c:"Mechanicsburg",s:"PA",la:40.247,lg:-77.009},
+  {n:"Target Williamsport",c:"Muncy",s:"PA",la:41.244,lg:-76.835},
+  {n:"Target Phoenixville",c:"Phoenixville",s:"PA",la:40.123,lg:-75.475},
+  {n:"Target Montgomeryville",c:"North Wales",s:"PA",la:40.224,lg:-75.24},
+  {n:"Target Plymouth Meeting",c:"Plymouth Meeting",s:"PA",la:40.102,lg:-75.292},
+  {n:"Target North Huntingdon",c:"North Huntingdon",s:"PA",la:40.32,lg:-79.691},
+  {n:"Target East Liberty",c:"Pittsburgh",s:"PA",la:40.461,lg:-79.921},
+  {n:"Target Richland Twp",c:"Quakertown",s:"PA",la:40.46,lg:-75.369},
+  {n:"Target West Pottsgrove Twp",c:"Pottstown",s:"PA",la:40.268,lg:-75.655},
+  {n:"Target Royersford",c:"Royersford",s:"PA",la:40.211,lg:-75.498},
+  {n:"Target Exeter Township",c:"Reading",s:"PA",la:40.308,lg:-75.859},
+  {n:"Target Selinsgrove",c:"Selinsgrove",s:"PA",la:40.842,lg:-76.839},
+  {n:"Target Stroudsburg",c:"Stroudsburg",s:"PA",la:40.996,lg:-75.239},
+  {n:"Target Muhlenberg Township",c:"Temple",s:"PA",la:40.398,lg:-75.93},
+  {n:"Target South Union Twp",c:"Uniontown",s:"PA",la:39.907,lg:-79.758},
+  {n:"Target Devon",c:"Wayne",s:"PA",la:40.046,lg:-75.409},
+  {n:"Target Washington",c:"Washington",s:"PA",la:40.187,lg:-80.222},
+  {n:"Target Warrington",c:"Warrington",s:"PA",la:40.224,lg:-75.137},
+  {n:"Target West Goshen",c:"West Chester",s:"PA",la:39.972,lg:-75.586},
+  {n:"Target West Mifflin",c:"West Mifflin",s:"PA",la:40.349,lg:-79.954},
+  {n:"Target Cheltenham",c:"Wyncote",s:"PA",la:40.076,lg:-75.155},
+  {n:"Target Wilkes-Barre",c:"Wilkes-barre Township",s:"PA",la:41.238,lg:-75.845},
+  {n:"Target Wynnewood",c:"Wynnewood",s:"PA",la:40.004,lg:-75.284},
+  {n:"Target Spring Township",c:"Wyomissing",s:"PA",la:40.361,lg:-75.985},
+  {n:"Target Allentown",c:"Allentown",s:"PA",la:40.613,lg:-75.535},
+  {n:"Target Exton",c:"Exton",s:"PA",la:40.039,lg:-75.629},
+  {n:"Target Hanover Township",c:"Allentown",s:"PA",la:40.639,lg:-75.439},
+  {n:"Target Uwchlan Township",c:"Exton",s:"PA",la:40.053,lg:-75.664},
+  {n:"Target Harrisburg North",c:"Harrisburg",s:"PA",la:40.312,lg:-76.799},
+  {n:"Target Harrisburg East",c:"Harrisburg",s:"PA",la:40.246,lg:-76.806},
+  {n:"Target Lancaster East",c:"Lancaster",s:"PA",la:40.026,lg:-76.204},
+  {n:"Target Lancaster Central",c:"Lancaster",s:"PA",la:40.068,lg:-76.311},
+  {n:"Target Philadelphia Roosevelt Blvd",c:"Philadelphia",s:"PA",la:40.103,lg:-75.01},
+  {n:"Target Philadelphia Snyder Ave",c:"Philadelphia",s:"PA",la:39.924,lg:-75.146},
+  {n:"Target Philadelphia Bridesburg",c:"Philadelphia",s:"PA",la:39.991,lg:-75.089},
+  {n:"Target Philadelphia City Ave",c:"Philadelphia",s:"PA",la:40.007,lg:-75.213},
+  {n:"Target Philadelphia Cottman",c:"Philadelphia",s:"PA",la:40.05,lg:-75.058},
+  {n:"Target Philadelphia Rittenhouse Square",c:"Philadelphia",s:"PA",la:39.952,lg:-75.172},
+  {n:"Target Philadelphia Roxborough",c:"Philadelphia",s:"PA",la:40.044,lg:-75.232},
+  {n:"Target Philadelphia Art Museum",c:"Philadelphia",s:"PA",la:39.962,lg:-75.173},
+  {n:"Target Philadelphia Broad And Washington",c:"Philadelphia",s:"PA",la:39.939,lg:-75.167},
+  {n:"Target Philadelphia Northern Liberties",c:"Philadelphia",s:"PA",la:39.96,lg:-75.148},
+  {n:"Target North Fayette",c:"Pittsburgh",s:"PA",la:40.446,lg:-80.183},
+  {n:"Target McCandless",c:"Pittsburgh",s:"PA",la:40.585,lg:-80.041},
+  {n:"Target Mount Nebo",c:"Pittsburgh",s:"PA",la:40.536,lg:-80.069},
+  {n:"Target Ross Township",c:"Pittsburgh",s:"PA",la:40.526,lg:-80.006},
+  {n:"Target Harmar",c:"Pittsburgh",s:"PA",la:40.538,lg:-79.837},
+  {n:"Target Upper St. Clair",c:"Pittsburgh",s:"PA",la:40.344,lg:-80.057},
+  {n:"Target Pittsburgh Downtown",c:"Pittsburgh",s:"PA",la:40.44,lg:-79.999},
+  {n:"Target Springfield",c:"Springfield",s:"PA",la:39.915,lg:-75.335},
+  {n:"Target Springfield West",c:"Springfield",s:"PA",la:39.914,lg:-75.351},
+  {n:"Target State College",c:"State College",s:"PA",la:40.813,lg:-77.906},
+  {n:"Target State College University Campus",c:"State College",s:"PA",la:40.792,lg:-77.862},
+  {n:"Target York Galleria",c:"York",s:"PA",la:39.987,lg:-76.68},
+  {n:"Target York West",c:"York",s:"PA",la:39.965,lg:-76.778},
+  {n:"Target Smithfield",c:"Smithfield",s:"RI",la:41.874,lg:-71.52},
+  {n:"Target Warwick Route 2",c:"Warwick",s:"RI",la:41.706,lg:-71.494},
+  {n:"Target Aiken",c:"Aiken",s:"SC",la:33.507,lg:-81.711},
+  {n:"Target Lincoln",c:"Lincoln",s:"RI",la:41.936,lg:-71.476},
+  {n:"Target Warwick North",c:"Warwick",s:"RI",la:41.725,lg:-71.478},
+  {n:"Target Hilton Head",c:"Bluffton",s:"SC",la:32.255,lg:-80.85},
+  {n:"Target Boiling Springs",c:"Boiling Springs",s:"SC",la:35.045,lg:-81.984},
+  {n:"Target Anderson",c:"Anderson",s:"SC",la:34.549,lg:-82.68},
+  {n:"Target Florence",c:"Florence",s:"SC",la:34.194,lg:-79.837},
+  {n:"Target Greenville",c:"Greenville",s:"SC",la:34.831,lg:-82.308},
+  {n:"Target Indian Land",c:"Indian Land",s:"SC",la:34.962,lg:-80.853},
+  {n:"Target Lexington",c:"Lexington",s:"SC",la:34.006,lg:-81.194},
+  {n:"Target North Charleston",c:"North Charleston",s:"SC",la:32.932,lg:-80.037},
+  {n:"Target Mt Pleasant",c:"Mount Pleasant",s:"SC",la:32.824,lg:-79.818},
+  {n:"Target Rock Hill",c:"Rock Hill",s:"SC",la:34.939,lg:-80.978},
+  {n:"Target Spartanburg",c:"Spartanburg",s:"SC",la:34.934,lg:-82.009},
+  {n:"Target Greer",c:"Taylors",s:"SC",la:34.938,lg:-82.279},
+  {n:"Target Simpsonville",c:"Simpsonville",s:"SC",la:34.706,lg:-82.26},
+  {n:"Target Summerville",c:"Summerville",s:"SC",la:33.04,lg:-80.158},
+  {n:"Target Charleston South",c:"Charleston",s:"SC",la:32.796,lg:-80.033},
+  {n:"Target Charleston King Street",c:"Charleston",s:"SC",la:32.78,lg:-79.934},
+  {n:"Target Columbia Harbison Blvd",c:"Columbia",s:"SC",la:34.066,lg:-81.165},
+  {n:"Target Columbia Two Notch Rd",c:"Columbia",s:"SC",la:34.118,lg:-80.877},
+  {n:"Target Columbia Garners Ferry",c:"Columbia",s:"SC",la:33.981,lg:-80.969},
+  {n:"Target Myrtle Beach 17 and 21st Ave",c:"Myrtle Beach",s:"SC",la:33.714,lg:-78.896},
+  {n:"Target Myrtle Beach 17 and 544",c:"Myrtle Beach",s:"SC",la:33.652,lg:-78.984},
+  {n:"Target Aberdeen",c:"Aberdeen",s:"SD",la:45.458,lg:-98.441},
+  {n:"Target Rapid City",c:"Rapid City",s:"SD",la:44.099,lg:-103.189},
+  {n:"Target Watertown",c:"Watertown",s:"SD",la:44.888,lg:-97.084},
+  {n:"Target Sioux Falls",c:"Sioux Falls",s:"SD",la:43.516,lg:-96.771},
+  {n:"Target Sioux Falls East",c:"Sioux Falls",s:"SD",la:43.539,lg:-96.655},
+  {n:"Target Brentwood",c:"Brentwood",s:"TN",la:36.043,lg:-86.779},
+  {n:"Target Chattanooga East",c:"Chattanooga",s:"TN",la:35.025,lg:-85.156},
+  {n:"Target Clarksville",c:"Clarksville",s:"TN",la:36.588,lg:-87.288},
+  {n:"Target Cleveland",c:"Cleveland",s:"TN",la:35.218,lg:-84.866},
+  {n:"Target Collierville",c:"Collierville",s:"TN",la:35.05,lg:-89.691},
+  {n:"Target Germantown",c:"Germantown",s:"TN",la:35.065,lg:-89.756},
+  {n:"Target Hendersonville",c:"Hendersonville",s:"TN",la:36.335,lg:-86.627},
+  {n:"Target Chattanooga North",c:"Hixson",s:"TN",la:35.146,lg:-85.252},
+  {n:"Target Jackson",c:"Jackson",s:"TN",la:35.687,lg:-88.858},
+  {n:"Target Johnson City",c:"Johnson City",s:"TN",la:36.343,lg:-82.375},
+  {n:"Target Rivergate",c:"Madison",s:"TN",la:36.304,lg:-86.695},
+  {n:"Target Kingsport",c:"Kingsport",s:"TN",la:36.553,lg:-82.492},
+  {n:"Target Maryville",c:"Maryville",s:"TN",la:35.752,lg:-83.991},
+  {n:"Target Mt Juliet",c:"Mount Juliet",s:"TN",la:36.165,lg:-86.514},
+  {n:"Target Murfreesboro",c:"Murfreesboro",s:"TN",la:35.846,lg:-86.426},
+  {n:"Target Sevierville",c:"Sevierville",s:"TN",la:35.888,lg:-83.576},
+  {n:"Target Smyrna",c:"Smyrna",s:"TN",la:35.98,lg:-86.572},
+  {n:"Target Spring Hill",c:"Spring Hill",s:"TN",la:35.742,lg:-86.937},
+  {n:"Target Cool Springs",c:"Franklin",s:"TN",la:35.966,lg:-86.812},
+  {n:"Target Franklin",c:"Franklin",s:"TN",la:35.893,lg:-86.881},
+  {n:"Target Knoxville West",c:"Knoxville",s:"TN",la:35.922,lg:-84.048},
+  {n:"Target Knoxville NW",c:"Knoxville",s:"TN",la:36.008,lg:-84.022},
+  {n:"Target Knoxville North",c:"Knoxville",s:"TN",la:36.037,lg:-83.889},
+  {n:"Target Farragut",c:"Knoxville",s:"TN",la:35.9,lg:-84.152},
+  {n:"Target Knoxville South",c:"Knoxville",s:"TN",la:35.863,lg:-84.079},
+  {n:"Target Memphis Central",c:"Memphis",s:"TN",la:35.114,lg:-89.903},
+  {n:"Target Nashville East",c:"Nashville",s:"TN",la:36.182,lg:-86.637},
+  {n:"Target Memphis NE",c:"Memphis",s:"TN",la:35.203,lg:-89.797},
+  {n:"Target Memphis East",c:"Memphis",s:"TN",la:35.101,lg:-89.864},
+  {n:"Target White Bridge",c:"Nashville",s:"TN",la:36.131,lg:-86.854},
+  {n:"Target Nashville West",c:"Nashville",s:"TN",la:36.135,lg:-86.892},
+  {n:"Target Abilene",c:"Abilene",s:"TX",la:32.406,lg:-99.768},
+  {n:"Target Addison",c:"Addison",s:"TX",la:32.951,lg:-96.854},
+  {n:"Target Amarillo",c:"Amarillo",s:"TX",la:35.186,lg:-101.934},
+  {n:"Target Arlington South",c:"Arlington",s:"TX",la:32.684,lg:-97.136},
+  {n:"Target Balcones Heights Crossroads",c:"Balcones Heights",s:"TX",la:29.492,lg:-98.551},
+  {n:"Target Baytown",c:"Baytown",s:"TX",la:29.772,lg:-94.976},
+  {n:"Target Beaumont",c:"Beaumont",s:"TX",la:30.126,lg:-94.153},
+  {n:"Target Bee Cave",c:"Bee Cave",s:"TX",la:30.318,lg:-97.951},
+  {n:"Target Bryan",c:"Bryan",s:"TX",la:30.665,lg:-96.322},
+  {n:"Target Brownsville North",c:"Brownsville",s:"TX",la:25.968,lg:-97.51},
+  {n:"Target Burleson",c:"Burleson",s:"TX",la:32.524,lg:-97.349},
+  {n:"Target Clear Lake Shores",c:"Clear Lake Shores",s:"TX",la:29.539,lg:-95.022},
+  {n:"Target Cedar Hill",c:"Cedar Hill",s:"TX",la:32.603,lg:-96.937},
+  {n:"Target College Station",c:"College Station",s:"TX",la:30.61,lg:-96.315},
+  {n:"Target Cedar Park",c:"Cedar Park",s:"TX",la:30.529,lg:-97.814},
+  {n:"Target Conroe",c:"Conroe",s:"TX",la:30.314,lg:-95.474},
+  {n:"Target Corpus Christi",c:"Corpus Christi",s:"TX",la:27.71,lg:-97.376},
+  {n:"Target Cypress",c:"Cypress",s:"TX",la:29.969,lg:-95.696},
+  {n:"Target League City",c:"Dickinson",s:"TX",la:29.459,lg:-95.084},
+  {n:"Target Euless",c:"Euless",s:"TX",la:32.881,lg:-97.104},
+  {n:"Target Flower Mound",c:"Flower Mound",s:"TX",la:33.068,lg:-97.084},
+  {n:"Target Galveston",c:"Galveston",s:"TX",la:29.291,lg:-94.84},
+  {n:"Target Georgetown",c:"Georgetown",s:"TX",la:30.631,lg:-97.699},
+  {n:"Target Garland East",c:"Garland",s:"TX",la:32.966,lg:-96.646},
+  {n:"Target Grapevine",c:"Grapevine",s:"TX",la:32.931,lg:-97.09},
+  {n:"Target Harker Heights",c:"Harker Heights",s:"TX",la:31.072,lg:-97.669},
+  {n:"Target Harlingen",c:"Harlingen",s:"TX",la:26.183,lg:-97.722},
+  {n:"Target Kyle",c:"Kyle",s:"TX",la:30.011,lg:-97.864},
+  {n:"Target Hurst",c:"Hurst",s:"TX",la:32.837,lg:-97.184},
+  {n:"Target Huntsville",c:"Huntsville",s:"TX",la:30.707,lg:-95.566},
+  {n:"Target Lake Worth",c:"Lake Worth",s:"TX",la:32.814,lg:-97.43},
+  {n:"Target Lake Jackson",c:"Lake Jackson",s:"TX",la:29.05,lg:-95.465},
+  {n:"Target Longview",c:"Longview",s:"TX",la:32.547,lg:-94.725},
+  {n:"Target Lufkin",c:"Lufkin",s:"TX",la:31.313,lg:-94.72},
+  {n:"Target Westwood Village",c:"Magnolia",s:"TX",la:30.218,lg:-95.568},
+  {n:"Target Mansfield",c:"Mansfield",s:"TX",la:32.59,lg:-97.144},
+  {n:"Target McAllen North",c:"Mcallen",s:"TX",la:26.268,lg:-98.216},
+  {n:"Target McKinney",c:"Mckinney",s:"TX",la:33.22,lg:-96.638},
+  {n:"Target McKinney SW",c:"Mckinney",s:"TX",la:33.13,lg:-96.731},
+  {n:"Target Mesquite",c:"Mesquite",s:"TX",la:32.814,lg:-96.621},
+  {n:"Target Midland",c:"Midland",s:"TX",la:32.024,lg:-102.145},
+  {n:"Target Mission",c:"Mission",s:"TX",la:26.198,lg:-98.283},
+  {n:"Target New Braunfels",c:"New Braunfels",s:"TX",la:29.731,lg:-98.074},
+  {n:"Target Missouri City",c:"Missouri City",s:"TX",la:29.568,lg:-95.57},
+  {n:"Target New Caney",c:"New Caney",s:"TX",la:30.133,lg:-95.233},
+  {n:"Target North Richland Hills",c:"North Richland Hills",s:"TX",la:32.907,lg:-97.192},
+  {n:"Target Odessa",c:"Odessa",s:"TX",la:31.892,lg:-102.347},
+  {n:"Target Pasadena",c:"Pasadena",s:"TX",la:29.65,lg:-95.152},
+  {n:"Target Pearland",c:"Pearland",s:"TX",la:29.553,lg:-95.383},
+  {n:"Target Pflugerville",c:"Pflugerville",s:"TX",la:30.467,lg:-97.598},
+  {n:"Target Port Arthur",c:"Port Arthur",s:"TX",la:29.948,lg:-93.989},
+  {n:"Target Portland Northshore",c:"Portland",s:"TX",la:27.898,lg:-97.305},
+  {n:"Target Prosper",c:"Prosper",s:"TX",la:33.224,lg:-96.803},
+  {n:"Target Richardson Sq Mall",c:"Richardson",s:"TX",la:32.94,lg:-96.697},
+  {n:"Target Richmond Grand Pkwy SW",c:"Richmond",s:"TX",la:29.658,lg:-95.71},
+  {n:"Target Rosenberg",c:"Rosenberg",s:"TX",la:29.548,lg:-95.751},
+  {n:"Target Rockwall",c:"Rockwall",s:"TX",la:32.894,lg:-96.468},
+  {n:"Target Round Rock",c:"Round Rock",s:"TX",la:30.479,lg:-97.669},
+  {n:"Target San Angelo",c:"San Angelo",s:"TX",la:31.432,lg:-100.501},
+  {n:"Target Rowlett",c:"Rowlett",s:"TX",la:32.908,lg:-96.558},
+  {n:"Target San Antonio NE",c:"Selma",s:"TX",la:29.569,lg:-98.327},
+  {n:"Target Sherman",c:"Sherman",s:"TX",la:33.68,lg:-96.612},
+  {n:"Target Stafford Kirkwood Rd",c:"Stafford",s:"TX",la:29.637,lg:-95.579},
+  {n:"Target Sugar Land",c:"Sugar Land",s:"TX",la:29.596,lg:-95.627},
+  {n:"Target Temple",c:"Temple",s:"TX",la:31.092,lg:-97.386},
+  {n:"Target Texarkana",c:"Texarkana",s:"TX",la:33.458,lg:-94.092},
+  {n:"Target Woodlands",c:"The Woodlands",s:"TX",la:30.17,lg:-95.453},
+  {n:"Target Houston Tomball North",c:"Tomball",s:"TX",la:30.092,lg:-95.64},
+  {n:"Target Tyler",c:"Tyler",s:"TX",la:32.273,lg:-95.31},
+  {n:"Target Victoria",c:"Victoria",s:"TX",la:28.866,lg:-96.999},
+  {n:"Target Waco",c:"Waco",s:"TX",la:31.533,lg:-97.193},
+  {n:"Target Waxahachie",c:"Waxahachie",s:"TX",la:32.418,lg:-96.841},
+  {n:"Target Watauga",c:"Watauga",s:"TX",la:32.889,lg:-97.257},
+  {n:"Target Weatherford",c:"Weatherford",s:"TX",la:32.727,lg:-97.784},
+  {n:"Target Baybrook",c:"Webster",s:"TX",la:29.536,lg:-95.151},
+  {n:"Target Wylie",c:"Wylie",s:"TX",la:33.009,lg:-96.594},
+  {n:"Target Wichita Falls",c:"Wichita Falls",s:"TX",la:33.865,lg:-98.534},
+  {n:"Target Allen North",c:"Allen",s:"TX",la:33.124,lg:-96.661},
+  {n:"Target Allen",c:"Allen",s:"TX",la:33.099,lg:-96.682},
+  {n:"Target Austin North",c:"Austin",s:"TX",la:30.363,lg:-97.716},
+  {n:"Target Austin SW",c:"Austin",s:"TX",la:30.234,lg:-97.829},
+  {n:"Target Austin South Lamar",c:"Austin",s:"TX",la:30.233,lg:-97.792},
+  {n:"Target Austin East",c:"Austin",s:"TX",la:30.316,lg:-97.706},
+  {n:"Target Austin Lakeline Mall Dr",c:"Austin",s:"TX",la:30.476,lg:-97.797},
+  {n:"Target Austin Southpark",c:"Austin",s:"TX",la:30.166,lg:-97.793},
+  {n:"Target Four Points",c:"Austin",s:"TX",la:30.403,lg:-97.85},
+  {n:"Target Austin UT Campus",c:"Austin",s:"TX",la:30.284,lg:-97.742},
+  {n:"Target Austin Arboretum",c:"Austin",s:"TX",la:30.393,lg:-97.744},
+  {n:"Target Austin Saltillo",c:"Austin",s:"TX",la:30.264,lg:-97.734},
+  {n:"Target North Dallas",c:"Dallas",s:"TX",la:32.928,lg:-96.814},
+  {n:"Target Medallion",c:"Dallas",s:"TX",la:32.857,lg:-96.75},
+  {n:"Target Cityplace Market",c:"Dallas",s:"TX",la:32.804,lg:-96.791},
+  {n:"Target Love Field",c:"Dallas",s:"TX",la:32.862,lg:-96.854},
+  {n:"Target North Dallas Coit Road",c:"Dallas",s:"TX",la:32.983,lg:-96.77},
+  {n:"Target Dallas South",c:"Dallas",s:"TX",la:32.65,lg:-96.863},
+  {n:"Target Northeast Dallas Skillman",c:"Dallas",s:"TX",la:32.866,lg:-96.746},
+  {n:"Target Dallas Preston Center",c:"Dallas",s:"TX",la:32.865,lg:-96.807},
+  {n:"Target El Paso West",c:"El Paso",s:"TX",la:31.82,lg:-106.545},
+  {n:"Target Denton North",c:"Denton",s:"TX",la:33.227,lg:-97.168},
+  {n:"Target Denton",c:"Denton",s:"TX",la:33.19,lg:-97.099},
+  {n:"Target El Paso East George Dieter Dr",c:"El Paso",s:"TX",la:31.77,lg:-106.305},
+  {n:"Target El Paso Central",c:"El Paso",s:"TX",la:31.782,lg:-106.414},
+  {n:"Target El Paso Joe Battle Blvd",c:"El Paso",s:"TX",la:31.759,lg:-106.265},
+  {n:"Target Eastchase",c:"Fort Worth",s:"TX",la:32.758,lg:-97.17},
+  {n:"Target Fort Worth Central",c:"Fort Worth",s:"TX",la:32.755,lg:-97.354},
+  {n:"Target Cityview",c:"Fort Worth",s:"TX",la:32.679,lg:-97.413},
+  {n:"Target Ridgmar",c:"Fort Worth",s:"TX",la:32.749,lg:-97.432},
+  {n:"Target Fort Worth",c:"Fort Worth",s:"TX",la:32.902,lg:-97.324},
+  {n:"Target Grand Prairie",c:"Grand Prairie",s:"TX",la:32.678,lg:-97.01},
+  {n:"Target Frisco North",c:"Frisco",s:"TX",la:33.173,lg:-96.845},
+  {n:"Target Frisco",c:"Frisco",s:"TX",la:33.105,lg:-96.812},
+  {n:"Target Grand Prairie S",c:"Grand Prairie",s:"TX",la:32.643,lg:-97.061},
+  {n:"Target Houston Westchase",c:"Houston",s:"TX",la:29.735,lg:-95.568},
+  {n:"Target Houston NW",c:"Houston",s:"TX",la:29.849,lg:-95.502},
+  {n:"Target Katy",c:"Houston",s:"TX",la:29.782,lg:-95.717},
+  {n:"Target Galleria",c:"Houston",s:"TX",la:29.745,lg:-95.453},
+  {n:"Target Tomball Parkway",c:"Houston",s:"TX",la:30.0,lg:-95.584},
+  {n:"Target Houston Memorial",c:"Houston",s:"TX",la:29.783,lg:-95.542},
+  {n:"Target Houston South Main",c:"Houston",s:"TX",la:29.692,lg:-95.419},
+  {n:"Target Copperfield",c:"Houston",s:"TX",la:29.878,lg:-95.645},
+  {n:"Target Houston Meyerland",c:"Houston",s:"TX",la:29.687,lg:-95.462},
+  {n:"Target Willowbrook",c:"Houston",s:"TX",la:29.968,lg:-95.531},
+  {n:"Target Houston Central",c:"Houston",s:"TX",la:29.774,lg:-95.385},
+  {n:"Target Steeplechase",c:"Houston",s:"TX",la:29.919,lg:-95.605},
+  {n:"Target Westheimer",c:"Houston",s:"TX",la:29.735,lg:-95.518},
+  {n:"Target Houston Eldridge Pkwy",c:"Houston",s:"TX",la:29.733,lg:-95.627},
+  {n:"Target Houston South",c:"Houston",s:"TX",la:29.602,lg:-95.264},
+  {n:"Target Humble",c:"Humble",s:"TX",la:30.019,lg:-95.268},
+  {n:"Target Houston Montrose",c:"Houston",s:"TX",la:29.741,lg:-95.41},
+  {n:"Target Atascocita",c:"Humble",s:"TX",la:30.0,lg:-95.173},
+  {n:"Target Irving",c:"Irving",s:"TX",la:32.839,lg:-96.991},
+  {n:"Target Irving North",c:"Irving",s:"TX",la:32.914,lg:-96.962},
+  {n:"Target Laredo",c:"Laredo",s:"TX",la:27.57,lg:-99.5},
+  {n:"Target Katy Cinco Ranch",c:"Katy",s:"TX",la:29.736,lg:-95.776},
+  {n:"Target Katy Elyson",c:"Katy",s:"TX",la:29.874,lg:-95.874},
+  {n:"Target Laredo East",c:"Laredo",s:"TX",la:27.516,lg:-99.452},
+  {n:"Target Vista Ridge",c:"Lewisville",s:"TX",la:33.011,lg:-96.968},
+  {n:"Target Lewisville State Highway 121",c:"Lewisville",s:"TX",la:33.064,lg:-96.885},
+  {n:"Target Lubbock University Ave",c:"Lubbock",s:"TX",la:33.528,lg:-101.872},
+  {n:"Target Lubbock Marsha Sharp",c:"Lubbock",s:"TX",la:33.549,lg:-101.948},
+  {n:"Target McAllen",c:"Mcallen",s:"TX",la:26.186,lg:-98.213},
+  {n:"Target McAllen Northwest",c:"Mcallen",s:"TX",la:26.245,lg:-98.254},
+  {n:"Target Plano",c:"Plano",s:"TX",la:33.037,lg:-96.708},
+  {n:"Target Plano West",c:"Plano",s:"TX",la:33.031,lg:-96.827},
+  {n:"Target Bitters",c:"San Antonio",s:"TX",la:29.565,lg:-98.48},
+  {n:"Target SW Military Drive",c:"San Antonio",s:"TX",la:29.356,lg:-98.543},
+  {n:"Target San Antonio North",c:"San Antonio",s:"TX",la:29.612,lg:-98.511},
+  {n:"Target San Antonio West",c:"San Antonio",s:"TX",la:29.548,lg:-98.663},
+  {n:"Target San Antonio SE",c:"San Antonio",s:"TX",la:29.354,lg:-98.436},
+  {n:"Target San Antonio Westover",c:"San Antonio",s:"TX",la:29.439,lg:-98.65},
+  {n:"Target La Cantera",c:"San Antonio",s:"TX",la:29.606,lg:-98.597},
+  {n:"Target Stone Oak",c:"San Antonio",s:"TX",la:29.653,lg:-98.445},
+  {n:"Target San Antonio Culebra",c:"San Antonio",s:"TX",la:29.488,lg:-98.709},
+  {n:"Target Park North",c:"San Antonio",s:"TX",la:29.519,lg:-98.505},
+  {n:"Target Alamo Heights",c:"San Antonio",s:"TX",la:29.489,lg:-98.447},
+  {n:"Target San Marcos",c:"San Marcos",s:"TX",la:29.846,lg:-97.971},
+  {n:"Target Houston North Central",c:"Spring",s:"TX",la:30.05,lg:-95.435},
+  {n:"Target San Marcos Downtown",c:"San Marcos",s:"TX",la:29.886,lg:-97.941},
+  {n:"Target Spring Grand Parkway North",c:"Spring",s:"TX",la:30.087,lg:-95.52},
+  {n:"Target American Fork",c:"American Fork",s:"UT",la:40.379,lg:-111.815},
+  {n:"Target Centerville",c:"Centerville",s:"UT",la:40.918,lg:-111.887},
+  {n:"Target Layton",c:"Layton",s:"UT",la:41.088,lg:-111.981},
+  {n:"Target Orem State Street",c:"Orem",s:"UT",la:40.297,lg:-111.7},
+  {n:"Target Riverdale",c:"Riverdale",s:"UT",la:41.176,lg:-112.008},
+  {n:"Target St George",c:"Saint George",s:"UT",la:37.103,lg:-113.554},
+  {n:"Target Sandy South Towne",c:"Sandy",s:"UT",la:40.567,lg:-111.892},
+  {n:"Target South Jordan",c:"South Jordan",s:"UT",la:40.542,lg:-111.978},
+  {n:"Target Spanish Fork",c:"Spanish Fork",s:"UT",la:40.122,lg:-111.639},
+  {n:"Target Taylorsville",c:"Taylorsville",s:"UT",la:40.646,lg:-111.94},
+  {n:"Target West Jordan SW",c:"West Jordan",s:"UT",la:40.61,lg:-111.984},
+  {n:"Target West Valley City",c:"West Valley City",s:"UT",la:40.714,lg:-112.023},
+  {n:"Target Provo Towne Centre",c:"Provo",s:"UT",la:40.218,lg:-111.663},
+  {n:"Target Provo State St and Bulldog Blvd UT",c:"Provo",s:"UT",la:40.252,lg:-111.666},
+  {n:"Target Fort Union",c:"Salt Lake City",s:"UT",la:40.623,lg:-111.85},
+  {n:"Target Salt Lake City",c:"Salt Lake City",s:"UT",la:40.746,lg:-111.9},
+  {n:"Target Salt Lake City Sugar House",c:"Salt Lake City",s:"UT",la:40.722,lg:-111.856},
+  {n:"Target South Burlington",c:"South Burlington",s:"VT",la:44.466,lg:-73.183},
+  {n:"Target Bridgeport",c:"Bridgeport",s:"WV",la:39.311,lg:-80.274},
+  {n:"Target Barboursville",c:"Barboursville",s:"WV",la:38.42,lg:-82.285},
+  {n:"Target Bristol",c:"Bristol",s:"VA",la:36.636,lg:-82.11},
+  {n:"Target Chantilly",c:"Chantilly",s:"VA",la:38.895,lg:-77.445},
+  {n:"Target Chester",c:"Chester",s:"VA",la:37.351,lg:-77.41},
+  {n:"Target Charlottesville",c:"Charlottesville",s:"VA",la:38.129,lg:-78.441},
+  {n:"Target Christiansburg",c:"Christiansburg",s:"VA",la:37.157,lg:-80.423},
+  {n:"Target Colonial Heights",c:"Colonial Heights",s:"VA",la:37.249,lg:-77.386},
+  {n:"Target Culpeper",c:"Culpeper",s:"VA",la:38.483,lg:-77.967},
+  {n:"Target Dumfries",c:"Dumfries",s:"VA",la:38.598,lg:-77.333},
+  {n:"Target Front Royal",c:"Front Royal",s:"VA",la:38.964,lg:-78.193},
+  {n:"Target Danville",c:"Danville",s:"VA",la:36.602,lg:-79.419},
+  {n:"Target Gainesville",c:"Gainesville",s:"VA",la:38.794,lg:-77.607},
+  {n:"Target Hampton",c:"Hampton",s:"VA",la:37.042,lg:-76.392},
+  {n:"Target Harrisonburg",c:"Harrisonburg",s:"VA",la:38.426,lg:-78.844},
+  {n:"Target Henrico Staples Mill Rd",c:"Henrico",s:"VA",la:37.639,lg:-77.511},
+  {n:"Target Teays Valley",c:"Hurricane",s:"WV",la:38.456,lg:-81.931},
+  {n:"Target Leesburg",c:"Leesburg",s:"VA",la:39.115,lg:-77.535},
+  {n:"Target Lynchburg",c:"Lynchburg",s:"VA",la:37.346,lg:-79.191},
+  {n:"Target Manassas West",c:"Manassas",s:"VA",la:38.739,lg:-77.532},
+  {n:"Target Martinsburg",c:"Martinsburg",s:"WV",la:39.438,lg:-77.993},
+  {n:"Target Mechanicsville",c:"Mechanicsville",s:"VA",la:37.6,lg:-77.349},
+  {n:"Target Newport News",c:"Newport News",s:"VA",la:37.108,lg:-76.495},
+  {n:"Target Morgantown",c:"Morgantown",s:"WV",la:39.649,lg:-80.0},
+  {n:"Target Norfolk",c:"Norfolk",s:"VA",la:36.865,lg:-76.213},
+  {n:"Target Reston",c:"Reston",s:"VA",la:38.955,lg:-77.37},
+  {n:"Target Roanoke",c:"Roanoke",s:"VA",la:37.3,lg:-79.958},
+  {n:"Target Rosslyn",c:"Rosslyn",s:"VA",la:38.895,lg:-77.074},
+  {n:"Target Charleston",c:"South Charleston",s:"WV",la:38.34,lg:-81.713},
+  {n:"Target Springfield",c:"Springfield",s:"VA",la:38.776,lg:-77.174},
+  {n:"Target Stafford",c:"Stafford",s:"VA",la:38.469,lg:-77.408},
+  {n:"Target Wheeling",c:"Triadelphia",s:"WV",la:40.056,lg:-80.599},
+  {n:"Target Waynesboro",c:"Waynesboro",s:"VA",la:38.057,lg:-78.944},
+  {n:"Target Alexandria",c:"Alexandria",s:"VA",la:38.833,lg:-77.05},
+  {n:"Target Alexandria Hybla Valley",c:"Alexandria",s:"VA",la:38.775,lg:-77.083},
+  {n:"Target Pentagon City Army Navy Dr",c:"Arlington",s:"VA",la:38.866,lg:-77.063},
+  {n:"Target Potomac Mills",c:"Woodbridge",s:"VA",la:38.655,lg:-77.289},
+  {n:"Target Ballston",c:"Arlington",s:"VA",la:38.88,lg:-77.114},
+  {n:"Target Greenbrier",c:"Chesapeake",s:"VA",la:36.771,lg:-76.232},
+  {n:"Target Chesapeake Sq Mall",c:"Chesapeake",s:"VA",la:36.828,lg:-76.414},
+  {n:"Target Fair Lakes",c:"Fairfax",s:"VA",la:38.855,lg:-77.393},
+  {n:"Target Hillcrest",c:"Chesapeake",s:"VA",la:36.659,lg:-76.234},
+  {n:"Target Fairfax",c:"Fairfax",s:"VA",la:38.798,lg:-77.301},
+  {n:"Target Merrifield",c:"Fairfax",s:"VA",la:38.873,lg:-77.229},
+  {n:"Target Skyline",c:"Falls Church",s:"VA",la:38.845,lg:-77.119},
+  {n:"Target Falls Church",c:"Falls Church",s:"VA",la:38.868,lg:-77.142},
+  {n:"Target Massaponax",c:"Fredericksburg",s:"VA",la:38.222,lg:-77.506},
+  {n:"Target Fredericksburg",c:"Fredericksburg",s:"VA",la:38.3,lg:-77.513},
+  {n:"Target Stafford South",c:"Fredericksburg",s:"VA",la:38.345,lg:-77.494},
+  {n:"Target Virginia Center Commons",c:"Glen Allen",s:"VA",la:37.673,lg:-77.463},
+  {n:"Target Glen Allen Broad St",c:"Glen Allen",s:"VA",la:37.652,lg:-77.606},
+  {n:"Target Richmond Brandermill",c:"Midlothian",s:"VA",la:37.421,lg:-77.634},
+  {n:"Target Midlothian Perimeter Dr",c:"Midlothian",s:"VA",la:37.512,lg:-77.693},
+  {n:"Target Richmond Central",c:"Richmond",s:"VA",la:37.588,lg:-77.5},
+  {n:"Target Richmond Midlothian Tpke",c:"Richmond",s:"VA",la:37.505,lg:-77.607},
+  {n:"Target Forest Hill",c:"Richmond",s:"VA",la:37.535,lg:-77.527},
+  {n:"Target Richmond East",c:"Richmond",s:"VA",la:37.527,lg:-77.356},
+  {n:"Target Sterling",c:"Sterling",s:"VA",la:39.026,lg:-77.401},
+  {n:"Target South Riding",c:"Sterling",s:"VA",la:38.952,lg:-77.534},
+  {n:"Target Dulles",c:"Sterling",s:"VA",la:39.009,lg:-77.439},
+  {n:"Target Princess Anne",c:"Virginia Beach",s:"VA",la:36.788,lg:-76.109},
+  {n:"Target Hilltop",c:"Virginia Beach",s:"VA",la:36.847,lg:-76.022},
+  {n:"Target Pembroke",c:"Virginia Beach",s:"VA",la:36.845,lg:-76.134},
+  {n:"Target Red Mill",c:"Virginia Beach",s:"VA",la:36.755,lg:-76.01},
+  {n:"Target Williamsburg",c:"Williamsburg",s:"VA",la:37.271,lg:-76.761},
+  {n:"Target Williamsburg East",c:"Williamsburg",s:"VA",la:37.259,lg:-76.641},
+  {n:"Target Winchester",c:"Winchester",s:"VA",la:39.154,lg:-78.167},
+  {n:"Target Bonney Lake",c:"Bonney Lake",s:"WA",la:47.172,lg:-122.172},
+  {n:"Target Bellingham",c:"Bellingham",s:"WA",la:48.787,lg:-122.494},
+  {n:"Target Winchester North",c:"Winchester",s:"VA",la:39.222,lg:-78.136},
+  {n:"Target Burlington",c:"Burlington",s:"WA",la:48.465,lg:-122.339},
+  {n:"Target Everett",c:"Everett",s:"WA",la:47.91,lg:-122.227},
+  {n:"Target Federal Way",c:"Federal Way",s:"WA",la:47.313,lg:-122.306},
+  {n:"Target Gig Harbor",c:"Gig Harbor",s:"WA",la:47.361,lg:-122.608},
+  {n:"Target Issaquah",c:"Issaquah",s:"WA",la:47.544,lg:-122.05},
+  {n:"Target Kelso",c:"Kelso",s:"WA",la:46.143,lg:-122.899},
+  {n:"Target Kennewick",c:"Kennewick",s:"WA",la:46.222,lg:-119.222},
+  {n:"Target Kent",c:"Kent",s:"WA",la:47.366,lg:-122.203},
+  {n:"Target Lake Stevens",c:"Lake Stevens",s:"WA",la:47.999,lg:-122.102},
+  {n:"Target Lacey",c:"Lacey",s:"WA",la:47.043,lg:-122.836},
+  {n:"Target Lakewood",c:"Lakewood",s:"WA",la:47.165,lg:-122.51},
+  {n:"Target Lynnwood",c:"Lynnwood",s:"WA",la:47.833,lg:-122.267},
+  {n:"Target Marysville",c:"Marysville",s:"WA",la:48.149,lg:-122.192},
+  {n:"Target Redmond",c:"Redmond",s:"WA",la:47.672,lg:-122.103},
+  {n:"Target Olympia",c:"Olympia",s:"WA",la:47.045,lg:-122.935},
+  {n:"Target Richland",c:"Richland",s:"WA",la:46.259,lg:-119.313},
+  {n:"Target Renton",c:"Renton",s:"WA",la:47.496,lg:-122.2},
+  {n:"Target Silverdale",c:"Silverdale",s:"WA",la:47.658,lg:-122.695},
+  {n:"Target South Center",c:"Tukwila",s:"WA",la:47.455,lg:-122.259},
+  {n:"Target North Tacoma",c:"Tacoma",s:"WA",la:47.238,lg:-122.48},
+  {n:"Target Wenatchee",c:"Wenatchee",s:"WA",la:47.438,lg:-120.328},
+  {n:"Target Woodinville",c:"Woodinville",s:"WA",la:47.758,lg:-122.155},
+  {n:"Target Yakima",c:"Yakima",s:"WA",la:46.606,lg:-120.49},
+  {n:"Target Factoria",c:"Bellevue",s:"WA",la:47.574,lg:-122.174},
+  {n:"Target Puyallup",c:"Puyallup",s:"WA",la:47.159,lg:-122.295},
+  {n:"Target Bellevue 4th St and 116th Ave",c:"Bellevue",s:"WA",la:47.612,lg:-122.184},
+  {n:"Target Puyallup South",c:"Puyallup",s:"WA",la:47.113,lg:-122.292},
+  {n:"Target West Seattle",c:"Seattle",s:"WA",la:47.522,lg:-122.369},
+  {n:"Target North Spokane",c:"Spokane",s:"WA",la:47.748,lg:-117.4},
+  {n:"Target Northgate",c:"Seattle",s:"WA",la:47.709,lg:-122.325},
+  {n:"Target Seattle Pike Plaza",c:"Seattle",s:"WA",la:47.608,lg:-122.338},
+  {n:"Target Spokane Valley",c:"Spokane",s:"WA",la:47.656,lg:-117.221},
+  {n:"Target Spokane South",c:"Spokane",s:"WA",la:47.609,lg:-117.365},
+  {n:"Target Vancouver Plaza Dr",c:"Vancouver",s:"WA",la:45.651,lg:-122.592},
+  {n:"Target Vancouver Hazel Dell Ave",c:"Vancouver",s:"WA",la:45.686,lg:-122.668},
+  {n:"Target Vancouver Mill Plain Blvd",c:"Vancouver",s:"WA",la:45.617,lg:-122.506},
+  {n:"Target Eau Claire",c:"Eau Claire",s:"WI",la:44.779,lg:-91.435},
+  {n:"Target Delafield",c:"Delafield",s:"WI",la:43.051,lg:-88.377},
+  {n:"Target Brookfield",c:"Brookfield",s:"WI",la:43.035,lg:-88.071},
+  {n:"Target Fitchburg",c:"Fitchburg",s:"WI",la:43.015,lg:-89.481},
+  {n:"Target Fond du Lac",c:"Fond Du Lac",s:"WI",la:43.791,lg:-88.485},
+  {n:"Target Grafton",c:"Grafton",s:"WI",la:43.319,lg:-87.925},
+  {n:"Target Glendale North Shore",c:"Glendale",s:"WI",la:43.121,lg:-87.912},
+  {n:"Target Franklin",c:"Franklin",s:"WI",la:42.904,lg:-88.038},
+  {n:"Target Hudson",c:"Hudson",s:"WI",la:44.964,lg:-92.725},
+  {n:"Target Lake Geneva",c:"Lake Geneva",s:"WI",la:42.598,lg:-88.416},
+  {n:"Target Marshfield",c:"Marshfield",s:"WI",la:44.684,lg:-90.162},
+  {n:"Target Janesville",c:"Janesville",s:"WI",la:42.722,lg:-88.999},
+  {n:"Target Menomonee Falls",c:"Menomonee Falls",s:"WI",la:43.17,lg:-88.124},
+  {n:"Target Milwaukee Chase",c:"Milwaukee",s:"WI",la:42.992,lg:-87.908},
+  {n:"Target Oak Creek",c:"Oak Creek",s:"WI",la:42.881,lg:-87.913},
+  {n:"Target New Berlin",c:"New Berlin",s:"WI",la:42.959,lg:-88.109},
+  {n:"Target LaCrosse",c:"Onalaska",s:"WI",la:43.874,lg:-91.193},
+  {n:"Target Pleasant Prairie",c:"Pleasant Prairie",s:"WI",la:42.564,lg:-87.928},
+  {n:"Target Oshkosh",c:"Oshkosh",s:"WI",la:43.998,lg:-88.579},
+  {n:"Target Wausau",c:"Schofield",s:"WI",la:44.906,lg:-89.592},
+  {n:"Target Racine",c:"Racine",s:"WI",la:42.699,lg:-87.844},
+  {n:"Target Kohler",c:"Sheboygan Falls",s:"WI",la:43.716,lg:-87.766},
+  {n:"Target Stevens Point",c:"Stevens Point",s:"WI",la:44.525,lg:-89.523},
+  {n:"Target Sturgeon Bay",c:"Sturgeon Bay",s:"WI",la:44.823,lg:-87.404},
+  {n:"Target Sun Prairie",c:"Sun Prairie",s:"WI",la:43.171,lg:-89.267},
+  {n:"Target West Allis",c:"West Allis",s:"WI",la:42.992,lg:-88.047},
+  {n:"Target Wauwatosa",c:"Wauwatosa",s:"WI",la:43.088,lg:-88.066},
+  {n:"Target West Milwaukee",c:"West Milwaukee",s:"WI",la:43.015,lg:-87.968},
+  {n:"Target Appleton",c:"Appleton",s:"WI",la:44.273,lg:-88.471},
+  {n:"Target Appleton East",c:"Appleton",s:"WI",la:44.247,lg:-88.359},
+  {n:"Target Bellevue",c:"Green Bay",s:"WI",la:44.466,lg:-87.986},
+  {n:"Target Green Bay West",c:"Green Bay",s:"WI",la:44.491,lg:-88.07},
+  {n:"Target Madison West",c:"Madison",s:"WI",la:43.062,lg:-89.525},
+  {n:"Target Madison East",c:"Madison",s:"WI",la:43.119,lg:-89.307},
+  {n:"Target Madison Hilldale",c:"Madison",s:"WI",la:43.075,lg:-89.454},
+  {n:"Target Madison State Street",c:"Madison",s:"WI",la:43.075,lg:-89.396},
+  {n:"Target Waukesha",c:"Waukesha",s:"WI",la:43.034,lg:-88.177},
+  {n:"Target Waukesha South",c:"Waukesha",s:"WI",la:42.99,lg:-88.259},
+  {n:"Target Casper",c:"Casper",s:"WY",la:42.847,lg:-106.271},
+  {n:"Target Cheyenne",c:"Cheyenne",s:"WY",la:41.162,lg:-104.8},
+  {n:"Target Jackson Hole",c:"Jackson",s:"WY",la:43.469,lg:-110.792},
 ];
 
 const REFRESH_MS = 60 * 60 * 1000;      // 1 hour
-const CONCURRENCY = 6;                   // simultaneous fetches per API
-const GRID_CACHE_KEY = "sundriver.gridCache.v1";
-const DATA_CACHE_KEY = "sundriver.lastData.v1";
-let CURRENT = [];                        // last rendered dataset
+const CONCURRENCY = 8;                   // simultaneous fetches per API
+const POINTS_CACHE_KEY = "sundriver.pointsCache.v2";   // {key: {hourlyUrl, grid}}
+const UV_CITY_CACHE_KEY = "sundriver.uvCityCache.v1";  // session-only UV by (state|city)
+const DATA_CACHE_KEY = "sundriver.lastData.v2";
+let CURRENT = [];
 let TIMER = null;
 let NEXT_AT = null;
 
-// ---- tiny helpers ----
 const $ = (id) => document.getElementById(id);
 const fmtTemp = (t) => (t == null || Number.isNaN(t)) ? "—" : Math.round(t) + "°";
 const fmtUv   = (u) => (u == null || Number.isNaN(u)) ? "—" : (Math.round(u * 10) / 10).toFixed(1);
@@ -464,52 +2407,72 @@ function uvColor(u) {
   return "var(--uv-low)";
 }
 
-async function pmap(items, concurrency, worker) {
-  const out = new Array(items.length);
+async function pmap(items, concurrency, worker, onProgress) {
+  let done = 0;
   let i = 0;
+  const out = new Array(items.length);
   async function run() {
     while (i < items.length) {
       const idx = i++;
       try { out[idx] = await worker(items[idx], idx); }
       catch (e) { out[idx] = { _error: String(e && e.message || e) }; }
+      done++;
+      if (onProgress) onProgress(done, items.length);
     }
   }
   await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, run));
   return out;
 }
 
-// ---- NOAA ----
-function loadGridCache() {
-  try { return JSON.parse(localStorage.getItem(GRID_CACHE_KEY) || "{}"); }
+// ---- NOAA: points (persisted) + hourly forecast (per-grid, per-run) ----
+function loadPointsCache() {
+  try { return JSON.parse(localStorage.getItem(POINTS_CACHE_KEY) || "{}"); }
   catch { return {}; }
 }
-function saveGridCache(c) {
-  try { localStorage.setItem(GRID_CACHE_KEY, JSON.stringify(c)); } catch {}
+function savePointsCache(c) {
+  try { localStorage.setItem(POINTS_CACHE_KEY, JSON.stringify(c)); } catch {}
 }
-async function noaaForecastUrl(s, cache) {
-  const key = s.lat.toFixed(4) + "," + s.lon.toFixed(4);
-  if (cache[key] && cache[key].forecastHourly) return cache[key].forecastHourly;
-  const r = await fetch("https://api.weather.gov/points/" + key, { headers: { Accept: "application/geo+json" }});
+function pointKey(la, lg) { return la.toFixed(4) + "," + lg.toFixed(4); }
+
+async function noaaPoint(la, lg) {
+  const r = await fetch("https://api.weather.gov/points/" + pointKey(la, lg),
+    { headers: { Accept: "application/geo+json" }});
   if (!r.ok) throw new Error("NOAA points " + r.status);
   const j = await r.json();
-  cache[key] = { forecastHourly: j.properties.forecastHourly };
-  return cache[key].forecastHourly;
+  const props = j.properties || {};
+  return {
+    hourlyUrl: props.forecastHourly,
+    grid: [props.gridId, props.gridX, props.gridY].join(":"),
+  };
 }
-async function noaaCurrent(s, cache) {
-  const url = await noaaForecastUrl(s, cache);
+
+async function noaaHourly(url) {
   const r = await fetch(url, { headers: { Accept: "application/geo+json" }});
   if (!r.ok) throw new Error("NOAA hourly " + r.status);
   const j = await r.json();
-  const p = (j.properties.periods || [])[0];
+  const p = ((j.properties || {}).periods || [])[0];
   if (!p) throw new Error("NOAA empty periods");
   let temp_f = p.temperature;
   if (p.temperatureUnit === "C" && typeof temp_f === "number") temp_f = temp_f * 9 / 5 + 32;
   return { temp_f, short: p.shortForecast || "" };
 }
 
-// ---- EPA ----
-async function epaUv(s) {
-  const url = "https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/ZIP/" + s.zip + "/JSON";
+// ---- EPA UV by city/state ----
+function parseEpaTimestamp(s) {
+  if (!s) return null;
+  const m = /^([A-Za-z]{3})\/(\d{1,2})\/(\d{4})\s+(\d{1,2})\s*(AM|PM)$/i.exec(s.trim());
+  if (!m) return null;
+  const months = {JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
+  const mo = months[m[1].toUpperCase()];
+  if (mo == null) return null;
+  let hr = parseInt(m[4], 10) % 12;
+  if (m[5].toUpperCase() === "PM") hr += 12;
+  return new Date(parseInt(m[3],10), mo, parseInt(m[2],10), hr, 0, 0);
+}
+async function epaUvForCity(city, state) {
+  const url = "https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/CITY/"
+    + encodeURIComponent(city.toUpperCase())
+    + "/STATE/" + encodeURIComponent(state.toUpperCase()) + "/JSON";
   const r = await fetch(url, { headers: { Accept: "application/json" }});
   if (!r.ok) throw new Error("EPA " + r.status);
   const rows = await r.json();
@@ -526,41 +2489,87 @@ async function epaUv(s) {
   if (!Number.isFinite(uv)) throw new Error("EPA non-numeric UV");
   return uv;
 }
-function parseEpaTimestamp(s) {
-  if (!s) return null;
-  const m = /^([A-Za-z]{3})\/(\d{1,2})\/(\d{4})\s+(\d{1,2})\s*(AM|PM)$/i.exec(s.trim());
-  if (!m) return null;
-  const months = {JAN:0,FEB:1,MAR:2,APR:3,MAY:4,JUN:5,JUL:6,AUG:7,SEP:8,OCT:9,NOV:10,DEC:11};
-  const mo = months[m[1].toUpperCase()];
-  if (mo == null) return null;
-  let hr = parseInt(m[4], 10) % 12;
-  if (m[5].toUpperCase() === "PM") hr += 12;
-  return new Date(parseInt(m[3],10), mo, parseInt(m[2],10), hr, 0, 0);
-}
 
 // ---- orchestration ----
+function showProgress(text, pct) {
+  const bar = $("fetch-progress");
+  bar.style.display = "";
+  $("progress-text").textContent = text;
+  $("progress-bar").style.width = Math.max(0, Math.min(100, pct)) + "%";
+}
+function hideProgress() { $("fetch-progress").style.display = "none"; }
+
 async function refreshAll() {
   const btn = $("refresh");
   btn.disabled = true;
   $("status").innerHTML = '<span class="spinner"></span> fetching';
-  const gridCache = loadGridCache();
-  const data = STATES.map(s => ({ ...s, temp_f: null, uv: null, short: "", errs: [] }));
 
-  // NOAA
-  await pmap(STATES, CONCURRENCY, async (s, i) => {
-    try { const r = await noaaCurrent(s, gridCache); data[i].temp_f = r.temp_f; data[i].short = r.short; }
-    catch (e) { data[i].errs.push("temp: " + (e.message || e)); }
-  });
-  saveGridCache(gridCache);
+  const data = TARGETS.map(t => ({
+    store_name: t.n, city: t.c, state: t.s, lat: t.la, lng: t.lg,
+    temp_f: null, uv: null, short: "", errs: [],
+  }));
 
-  // EPA
-  await pmap(STATES, CONCURRENCY, async (s, i) => {
-    try { data[i].uv = await epaUv(s); }
-    catch (e) { data[i].errs.push("uv: " + (e.message || e)); }
-  });
+  // --- Phase 1: NOAA /points (cached forever in localStorage) ---
+  const pointsCache = loadPointsCache();
+  const needPoints = [];
+  for (let i = 0; i < TARGETS.length; i++) {
+    const k = pointKey(TARGETS[i].la, TARGETS[i].lg);
+    if (!pointsCache[k]) needPoints.push(i);
+  }
+  if (needPoints.length) {
+    showProgress(`Looking up NOAA grids… 0 / ${needPoints.length}`, 0);
+    await pmap(needPoints, CONCURRENCY, async (i) => {
+      try {
+        pointsCache[pointKey(TARGETS[i].la, TARGETS[i].lg)] =
+          await noaaPoint(TARGETS[i].la, TARGETS[i].lg);
+      } catch (e) {
+        data[i].errs.push("points: " + (e.message || e));
+      }
+    }, (done, total) => showProgress(`Looking up NOAA grids… ${done} / ${total}`, 33 * done / total));
+    savePointsCache(pointsCache);
+  }
 
+  // --- Phase 2: NOAA hourly forecast deduped by grid ---
+  const gridToStores = new Map();   // grid -> {url, members:[i]}
+  for (let i = 0; i < TARGETS.length; i++) {
+    const pt = pointsCache[pointKey(TARGETS[i].la, TARGETS[i].lg)];
+    if (!pt || !pt.hourlyUrl) continue;
+    if (!gridToStores.has(pt.grid)) gridToStores.set(pt.grid, { url: pt.hourlyUrl, members: [] });
+    gridToStores.get(pt.grid).members.push(i);
+  }
+  const gridEntries = Array.from(gridToStores.values());
+  showProgress(`Fetching hourly forecasts… 0 / ${gridEntries.length}`, 33);
+  await pmap(gridEntries, CONCURRENCY, async (entry) => {
+    try {
+      const r = await noaaHourly(entry.url);
+      for (const i of entry.members) { data[i].temp_f = r.temp_f; data[i].short = r.short; }
+    } catch (e) {
+      for (const i of entry.members) data[i].errs.push("temp: " + (e.message || e));
+    }
+  }, (done, total) => showProgress(`Fetching hourly forecasts… ${done} / ${total}`, 33 + 33 * done / total));
+
+  // --- Phase 3: EPA UV deduped by (state, city) ---
+  const cityKeys = new Map();   // state|city -> {state, city, members:[i]}
+  for (let i = 0; i < TARGETS.length; i++) {
+    const k = TARGETS[i].s + "|" + TARGETS[i].c;
+    if (!cityKeys.has(k)) cityKeys.set(k, { state: TARGETS[i].s, city: TARGETS[i].c, members: [] });
+    cityKeys.get(k).members.push(i);
+  }
+  const cityEntries = Array.from(cityKeys.values());
+  showProgress(`Fetching UV by city… 0 / ${cityEntries.length}`, 66);
+  await pmap(cityEntries, CONCURRENCY, async (entry) => {
+    try {
+      const uv = await epaUvForCity(entry.city, entry.state);
+      for (const i of entry.members) data[i].uv = uv;
+    } catch (e) {
+      for (const i of entry.members) data[i].errs.push("uv: " + (e.message || e));
+    }
+  }, (done, total) => showProgress(`Fetching UV by city… ${done} / ${total}`, 66 + 34 * done / total));
+
+  hideProgress();
   CURRENT = data;
   try { localStorage.setItem(DATA_CACHE_KEY, JSON.stringify({ at: Date.now(), data })); } catch {}
+  populateStateFilter();
   render();
 
   $("status").textContent = "ok";
@@ -568,12 +2577,11 @@ async function refreshAll() {
   scheduleNext();
   btn.disabled = false;
 
-  // Fire-and-forget auto-sync to Google Sheets (no-op unless opted in & connected).
   if (typeof autoSyncAfterRefresh === "function") {
     autoSyncAfterRefresh().catch(() => {});
   }
 
-  // If EVERY uv fetch failed and at least some succeeded for temp, show the file:// banner.
+  // Surface the file:// CORS banner only when EVERY signal failed.
   const uvFail = data.every(d => d.uv == null);
   const tempFail = data.every(d => d.temp_f == null);
   if (uvFail || tempFail) $("banner").style.display = "";
@@ -594,16 +2602,28 @@ function updateNextLabel() {
 setInterval(updateNextLabel, 30 * 1000);
 
 // ---- render ----
+function populateStateFilter() {
+  const sel = $("state-filter");
+  if (sel.options.length > 1) return;   // populated once
+  const states = Array.from(new Set(TARGETS.map(t => t.s))).sort();
+  for (const s of states) {
+    const opt = document.createElement("option");
+    opt.value = s; opt.textContent = s;
+    sel.appendChild(opt);
+  }
+}
+
 function render() {
   const q = ($("filter").value || "").toLowerCase().trim();
+  const stateFilter = $("state-filter").value;
   const sort = $("sort").value;
   const minT = parseFloat($("min-temp").value);
   const minU = parseFloat($("min-uv").value);
 
   let rows = CURRENT.slice();
-  if (q) {
-    rows = rows.filter(r => (r.state + " " + r.name + " " + r.city + " " + r.short).toLowerCase().includes(q));
-  }
+  if (stateFilter) rows = rows.filter(r => r.state === stateFilter);
+  if (q) rows = rows.filter(r =>
+    (r.state + " " + r.store_name + " " + r.city + " " + r.short).toLowerCase().includes(q));
   if (Number.isFinite(minT)) rows = rows.filter(r => r.temp_f != null && r.temp_f >= minT);
   if (Number.isFinite(minU)) rows = rows.filter(r => r.uv     != null && r.uv     >= minU);
 
@@ -613,40 +2633,34 @@ function render() {
     case "temp-asc":  rows.sort((a,b) => numOrInf(a.temp_f,"asc")  - numOrInf(b.temp_f,"asc"));  break;
     case "uv-desc":   rows.sort((a,b) => numOrInf(b.uv,"desc")     - numOrInf(a.uv,"desc"));     break;
     case "uv-asc":    rows.sort((a,b) => numOrInf(a.uv,"asc")      - numOrInf(b.uv,"asc"));      break;
-    default:          rows.sort((a,b) => a.state.localeCompare(b.state));
+    case "store":     rows.sort((a,b) => a.store_name.localeCompare(b.store_name)); break;
+    default:          rows.sort((a,b) => a.state.localeCompare(b.state) || a.city.localeCompare(b.city));
   }
 
-  const grid = $("grid");
-  grid.innerHTML = "";
-  for (const r of rows) {
-    const card = document.createElement("div");
-    card.className = "card";
-    const errHtml = r.errs && r.errs.length
-      ? `<div class="err" title="${escapeAttr(r.errs.join('\n'))}">⚠ partial</div>` : "";
-    card.innerHTML = `
-      <div class="card-head">
-        <span class="state-name">${escapeHtml(r.name)}</span>
-        <span class="state-code">${escapeHtml(r.state)}</span>
-      </div>
-      <div class="city">${escapeHtml(r.city)} · ${escapeHtml(r.zip)}</div>
-      <div class="readings">
-        <div class="reading">
-          <div class="reading-label"><span class="swatch" style="background:${tempColor(r.temp_f)}"></span>Temp</div>
-          <div class="reading-value" style="color:${tempColor(r.temp_f)}">${fmtTemp(r.temp_f)}</div>
-        </div>
-        <div class="reading">
-          <div class="reading-label"><span class="swatch" style="background:${uvColor(r.uv)}"></span>UV</div>
-          <div class="reading-value" style="color:${uvColor(r.uv)}">${fmtUv(r.uv)}</div>
-        </div>
-      </div>
-      <div class="forecast">${escapeHtml(r.short || "—")}</div>
-      ${errHtml}
-    `;
-    grid.appendChild(card);
-  }
+  $("visible-count").textContent = `${rows.length.toLocaleString()} of ${CURRENT.length.toLocaleString()}`;
+
+  const wrap = $("store-table-wrap");
   if (!rows.length) {
-    grid.innerHTML = '<div class="meta-item">No rows match the current filters.</div>';
+    wrap.innerHTML = '<div class="meta-item" style="padding:24px">No rows match the current filters.</div>';
+    return;
   }
+  const head = `<thead><tr>
+    <th>Store</th><th>City</th><th>ST</th><th>Temp °F</th><th>UV</th><th>Forecast</th><th>Notes</th>
+  </tr></thead>`;
+  const body = rows.map(r => {
+    const errTitle = r.errs && r.errs.length ? escapeAttr(r.errs.join("\n")) : "";
+    const errCell = errTitle ? `<td class="err-cell" title="${errTitle}">⚠ ${escapeHtml(r.errs[0])}</td>` : `<td></td>`;
+    return `<tr>
+      <td class="store">${escapeHtml(r.store_name)}</td>
+      <td class="muted">${escapeHtml(r.city)}</td>
+      <td class="code">${escapeHtml(r.state)}</td>
+      <td class="num" style="color:${tempColor(r.temp_f)}">${fmtTemp(r.temp_f)}</td>
+      <td class="num" style="color:${uvColor(r.uv)}">${fmtUv(r.uv)}</td>
+      <td class="forecast" title="${escapeAttr(r.short || '')}">${escapeHtml(r.short || "—")}</td>
+      ${errCell}
+    </tr>`;
+  }).join("");
+  wrap.innerHTML = `<table class="stores">${head}<tbody>${body}</tbody></table>`;
 }
 
 function escapeHtml(s) {
@@ -657,6 +2671,7 @@ function escapeAttr(s) { return escapeHtml(s).replace(/"/g, "&quot;"); }
 
 // ---- restore + wire ----
 function restoreLast() {
+  populateStateFilter();
   try {
     const j = JSON.parse(localStorage.getItem(DATA_CACHE_KEY) || "null");
     if (j && Array.isArray(j.data)) {
@@ -668,7 +2683,7 @@ function restoreLast() {
 }
 
 $("refresh").addEventListener("click", refreshAll);
-["filter","sort","min-temp","min-uv"].forEach(id => {
+["filter","state-filter","sort","min-temp","min-uv"].forEach(id => {
   $(id).addEventListener("input", render);
   $(id).addEventListener("change", render);
 });
@@ -683,10 +2698,10 @@ function defaultBaseName() {
 }
 
 function buildSheetRows() {
-  const header = ["state","name","city","lat","lon","zip","temperature_f","uv_index","short_forecast","updated_at_local","errors"];
+  const header = ["store_name","city","state","lat","lng","temperature_f","uv_index","short_forecast","updated_at_local","errors"];
   const updated = new Date().toLocaleString();
   const rows = CURRENT.map(r => [
-    r.state, r.name, r.city, r.lat, r.lon, r.zip,
+    r.store_name, r.city, r.state, r.lat, r.lng,
     r.temp_f == null ? "" : Math.round(r.temp_f * 10) / 10,
     r.uv     == null ? "" : Math.round(r.uv     * 10) / 10,
     r.short || "",
@@ -724,7 +2739,7 @@ async function saveSnapshot() {
   if (xlsxAvailable) {
     const ws = XLSX.utils.aoa_to_sheet(buildSheetRows());
     ws["!cols"] = [
-      {wch:6},{wch:18},{wch:18},{wch:9},{wch:10},{wch:7},
+      {wch:30},{wch:18},{wch:5},{wch:9},{wch:10},
       {wch:8},{wch:7},{wch:32},{wch:22},{wch:30},
     ];
     const wb = XLSX.utils.book_new();
@@ -918,7 +2933,7 @@ async function pushToSheet({ interactive }) {
   const base = `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(gsSettings.sheetId)}/values/${tab}`;
 
   // Wipe the tab first so a shrinking dataset doesn't leave stale rows.
-  const clearResp = await fetch(`${base}!A:K:clear`, { method: "POST", headers: auth });
+  const clearResp = await fetch(`${base}!A:J:clear`, { method: "POST", headers: auth });
   if (!clearResp.ok) throw new Error("clear " + clearResp.status + ": " + (await clearResp.text()).slice(0, 200));
 
   const rows = buildSheetRows();
